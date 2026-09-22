@@ -1,0 +1,4 @@
+*.log
+.tmp-result.json
+node_modules/
+.deploy-*/
