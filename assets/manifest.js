@@ -7,11 +7,15 @@
       menuBgMain:{src:'assets/menu/menu_bg_main.png',enabled:true},
       menuFogOverlay:{src:'assets/menu/menu_fog_overlay.png',enabled:false},
       menuForegroundOverlay:{src:'assets/menu/menu_foreground_overlay.png',enabled:false},
+      flyerGuard01:{src:'assets/menu/animated/flyer_guard_01.png',enabled:false,animation:{frames:1,fps:12},motion:{x:.5,y:.14,size:.12,rangeX:.018,rangeY:.012,phase:0}},
+      flyerHeavy01:{src:'assets/menu/animated/flyer_heavy_01.png',enabled:false,animation:{frames:1,fps:12},motion:{x:.68,y:.19,size:.14,rangeX:.014,rangeY:.01,phase:2.1}},
+      flyerScout01:{src:'assets/menu/animated/flyer_scout_01.png',enabled:false,animation:{frames:1,fps:16},motion:{x:.82,y:.12,size:.09,rangeX:.026,rangeY:.016,phase:4.2}},
       intro01Fall:{src:'assets/intro/intro_01_fall.png',enabled:true},
       intro02Mutation:{src:'assets/intro/intro_02_mutation.png',enabled:true},
       intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
+    menuFlyers:['flyerGuard01','flyerHeavy01','flyerScout01'],
     introSequence:['intro01Fall','intro02Mutation','intro03Empires'],
     audio:{
       bgmNest:{src:'assets/audio/bgm/bgm_nest.ogg',enabled:false,loop:true},
