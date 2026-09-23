@@ -54,3 +54,22 @@ test('BGM fade clamps the first browser frame to a legal volume',async()=>{
   await finished;
   assert.equal(volume,0);
 });
+
+test('static-host audio is fetched completely before media decoding',async()=>{
+  const fetched=[],urls=[];
+  class MockAudio{
+    constructor(){this.listeners=new Map();this.readyState=0;this.loop=false;}
+    addEventListener(type,listener){this.listeners.set(type,listener)}
+    removeEventListener(type){this.listeners.delete(type)}
+    load(){queueMicrotask(()=>{this.readyState=3;this.listeners.get('loadeddata')?.()})}
+  }
+  const context={window:{},Audio:MockAudio,fetch:async src=>{fetched.push(src);return {ok:true,blob:async()=>({})}},URL:{createObjectURL:()=>{urls.push('blob:formal-audio');return 'blob:formal-audio'},revokeObjectURL:()=>{}},setTimeout,clearTimeout,queueMicrotask};
+  vm.runInNewContext(read('asset-loader.js'),context);
+  const loader=new context.window.AntAssetLoader({images:{},audio:{bgmNest:{src:'assets/audio/bgm/bgm_nest.ogg',enabled:true,loop:true}}});
+  await loader.ready;
+  assert.equal(loader.state('bgmNest'),'ready');
+  assert.equal(loader.audio('bgmNest').src,'blob:formal-audio');
+  assert.equal(loader.audio('bgmNest').loop,true);
+  assert.deepEqual(fetched,['assets/audio/bgm/bgm_nest.ogg']);
+  assert.equal(urls.length,1);
+});
