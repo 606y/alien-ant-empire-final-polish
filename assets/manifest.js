@@ -1,0 +1,44 @@
+/* Assets v1 registry. Keep entries disabled until a valid licensed file is supplied. */
+(function(root){
+  'use strict';
+  root.AntAssetManifest={
+    version:1,
+    images:{
+      menuBgMain:{src:'assets/menu/menu_bg_main.png',enabled:true},
+      menuFogOverlay:{src:'assets/menu/menu_fog_overlay.png',enabled:false},
+      menuForegroundOverlay:{src:'assets/menu/menu_foreground_overlay.png',enabled:false},
+      intro01ForestStirring:{src:'assets/intro/intro_01_forest_stirring.png',enabled:false},
+      intro02AntEmerges:{src:'assets/intro/intro_02_ant_emerges.png',enabled:false},
+      intro03WingedRise:{src:'assets/intro/intro_03_winged_rise.png',enabled:false},
+      intro04EmpireReveal:{src:'assets/intro/intro_04_empire_reveal.png',enabled:false},
+      intro05TitleCard:{src:'assets/intro/intro_05_title_card.png',enabled:false},
+      logoMain:{src:'assets/logo/logo_main.png',enabled:false}
+    },
+    introSequence:['intro01ForestStirring','intro03WingedRise','intro04EmpireReveal'],
+    audio:{
+      bgmNest:{src:'assets/audio/bgm/bgm_nest.ogg',enabled:false,loop:true},
+      bgmSurface:{src:'assets/audio/bgm/bgm_surface.ogg',enabled:false,loop:true},
+      bgmCombat:{src:'assets/audio/bgm/bgm_combat.ogg',enabled:false,loop:true},
+      sfxClick:{src:'assets/audio/sfx/sfx_click.ogg',enabled:false},
+      sfxConfirm:{src:'assets/audio/sfx/sfx_confirm.ogg',enabled:false},
+      sfxCancel:{src:'assets/audio/sfx/sfx_cancel.ogg',enabled:false},
+      sfxMove:{src:'assets/audio/sfx/sfx_move.ogg',enabled:false},
+      sfxAttack:{src:'assets/audio/sfx/sfx_attack.ogg',enabled:false},
+      sfxAlert:{src:'assets/audio/sfx/sfx_alert.ogg',enabled:false},
+      sfxWarning:{src:'assets/audio/sfx/sfx_warning.ogg',enabled:false},
+      sfxVictory:{src:'assets/audio/sfx/sfx_victory.ogg',enabled:false},
+      sfxDefeat:{src:'assets/audio/sfx/sfx_defeat.ogg',enabled:false},
+      sfxDig:{src:'assets/audio/sfx/sfx_dig.ogg',enabled:false},
+      sfxAntMarch:{src:'assets/audio/sfx/sfx_ant_march.ogg',enabled:false},
+      sfxChitinHit:{src:'assets/audio/sfx/sfx_chitin_hit.ogg',enabled:false},
+      sfxBite:{src:'assets/audio/sfx/sfx_bite.ogg',enabled:false},
+      sfxMutationPulse:{src:'assets/audio/sfx/sfx_mutation_pulse.ogg',enabled:false},
+      sfxQueenMove:{src:'assets/audio/sfx/sfx_queen_move.ogg',enabled:false},
+      sfxLarvaCare:{src:'assets/audio/sfx/sfx_larva_care.ogg',enabled:false},
+      sfxWingFlap:{src:'assets/audio/sfx/sfx_wing_flap.ogg',enabled:false},
+      ambNestLoop:{src:'assets/audio/sfx/amb_nest_loop.ogg',enabled:false,loop:true},
+      ambForestLoop:{src:'assets/audio/sfx/amb_forest_loop.ogg',enabled:false,loop:true},
+      ambCombatTensionLoop:{src:'assets/audio/sfx/amb_combat_tension_loop.ogg',enabled:false,loop:true}
+    }
+  };
+})(window);
