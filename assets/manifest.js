@@ -1,23 +1,39 @@
-/* Alien Ant Empire Assets v2 registry. Formal files fail safely when unavailable. */
+/* Assets v3 integration slots. Enable entries when the owner supplies formal files. */
 (function(root){
   'use strict';
   root.AntAssetManifest={
-    version:2,
+    version:3,
     images:{
+      menuBgV3:{src:'assets/menu/v3/menu_bg_v3.png',enabled:false},
       menuBgAnimationBase:{src:'assets/menu/menu_bg_animation_base.png',enabled:true},
       menuBgMain:{src:'assets/menu/menu_bg_main.png',enabled:true},
       menuFogOverlay:{src:'assets/menu/menu_fog_overlay.png',enabled:false},
       menuForegroundOverlay:{src:'assets/menu/menu_foreground_overlay.png',enabled:false},
+      flyerScoutBodyV3:{src:'assets/menu/v3/flyers/flyer_scout_body.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:8}},
+      flyerScoutWingsV3:{src:'assets/menu/v3/flyers/flyer_scout_wings.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:16}},
+      flyerGuardBodyV3:{src:'assets/menu/v3/flyers/flyer_guard_body.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:8}},
+      flyerGuardWingsV3:{src:'assets/menu/v3/flyers/flyer_guard_wings.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:14}},
+      flyerHeavyBodyV3:{src:'assets/menu/v3/flyers/flyer_heavy_body.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:6}},
+      flyerHeavyWingsV3:{src:'assets/menu/v3/flyers/flyer_heavy_wings.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:12}},
       flyerScout01:{src:'assets/menu/animated/flyer_scout_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:.40,toX:1.15,y:.14,size:.25,driftY:.018,cycle:43000,phase:0,turn:.025,opacity:.98}},
       flyerGuard01:{src:'assets/menu/animated/flyer_guard_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:1.16,toX:.47,y:.25,size:.31,driftY:.016,cycle:61000,phase:.31,turn:.022,opacity:.98}},
       flyerHeavy01:{src:'assets/menu/animated/flyer_heavy_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:.45,toX:1.18,y:.37,size:.37,driftY:.013,cycle:79000,phase:.62,turn:.018,opacity:.98}},
+      intro01FallV3:{src:'assets/intro/v3/intro_01_fall_v3.png',enabled:false},
+      intro02MutationV3:{src:'assets/intro/v3/intro_02_mutation_v3.png',enabled:false},
+      intro03EmpiresV3:{src:'assets/intro/v3/intro_03_empires_v3.png',enabled:false},
       intro01Fall:{src:'assets/intro/intro_01_fall.png',enabled:true},
       intro02Mutation:{src:'assets/intro/intro_02_mutation.png',enabled:true},
       intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
-    menuBackground:['menuBgAnimationBase','menuBgMain'],
+    menuBackground:['menuBgV3','menuBgAnimationBase','menuBgMain'],
+    menuFlyersV3:[
+      {body:'flyerScoutBodyV3',wings:'flyerScoutWingsV3',fallback:'flyerScout01',motion:{fromX:.35,toX:1.18,y:.14,size:.25,driftY:.014,cycle:42000,phase:0,turn:.028},wing:{frequency:16,angle:.09,offsetX:0,offsetY:0,scale:1,order:'back'}},
+      {body:'flyerGuardBodyV3',wings:'flyerGuardWingsV3',fallback:'flyerGuard01',motion:{fromX:1.16,toX:.42,y:.25,size:.31,driftY:.011,cycle:62000,phase:.31,turn:.02},wing:{frequency:14,angle:.075,offsetX:0,offsetY:0,scale:1,order:'back'}},
+      {body:'flyerHeavyBodyV3',wings:'flyerHeavyWingsV3',fallback:'flyerHeavy01',motion:{fromX:.42,toX:1.18,y:.37,size:.37,driftY:.008,cycle:82000,phase:.62,turn:.014},wing:{frequency:12,angle:.06,offsetX:0,offsetY:0,scale:1,order:'back'}}
+    ],
     menuFlyers:['flyerScout01','flyerGuard01','flyerHeavy01'],
+    introSequenceV3:['intro01FallV3','intro02MutationV3','intro03EmpiresV3'],
     introSequence:['intro01Fall','intro02Mutation','intro03Empires'],
     audio:{
       bgmNest:{src:'assets/audio/bgm/bgm_nest.ogg',enabled:true,loop:true},
