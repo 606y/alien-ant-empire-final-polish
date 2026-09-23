@@ -9,9 +9,9 @@
   let view='nest',context=null,selection=[],candidates=[],selectionTools=false,commandMode=null,split=false,digging=false,royalPlacement=false,commandMarker=null,postGameReview=false,journalFilter='all',broodId=s.broods[0]?.id,broodDraft=null,mergePreview=[],infoMode='',jobDraft=null,edit=null,last=performance.now(),acc=0,uiTime=0,contextTime=0,saveTime=0,toast=null,toastUntil=0,feedbackUntil=0,seenEvent=s.events[0],seenUiNotice=s.uiNotice?.id||0,lastNotice=-100,eventFocusUntil=0,lastSaved='尚未儲存',dialogSpeed=0,selectionLessonShown=false,commandLessonShown=false,inputHintUntil=performance.now()+5000;
   const stateNames=['卵','幼蟲','蛹'],jobNames={nurse:'育幼',forage:'覓食',dig:'挖掘',scout:'偵察',defense:'防守／戰鬥'};
   const introSlides=[
-    ['墜落','森林深處的異物','數百年前，一艘不屬於這個世界的飛行器墜入森林深處。殘骸被泥土與根系吞沒，異質物質卻開始緩慢滲入大地。'],
-    ['異變','蟻群開始改變','一代又一代，受到污染的蟻群產生分化。巨顎、重甲、翼化與未知特徵逐漸出現——原本渺小的族群，開始走向另一種生命。'],
-    ['蟻國','森林從來不是無主之地','四個敵對蟻國已在森林中擴張。資源、領地與巢穴終將彼此碰撞——而你的王國，也從此刻開始生長。']
+    ['墜落','森林深處的異物','數百年前，一艘不屬於這個世界的飛行器墜入森林深處。\n殘骸被泥土與根系吞沒，異質物質卻開始緩慢滲入大地。'],
+    ['異變','蟻群開始改變','一代又一代，受到污染的蟻群產生分化。\n巨顎、重甲、翼化與未知特徵逐漸出現——\n原本渺小的族群，開始走向另一種生命。'],
+    ['蟻國','森林從來不是無主之地','四個敵對蟻國已在森林中擴張。\n資源、領地與巢穴終將彼此碰撞——\n而你的王國，也從此刻開始生長。']
   ];
   let introStep=0;
   function audioLabel(){const text=audio.muted?'聲音：關':'聲音：開';$('menuAudio').textContent=text;$('menuAudio').setAttribute('aria-pressed',String(!audio.muted));}
@@ -177,7 +177,7 @@
   function save(notify=false){try{localStorage.setItem(SAVE,E.serialize(s));lastSaved='已儲存 '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});if(notify)tell('蟻國已儲存。');}catch{lastSaved='瀏覽器無法儲存';if(notify)tell('請允許網站使用本機儲存空間。');}}
   document.addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
-    audio.unlock();if(!b.closest('.time-controls')&&!b.closest('.menu-actions'))audio.ui();
+    audio.unlock();if(!b.closest('.time-controls')&&!b.closest('.menu-actions')&&!b.closest('.intro')){const name=b.dataset.action||'';if(b.id==='closeContext'||b.id==='closeInfo'||/^cancel/i.test(name))audio.back();else audio.ui();}
     if(b.dataset.threatK){const raw=b.dataset.threatK;focus(/^-?\d+$/.test(raw)?Number(raw):raw);tell('鏡頭已移到目前前線。');return;}
     if(b.dataset.view){switchView(b.dataset.view,false);return;}
     if(b.dataset.speed){s.speed=s.ended?0:Number(b.dataset.speed);renderStatus();return;}
@@ -323,10 +323,10 @@
     if(commandMarker&&now>commandMarker.until)commandMarker=null;audio.setScene(s.ants.some(a=>a.action==='戰鬥')?'combat':view==='surface'?'surface':'nest');world.draw(s,{selected:selection,target:eventFocusUntil>now?toast?.k??E.HOME:context?.k??null,digging,commandMarker},dt);requestAnimationFrame(frame);
   }
   $('menuAudio').onclick=()=>{audio.toggle();audioLabel();};
-  $('continueGame').onclick=()=>{audio.unlock();if(hasSave){$('mainMenu').classList.add('hidden');s.speed=menuResumeSpeed;last=performance.now();renderStatus();}else{resetGame();showIntro();}};
-  $('newGame').onclick=()=>{audio.unlock();resetGame();showIntro();};
-  $('skipIntro').onclick=closeIntro;
-  $('nextIntro').onclick=()=>{audio.command('move');if(introStep<introSlides.length-1){introStep++;renderIntro();}else closeIntro();};
+  $('continueGame').onclick=()=>{audio.unlock();audio.ui();if(hasSave){$('mainMenu').classList.add('hidden');s.speed=menuResumeSpeed;last=performance.now();renderStatus();}else{resetGame();showIntro();}};
+  $('newGame').onclick=()=>{audio.unlock();audio.ui();resetGame();showIntro();};
+  $('skipIntro').onclick=()=>{audio.back();closeIntro();};
+  $('nextIntro').onclick=()=>{audio.ui();if(introStep<introSlides.length-1){introStep++;if(introStep===1)audio.introMutation();renderIntro();}else closeIntro();};
   window.addEventListener('pagehide',()=>save());document.addEventListener('visibilitychange',()=>{if(document.hidden)save();last=performance.now();acc=0;});
   renderStatus();requestAnimationFrame(frame);
 })();

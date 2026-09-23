@@ -5,7 +5,7 @@ test('presentation uses formal assets with quiet fallbacks and no remote depende
   const html=read('index.html'),css=read('style.css'),menu=read('menu-art.js'),audio=read('audio.js');
   assert.match(html,/id="mainMenu"/);assert.match(html,/id="menuArt"/);assert.match(html,/id="intro"/);assert.match(html,/id="introArt"/);
   assert.match(html,/在黑暗森林中，孕育一座會呼吸、擴張並吞噬一切的異變蟻國。/);
-  assert.match(menu,/class MenuArt/);assert.match(menu,/function drawFormalFlyer/);assert.match(menu,/function drawQuietFallback/);assert.match(menu,/function usableFormal/);
+  assert.match(menu,/class MenuArt/);assert.match(menu,/function formalFlyer/);assert.match(menu,/function fallback/);assert.match(menu,/function usable/);
   for(const removed of [/function wingedAnt/,/function drawWarpedFlag/,/function formalBanners/,/function formalGuardLife/,/function formalAtmosphere/])assert.doesNotMatch(menu,removed);
   assert.match(audio,/class AntAudio/);assert.match(audio,/setScene/);assert.match(audio,/syncExternalAudio/);assert.doesNotMatch(audio,/AudioContext|createOscillator|musicTick|noiseBurst/);
   assert.match(css,/\.main-menu/);assert.match(css,/\.intro/);assert.match(css,/\.menu-noise\{display:none\}/);assert.match(menu,/naturalWidth>16/);

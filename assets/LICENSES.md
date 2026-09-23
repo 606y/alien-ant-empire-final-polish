@@ -1,25 +1,20 @@
 # Asset and License Record
 
-## Project-created assets and engineering placeholders
+## Project-supplied formal assets
 
-| Asset | Source | License | Attribution |
+| Assets | Source | Usage authorization | Attribution |
 | --- | --- | --- | --- |
-| Main-menu presentation code, layout gradients and restrained local city lights | `menu-art.js`, `style.css` | Original project code | Not required |
-| Intro fallback stage and formal-image motion framing | `menu-art.js` | Original project code | Not required |
-| Three transparent 1×1 intro slot placeholders | `assets/intro/intro_01_fall.png`, `intro_02_mutation.png`, `intro_03_empires.png` | Original project placeholders | Not required |
-| Ground, tunnel, chamber, ant, resource and combat visuals | `world.js` | Original project code | Not required |
-| Interface panels, ornament and lighting | `style.css` | Original project code | Not required |
-| Formal-audio playback and silent fallback controller | `audio.js` | Original project code | Not required |
-| `assets/menu/menu_bg_main.png` — 「異星蟻國_黃昏帝都」定稿主視覺 | User-supplied approved project artwork | Supplied and authorized by the project owner for this game | Not required |
+| `assets/menu/menu_bg_animation_base.png`, three flyer PNGs, three intro PNGs | User-supplied `AlienAntEmpire_Assets_v2.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
+| Three BGM OGGs and five SFX OGGs | User-supplied `AlienAntEmpire_Assets_v2.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
+| Main-menu copy and three intro scripts | User-supplied Assets v2 `docs/COPY_DECK.md` | Provided for this project | Not required |
+| `assets/menu/menu_bg_main.png` (`異星蟻國_黃昏帝都`) | User-supplied approved project artwork | Authorized by the project owner for this game | Not required |
 
-The interface uses only operating-system font fallbacks (`system-ui`, `Microsoft JhengHei`, `Georgia`, and generic `serif`/`sans-serif`). No font files are bundled or downloaded by the project.
+The original package records are retained in `assets/docs/ASSETS-V2-MANIFEST.json`, `ASSETS-V2-INTEGRATION.md`, `ASSETS-V2-COPY-DECK.md`, and `ASSETS-V2-LICENSES.md`.
+
+## Original project code
+
+Menu presentation (`menu-art.js`), intro motion, audio playback (`audio.js`), game visuals (`world.js`), UI (`style.css`) and fallback backgrounds are original project code. The interface uses operating-system font fallbacks; no font files are bundled or downloaded.
 
 ## Third-party assets
 
 No third-party copyrighted assets are included.
-
-No unverified external images, music, sound effects, videos, icons, character art, game assets, or downloaded fonts are included.
-
-## Reserved formal-asset slots
-
-The flyer, overlay, logo, BGM and SFX paths in `assets/manifest.js` are disabled until approved files are supplied. The three intro paths contain transparent project-created placeholders so they can be replaced directly without producing missing-file requests.

@@ -1,46 +1,33 @@
-/* Assets v1 registry. Keep entries disabled until a valid licensed file is supplied. */
+/* Alien Ant Empire Assets v2 registry. Formal files fail safely when unavailable. */
 (function(root){
   'use strict';
   root.AntAssetManifest={
-    version:1,
+    version:2,
     images:{
+      menuBgAnimationBase:{src:'assets/menu/menu_bg_animation_base.png',enabled:true},
       menuBgMain:{src:'assets/menu/menu_bg_main.png',enabled:true},
       menuFogOverlay:{src:'assets/menu/menu_fog_overlay.png',enabled:false},
       menuForegroundOverlay:{src:'assets/menu/menu_foreground_overlay.png',enabled:false},
-      flyerGuard01:{src:'assets/menu/animated/flyer_guard_01.png',enabled:false,animation:{frames:1,fps:12},motion:{x:.5,y:.14,size:.12,rangeX:.018,rangeY:.012,phase:0}},
-      flyerHeavy01:{src:'assets/menu/animated/flyer_heavy_01.png',enabled:false,animation:{frames:1,fps:12},motion:{x:.68,y:.19,size:.14,rangeX:.014,rangeY:.01,phase:2.1}},
-      flyerScout01:{src:'assets/menu/animated/flyer_scout_01.png',enabled:false,animation:{frames:1,fps:16},motion:{x:.82,y:.12,size:.09,rangeX:.026,rangeY:.016,phase:4.2}},
+      flyerScout01:{src:'assets/menu/animated/flyer_scout_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:.40,toX:1.15,y:.14,size:.25,driftY:.018,cycle:43000,phase:0,turn:.025,opacity:.98}},
+      flyerGuard01:{src:'assets/menu/animated/flyer_guard_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:1.16,toX:.47,y:.25,size:.31,driftY:.016,cycle:61000,phase:.31,turn:.022,opacity:.98}},
+      flyerHeavy01:{src:'assets/menu/animated/flyer_heavy_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:.45,toX:1.18,y:.37,size:.37,driftY:.013,cycle:79000,phase:.62,turn:.018,opacity:.98}},
       intro01Fall:{src:'assets/intro/intro_01_fall.png',enabled:true},
       intro02Mutation:{src:'assets/intro/intro_02_mutation.png',enabled:true},
       intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
-    menuFlyers:['flyerGuard01','flyerHeavy01','flyerScout01'],
+    menuBackground:['menuBgAnimationBase','menuBgMain'],
+    menuFlyers:['flyerScout01','flyerGuard01','flyerHeavy01'],
     introSequence:['intro01Fall','intro02Mutation','intro03Empires'],
     audio:{
-      bgmNest:{src:'assets/audio/bgm/bgm_nest.ogg',enabled:false,loop:true},
-      bgmSurface:{src:'assets/audio/bgm/bgm_surface.ogg',enabled:false,loop:true},
-      bgmCombat:{src:'assets/audio/bgm/bgm_combat.ogg',enabled:false,loop:true},
-      sfxClick:{src:'assets/audio/sfx/sfx_click.ogg',enabled:false},
-      sfxConfirm:{src:'assets/audio/sfx/sfx_confirm.ogg',enabled:false},
-      sfxCancel:{src:'assets/audio/sfx/sfx_cancel.ogg',enabled:false},
-      sfxMove:{src:'assets/audio/sfx/sfx_move.ogg',enabled:false},
-      sfxAttack:{src:'assets/audio/sfx/sfx_attack.ogg',enabled:false},
-      sfxAlert:{src:'assets/audio/sfx/sfx_alert.ogg',enabled:false},
-      sfxWarning:{src:'assets/audio/sfx/sfx_warning.ogg',enabled:false},
-      sfxVictory:{src:'assets/audio/sfx/sfx_victory.ogg',enabled:false},
-      sfxDefeat:{src:'assets/audio/sfx/sfx_defeat.ogg',enabled:false},
-      sfxDig:{src:'assets/audio/sfx/sfx_dig.ogg',enabled:false},
-      sfxAntMarch:{src:'assets/audio/sfx/sfx_ant_march.ogg',enabled:false},
-      sfxChitinHit:{src:'assets/audio/sfx/sfx_chitin_hit.ogg',enabled:false},
-      sfxBite:{src:'assets/audio/sfx/sfx_bite.ogg',enabled:false},
-      sfxMutationPulse:{src:'assets/audio/sfx/sfx_mutation_pulse.ogg',enabled:false},
-      sfxQueenMove:{src:'assets/audio/sfx/sfx_queen_move.ogg',enabled:false},
-      sfxLarvaCare:{src:'assets/audio/sfx/sfx_larva_care.ogg',enabled:false},
-      sfxWingFlap:{src:'assets/audio/sfx/sfx_wing_flap.ogg',enabled:false},
-      ambNestLoop:{src:'assets/audio/sfx/amb_nest_loop.ogg',enabled:false,loop:true},
-      ambForestLoop:{src:'assets/audio/sfx/amb_forest_loop.ogg',enabled:false,loop:true},
-      ambCombatTensionLoop:{src:'assets/audio/sfx/amb_combat_tension_loop.ogg',enabled:false,loop:true}
+      bgmNest:{src:'assets/audio/bgm/bgm_nest.ogg',enabled:true,loop:true},
+      bgmSurface:{src:'assets/audio/bgm/bgm_surface.ogg',enabled:true,loop:true},
+      bgmCombat:{src:'assets/audio/bgm/bgm_combat.ogg',enabled:true,loop:true},
+      uiConfirm:{src:'assets/audio/sfx/ui_confirm.ogg',enabled:true},
+      uiBack:{src:'assets/audio/sfx/ui_back.ogg',enabled:true},
+      wingPass:{src:'assets/audio/sfx/wing_pass.ogg',enabled:true},
+      colonyPulse:{src:'assets/audio/sfx/colony_pulse.ogg',enabled:true},
+      impactMutation:{src:'assets/audio/sfx/impact_mutation.ogg',enabled:true}
     }
   };
 })(window);

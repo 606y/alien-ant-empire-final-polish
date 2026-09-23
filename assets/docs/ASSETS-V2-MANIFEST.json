@@ -1,0 +1,32 @@
+{
+  "version": "2.0",
+  "menu": {
+    "base": "menu/base/menu_bg_animation_base.png",
+    "flyers": [
+      "menu/animated/flyer_scout_01.png",
+      "menu/animated/flyer_guard_01.png",
+      "menu/animated/flyer_heavy_01.png"
+    ]
+  },
+  "intro": [
+    "intro/intro_01_fall.png",
+    "intro/intro_02_mutation.png",
+    "intro/intro_03_empires.png"
+  ],
+  "copy": "docs/COPY_DECK.md",
+  "integration": "docs/INTEGRATION.md",
+  "audio": {
+    "bgm": [
+      "audio/bgm/bgm_nest.ogg",
+      "audio/bgm/bgm_surface.ogg",
+      "audio/bgm/bgm_combat.ogg"
+    ],
+    "sfx": [
+      "audio/sfx/ui_confirm.ogg",
+      "audio/sfx/ui_back.ogg",
+      "audio/sfx/wing_pass.ogg",
+      "audio/sfx/colony_pulse.ogg",
+      "audio/sfx/impact_mutation.ogg"
+    ]
+  }
+}
