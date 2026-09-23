@@ -7,14 +7,12 @@
       menuBgMain:{src:'assets/menu/menu_bg_main.png',enabled:true},
       menuFogOverlay:{src:'assets/menu/menu_fog_overlay.png',enabled:false},
       menuForegroundOverlay:{src:'assets/menu/menu_foreground_overlay.png',enabled:false},
-      intro01ForestStirring:{src:'assets/intro/intro_01_forest_stirring.png',enabled:false},
-      intro02AntEmerges:{src:'assets/intro/intro_02_ant_emerges.png',enabled:false},
-      intro03WingedRise:{src:'assets/intro/intro_03_winged_rise.png',enabled:false},
-      intro04EmpireReveal:{src:'assets/intro/intro_04_empire_reveal.png',enabled:false},
-      intro05TitleCard:{src:'assets/intro/intro_05_title_card.png',enabled:false},
+      intro01Fall:{src:'assets/intro/intro_01_fall.png',enabled:true},
+      intro02Mutation:{src:'assets/intro/intro_02_mutation.png',enabled:true},
+      intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
-    introSequence:['intro01ForestStirring','intro03WingedRise','intro04EmpireReveal'],
+    introSequence:['intro01Fall','intro02Mutation','intro03Empires'],
     audio:{
       bgmNest:{src:'assets/audio/bgm/bgm_nest.ogg',enabled:false,loop:true},
       bgmSurface:{src:'assets/audio/bgm/bgm_surface.ogg',enabled:false,loop:true},

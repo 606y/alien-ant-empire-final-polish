@@ -7,7 +7,8 @@ The following presentation assets are original, programmatically generated parts
 | Asset | Source | License | Attribution |
 | --- | --- | --- | --- |
 | Main-menu forest, alien ant city, ant traffic, fog, light shafts and particles | `menu-art.js` Canvas rendering | Original project code | Not required |
-| Intro cinematic visuals | `menu-art.js` Canvas rendering | Original project code | Not required |
+| Intro fallback stage and motion framing | `menu-art.js` Canvas rendering; no illustrated scene | Original project code | Not required |
+| Three transparent 1×1 intro slot placeholders | `assets/intro/intro_01_fall.png`, `intro_02_mutation.png`, `intro_03_empires.png` | Original project placeholders | Not required |
 | Ground, tunnel, chamber, ant, resource and combat visuals | `world.js` Canvas rendering | Original project code | Not required |
 | Interface panels, ornament, lighting and embedded noise texture | `style.css`; the noise texture is an inline procedural SVG using `feTurbulence` | Original project code | Not required |
 | Multi-layer nest, exploration and combat music; colony drone, insect ambience, friction, UI, command and event sounds | `audio.js` Web Audio synthesis with original note sequences | Original project code | Not required |
@@ -23,4 +24,4 @@ No unverified external images, music, sound effects, videos, icons, character ar
 
 ## Assets v1 reserved slots
 
-The optional PNG and OGG paths in `assets/manifest.js` are currently disabled and contain no third-party material. They fall back to the original procedural art and audio until valid licensed files are supplied and documented.
+The three intro PNG slots currently contain transparent 1×1 project-created placeholders and are enabled for direct file replacement. Other optional PNG and OGG paths remain disabled. No placeholder contains third-party material.

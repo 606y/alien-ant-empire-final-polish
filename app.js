@@ -9,9 +9,9 @@
   let view='nest',context=null,selection=[],candidates=[],selectionTools=false,commandMode=null,split=false,digging=false,royalPlacement=false,commandMarker=null,postGameReview=false,journalFilter='all',broodId=s.broods[0]?.id,broodDraft=null,mergePreview=[],infoMode='',jobDraft=null,edit=null,last=performance.now(),acc=0,uiTime=0,contextTime=0,saveTime=0,toast=null,toastUntil=0,feedbackUntil=0,seenEvent=s.events[0],seenUiNotice=s.uiNotice?.id||0,lastNotice=-100,eventFocusUntil=0,lastSaved='尚未儲存',dialogSpeed=0,selectionLessonShown=false,commandLessonShown=false,inputHintUntil=performance.now()+5000;
   const stateNames=['卵','幼蟲','蛹'],jobNames={nurse:'育幼',forage:'覓食',dig:'挖掘',scout:'偵察',defense:'防守／戰鬥'};
   const introSlides=[
-    ['序章','黑暗土壤中的心跳','一隻蟻后落入陌生森林。她帶來的不是回憶，而是一個尚未成形的王國。'],
-    ['甦醒','讓巢穴開始呼吸','工蟻會採集、照護與開挖。你決定王國向何處生長，以及何時露出獠牙。'],
-    ['戰役','森林裡不只有你','四個敵對蟻國正在擴張。找到牠們的巢口，攻入核心，讓最後一隻敵后沉默。']
+    ['墜落','森林深處的異物','數百年前，一艘不屬於這個世界的飛行器墜入森林深處。殘骸被泥土與根系吞沒，異質物質卻開始緩慢滲入大地。'],
+    ['異變','蟻群開始改變','一代又一代，受到污染的蟻群產生分化。巨顎、重甲、翼化與未知特徵逐漸出現——原本渺小的族群，開始走向另一種生命。'],
+    ['蟻國','森林從來不是無主之地','四個敵對蟻國已在森林中擴張。資源、領地與巢穴終將彼此碰撞——而你的王國，也從此刻開始生長。']
   ];
   let introStep=0;
   function audioLabel(){const text=audio.muted?'聲音：關':'聲音：開';$('menuAudio').textContent=text;$('menuAudio').setAttribute('aria-pressed',String(!audio.muted));}
