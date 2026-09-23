@@ -22,7 +22,7 @@
     setScene(scene){if(!['nest','surface','combat'].includes(scene)||scene===this.scene)return;this.scene=scene;if(this.unlocked&&!this.muted&&!document.hidden)this.syncExternalAudio();this.scheduleColonyPulse();}
     pauseLoop(){if(this.externalBgm&&!this.externalBgm.paused)this.externalBgm.pause();}
     fade(audio,from,to,duration){
-      return new Promise(resolve=>{if(!audio){resolve();return;}const started=performance.now();audio.volume=from;const step=now=>{const progress=Math.min(1,(now-started)/duration);audio.volume=from+(to-from)*progress;if(progress<1)requestAnimationFrame(step);else resolve();};requestAnimationFrame(step);});
+      return new Promise(resolve=>{if(!audio){resolve();return;}const started=performance.now();audio.volume=from;const step=now=>{const progress=Math.max(0,Math.min(1,(now-started)/duration));audio.volume=Math.max(0,Math.min(1,from+(to-from)*progress));if(progress<1)requestAnimationFrame(step);else resolve();};requestAnimationFrame(step);});
     }
     async syncExternalAudio(){
       if(!this.unlocked||this.muted||document.hidden)return false;

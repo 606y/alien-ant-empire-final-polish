@@ -42,3 +42,15 @@ test('formal menu, intro and audio controller keep safe fallbacks',()=>{
   for(const text of ['森林深處的異物','蟻群開始改變','森林從來不是無主之地','進入蟻國'])assert.match(app+html,new RegExp(text));
   assert.match(docs,/Assets v2/);assert.match(read('assets/LICENSES.md'),/No third-party copyrighted assets are included\./);
 });
+
+test('BGM fade clamps the first browser frame to a legal volume',async()=>{
+  const frames=[],context={window:{},performance:{now:()=>100},requestAnimationFrame:callback=>frames.push(callback)};
+  vm.runInNewContext(read('audio.js'),context);
+  let volume=0;const element={get volume(){return volume},set volume(value){if(value<0||value>1)throw RangeError('invalid volume');volume=value}};
+  const finished=context.window.AntAudio.prototype.fade.call({},element,.27,0,420);
+  frames.shift()(99);
+  assert.equal(volume,.27);
+  frames.shift()(520);
+  await finished;
+  assert.equal(volume,0);
+});
