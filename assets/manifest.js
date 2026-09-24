@@ -1,9 +1,17 @@
-/* Assets v3 formal package with V2 fallback. */
+/* Assets v4 presentation with V3 and V2 fallback. */
 (function(root){
   'use strict';
   root.AntAssetManifest={
-    version:3,
+    version:4,
     images:{
+      menuBgV4:{src:'assets/menu/v4/background/menu_bg_battle_v4.png',enabled:true},
+      flagSoldierV4:{src:'assets/menu/v4/foreground/flag_soldier_back.png',enabled:true},
+      heavyEnemyV4:{src:'assets/menu/v4/foreground/heavy_enemy.png',enabled:true},
+      flyerBodyV4:{src:'assets/menu/v4/flyer/flyer_body.png',enabled:true},
+      flyerWingsV4:{src:'assets/menu/v4/flyer/flyer_wings.png',enabled:true},
+      intro01FallV4:{src:'assets/intro/v4/intro_01_fall_v4.png',enabled:true},
+      intro02MutationV4:{src:'assets/intro/v4/intro_02_mutation_v4.png',enabled:true},
+      intro03EmpiresV4:{src:'assets/intro/v4/intro_03_empires_v4.png',enabled:true},
       menuBgV3:{src:'assets/menu/v3/menu_bg_v3.png',enabled:true},
       menuBgAnimationBase:{src:'assets/menu/menu_bg_animation_base.png',enabled:true},
       menuBgMain:{src:'assets/menu/menu_bg_main.png',enabled:true},
@@ -33,7 +41,17 @@
       intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
-    menuBackground:['menuBgV3','menuBgAnimationBase','menuBgMain'],
+    menuBackground:['menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'],
+    imageTiers:{
+      primary:['menuBgV4','flagSoldierV4','heavyEnemyV4','flyerBodyV4','flyerWingsV4','intro01FallV4','intro02MutationV4','intro03EmpiresV4'],
+      menuV3:['menuBgV3','groundSoldierV3','groundHeavyV3','groundMandibleV3','groundRoyalGuardV3','banner01V3','banner02V3','banner03V3','flyerScoutBodyV3','flyerScoutWingsV3','flyerGuardBodyV3','flyerGuardWingsV3','flyerHeavyBodyV3','flyerHeavyWingsV3'],
+      menuV2:['menuBgAnimationBase','menuBgMain','flyerScout01','flyerGuard01','flyerHeavy01']
+    },
+    menuV4:{
+      flag:{key:'flagSoldierV4',x:.55,bottom:.98,height:.21,mobileX:.58,mobileBottom:.56,mobileHeight:.135},
+      heavy:{key:'heavyEnemyV4',x:.75,bottom:1,height:.245,mobileX:.84,mobileBottom:.55,mobileHeight:.145},
+      flyer:{body:'flyerBodyV4',wings:'flyerWingsV4',height:.11,mobileHeight:.10}
+    },
     menuGroundV3:[
       {key:'groundSoldierV3',x:.48,y:.60,height:.057,mobileX:.47,mobileY:.61,mobileHeight:.058,motion:'patrol',phase:0},
       {key:'groundHeavyV3',x:.59,y:.75,height:.071,mobileX:.69,mobileY:.76,mobileHeight:.07,motion:'sentry',phase:1.3},
@@ -51,6 +69,7 @@
       {body:'flyerHeavyBodyV3',wings:'flyerHeavyWingsV3',motion:{fromX:.88,toX:.78,y:.42,height:.108,driftY:.009,cycle:41000,phase:.57,turn:.018},wing:{frequency:10,angle:.09,phase:2.4}}
     ],
     menuFlyers:['flyerScout01','flyerGuard01','flyerHeavy01'],
+    introSequenceV4:['intro01FallV4','intro02MutationV4','intro03EmpiresV4'],
     introSequenceV3:['intro01FallV3','intro02MutationV3','intro03EmpiresV3'],
     introSequence:['intro01Fall','intro02Mutation','intro03Empires'],
     audio:{

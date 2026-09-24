@@ -9,9 +9,9 @@
   let view='nest',context=null,selection=[],candidates=[],selectionTools=false,commandMode=null,split=false,digging=false,royalPlacement=false,commandMarker=null,postGameReview=false,journalFilter='all',broodId=s.broods[0]?.id,broodDraft=null,mergePreview=[],infoMode='',jobDraft=null,edit=null,last=performance.now(),acc=0,uiTime=0,contextTime=0,saveTime=0,toast=null,toastUntil=0,feedbackUntil=0,seenEvent=s.events[0],seenUiNotice=s.uiNotice?.id||0,lastNotice=-100,eventFocusUntil=0,lastSaved='尚未儲存',dialogSpeed=0,selectionLessonShown=false,commandLessonShown=false,inputHintUntil=performance.now()+5000;
   const stateNames=['卵','幼蟲','蛹'],jobNames={nurse:'育幼',forage:'覓食',dig:'挖掘',scout:'偵察',defense:'防守／戰鬥'};
   const introSlides=[
-    ['墜落','森林深處的異物','數百年前，一艘不屬於這個世界的飛行器墜入森林深處。\n殘骸被泥土與根系吞沒，異質物質卻沒有消失。\n它沿著地下水、菌絲與根脈，緩慢滲入整片森林。'],
-    ['異變','蟻群不再只是蟻群','污染沒有帶來瞬間的奇蹟，而是在世代之間留下痕跡。\n巨顎、重甲、翼化與未知器官逐漸出現。\n微小的族群，開始長成不屬於自然秩序的生命。'],
-    ['蟻國','森林從來不是無主之地','四個敵對蟻國早已在森林中擴張。\n牠們爭奪食物、巢穴、通道與領地，也吞噬彼此的未來。\n現在，第五座王國開始甦醒。']
+    ['墜落','森林深處的異物','數百年前，一艘不屬於這個世界的飛行器墜入森林深處。\n烈焰撕開大地，殘骸沉入根系與泥土之下。\n真正留下來的，卻不是金屬，而是會改變生命的異質物質。'],
+    ['異變','蟻群不再只是蟻群','污染沿著土壤、菌絲與地下水蔓延。\n一代又一代，巨顎、重甲、翼化與未知器官開始出現。\n原本微小的族群，逐漸成為另一種生命。'],
+    ['蟻國','戰爭已經開始','四個敵對蟻國早已佔據森林。\n牠們爭奪食物、巢穴、通道與領地，也吞噬彼此的未來。\n而現在，第五座王國在戰火中甦醒。']
   ];
   let introStep=0;
   function audioLabel(){const text=audio.muted?'聲音：關':'聲音：開';$('menuAudio').textContent=text;$('menuAudio').setAttribute('aria-pressed',String(!audio.muted));}

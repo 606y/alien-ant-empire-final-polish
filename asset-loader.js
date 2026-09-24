@@ -11,10 +11,23 @@
     audio(key){return this.state(key)==='ready'?this.audioElements.get(key)||null:null;}
     source(key){return this.entry(key)?.src||'';}
     async preload(){
-      const jobs=[];
-      for(const [key,item] of Object.entries(this.manifest.images||{})){if(item.enabled)jobs.push(this.loadImage(key,item));else this.states.set(key,'fallback');}
-      for(const [key,item] of Object.entries(this.manifest.audio||{})){if(item.enabled)jobs.push(this.loadAudio(key,item));else this.states.set(key,'fallback');}
-      await Promise.allSettled(jobs);return this;
+      const images=this.manifest.images||{},audio=this.manifest.audio||{},tiers=this.manifest.imageTiers;
+      for(const key of Object.keys(images))this.states.set(key,'fallback');
+      const loadKeys=keys=>Promise.allSettled((keys||[]).filter(key=>images[key]?.enabled).map(key=>this.loadImage(key,images[key])));
+      const audioJobs=Object.entries(audio).map(([key,item])=>item.enabled?this.loadAudio(key,item):(this.states.set(key,'fallback'),Promise.resolve(false)));
+      if(!tiers){await Promise.allSettled([...Object.entries(images).filter(([,item])=>item.enabled).map(([key,item])=>this.loadImage(key,item)),...audioJobs]);return this;}
+      await Promise.allSettled([loadKeys(tiers.primary),...audioJobs]);
+      if(this.state('menuBgV4')!=='ready'){
+        await loadKeys(tiers.menuV3);
+        if(this.state('menuBgV3')!=='ready')await loadKeys(tiers.menuV2);
+        else if(!(this.manifest.menuFlyersV3||[]).every(group=>this.state(group.body)==='ready'&&this.state(group.wings)==='ready'))await loadKeys((this.manifest.menuFlyers||[]));
+      }
+      for(let i=0;i<(this.manifest.introSequenceV4||[]).length;i++){
+        if(this.state(this.manifest.introSequenceV4[i])==='ready')continue;
+        await loadKeys([this.manifest.introSequenceV3?.[i]]);
+        if(this.state(this.manifest.introSequenceV3?.[i])!=='ready')await loadKeys([this.manifest.introSequence?.[i]]);
+      }
+      return this;
     }
     loadImage(key,item){
       this.states.set(key,'loading');return new Promise(resolve=>{const image=new Image();image.decoding='async';image.onload=()=>{this.images.set(key,image);this.states.set(key,'ready');resolve(true)};image.onerror=()=>{this.states.set(key,'fallback');resolve(false)};image.src=item.src;});

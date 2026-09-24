@@ -96,10 +96,62 @@
     }
     return visible;
   }
+  const isolatedParts=new Map();
+  function isolateSprite(image,key,polygon){
+    if(isolatedParts.has(key))return isolatedParts.get(key);
+    const create=()=>{const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;return canvas;};
+    const base=create(),part=create(),path=context=>{context.beginPath();polygon.forEach(([x,y],i)=>i?context.lineTo(x*image.naturalWidth,y*image.naturalHeight):context.moveTo(x*image.naturalWidth,y*image.naturalHeight));context.closePath();};
+    const back=base.getContext('2d');back.drawImage(image,0,0);back.globalCompositeOperation='destination-out';path(back);back.fill();
+    const front=part.getContext('2d');front.drawImage(image,0,0);front.globalCompositeOperation='destination-in';path(front);front.fill();
+    const result={base,part};isolatedParts.set(key,result);return result;
+  }
+  function drawPartSprite(context,image,key,polygon,x,bottom,height,pivot,angle,shift=0){
+    const layer=isolateSprite(image,key,polygon),scale=height/image.naturalHeight;
+    context.save();context.translate(x-image.naturalWidth*scale/2+shift,bottom-height);context.scale(scale,scale);
+    context.drawImage(layer.base,0,0);context.translate(pivot[0]*image.naturalWidth,pivot[1]*image.naturalHeight);context.rotate(angle);context.drawImage(layer.part,-pivot[0]*image.naturalWidth,-pivot[1]*image.naturalHeight);context.restore();
+  }
+  function drawV4Foreground(context,w,h,time){
+    const config=assets?.manifest?.menuV4;if(!config)return;
+    const mobile=w<620,flag=ready(config.flag.key),heavy=ready(config.heavy.key);
+    if(flag){const c=config.flag,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom);
+      // Isolate fabric from this independent sprite. The pole and body remain fixed.
+      const sway=Math.sin(time*.0009)*.023+Math.sin(time*.00041+1.1)*.009;
+      drawPartSprite(context,flag,c.key,[[.69,.15],[.99,.17],[1,.94],[.84,.96],[.73,.75],[.69,.46]],x,bottom,height,[.69,.17],sway);
+    }
+    if(heavy){const c=config.heavy,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom);
+      const cycle=(time/5100)%1,lift=cycle<.2?cycle/.2:cycle<.58?1:cycle<.8?1-(cycle-.58)/.22:0;
+      const eased=lift*lift*(3-2*lift),angle=-.045*eased;
+      drawPartSprite(context,heavy,c.key,[[0,.27],[.16,.28],[.12,.39],[.23,.48],[.43,.53],[.47,.69],[.14,.68],[0,.54]],x,bottom,height,[.39,.52],angle,Math.sin(time*.00055)*.6);
+    }
+  }
+  function drawV4Flyer(context,w,h,time){
+    const config=assets?.manifest?.menuV4?.flyer;if(!config)return 0;
+    const body=ready(config.body),wings=ready(config.wings);if(!body||!wings)return 0;
+    const mobile=w<620,height=h*(mobile?config.mobileHeight:config.height),cycle=(time/36000+.11)%1;
+    let travel;if(cycle<.42){const t=cycle/.42;travel=t*t*(3-2*t);}else if(cycle<.53)travel=1;else if(cycle<.93){const t=(cycle-.53)/.4;travel=1-t*t*(3-2*t);}else travel=0;
+    const x=w*((mobile?.56:.48)+(mobile?.23:.34)*travel),y=h*(mobile?.18:.22)+Math.sin(cycle*Math.PI*2)*h*.023;
+    const tilt=Math.sin(cycle*Math.PI*2)*.026,face=cycle<.53?1:-1;
+    const bodyWidth=height*body.naturalWidth/body.naturalHeight,wingHeight=height*.86,wingWidth=wingHeight*wings.naturalWidth/wings.naturalHeight;
+    const beat=Math.sin(time*Math.PI*2*18/1000),backX=height*.02,backY=-height*.13;
+    context.save();context.translate(x,y);context.rotate(tilt);if(face<0)context.scale(-1,1);
+    context.save();context.translate(backX,backY);context.rotate(beat*.12);context.scale(1,.76+.2*beat);
+    context.drawImage(wings,-wingWidth/2,-wingHeight*.16,wingWidth,wingHeight);context.restore();
+    context.drawImage(body,-bodyWidth/2,-height/2,bodyWidth,height);context.restore();return 1;
+  }
+  function battleFire(context,w,h,time){
+    if(w<620)return;context.save();context.globalCompositeOperation='screen';
+    for(const [x,y,r,phase] of [[.78,.3,13,0],[.88,.24,11,1.9],[.95,.36,9,3.4]]){
+      const pulse=.55+.45*Math.sin(time*.002+phase),gradient=context.createRadialGradient(x*w,y*h,0,x*w,y*h,r);
+      gradient.addColorStop(0,'rgba(255,145,45,'+(.07+.045*pulse)+')');gradient.addColorStop(1,'rgba(255,70,10,0)');context.fillStyle=gradient;context.fillRect(x*w-r,y*h-r,r*2,r*2);
+    }context.restore();
+  }
   function v3FlyersReady(){const groups=assets?.manifest?.menuFlyersV3||[];return groups.length>0&&groups.every(group=>ready(group.body)&&ready(group.wings));}
   function drawMenu(canvas,time){
-    const {context,w,h}=fit(canvas),background=preferred(assets?.manifest?.menuBackground||['menuBgAnimationBase','menuBgMain']);
+    const {context,w,h}=fit(canvas),background=preferred(assets?.manifest?.menuBackground||['menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
     setMenuBackdrop(canvas,background,w,h);context.clearRect(0,0,w,h);if(!background)fallback(context,w,h);
+    if(background?.key==='menuBgV4'){
+      canvas.dataset.flyerMode='v4';battleFire(context,w,h,time);drawV4Foreground(context,w,h,time);return drawV4Flyer(context,w,h,time);
+    }
     if(background)localCityLights(context,w,h,time);
     if(background?.key==='menuBgV3'){drawBanners(context,w,h,time);drawGround(context,w,h,time);}
     let visible=0;
@@ -111,7 +163,7 @@
     return visible;
   }
   function introImage(step){
-    const v3=assets?.manifest?.introSequenceV3?.[step],v2=assets?.manifest?.introSequence?.[step];return preferred([v3,v2]);
+    const v4=assets?.manifest?.introSequenceV4?.[step],v3=assets?.manifest?.introSequenceV3?.[step],v2=assets?.manifest?.introSequence?.[step];return preferred([v4,v3,v2]);
   }
   function drawIntroLayer(context,selection,w,h,time,step,alpha){
     if(!selection)return;

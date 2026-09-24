@@ -1,0 +1,25 @@
+{
+  "version": "4.0",
+  "menu": {
+    "background": "menu/v4/background/menu_bg_battle_v4.png",
+    "foreground": {
+      "flag_soldier": "menu/v4/foreground/flag_soldier_back.png",
+      "heavy_enemy": "menu/v4/foreground/heavy_enemy.png"
+    },
+    "flyer": {
+      "body": "menu/v4/flyer/flyer_body.png",
+      "wings": "menu/v4/flyer/flyer_wings.png"
+    }
+  },
+  "intro": [
+    "intro/v4/intro_01_fall_v4.png",
+    "intro/v4/intro_02_mutation_v4.png",
+    "intro/v4/intro_03_empires_v4.png"
+  ],
+  "copy": "docs/COPY_DECK.md",
+  "integration": "docs/INTEGRATION.md",
+  "audio": {
+    "bgm": [],
+    "sfx": []
+  }
+}

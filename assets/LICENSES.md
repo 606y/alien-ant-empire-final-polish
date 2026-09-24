@@ -1,19 +1,15 @@
 # Asset and License Record
 
-## Project-supplied formal assets
+## Project-supplied assets
 
 | Assets | Source | Usage authorization | Attribution |
 | --- | --- | --- | --- |
-| `assets/menu/menu_bg_animation_base.png`, three flyer PNGs, three intro PNGs | User-supplied `AlienAntEmpire_Assets_v2.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
-| Three BGM OGGs and five SFX OGGs | User-supplied `AlienAntEmpire_Assets_v2.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
-| Main-menu copy and three intro scripts | User-supplied Assets v2 `docs/COPY_DECK.md` | Provided for this project | Not required |
+| V2 menu background, three flyers, three intro images, three BGM OGGs and five SFX OGGs | User-supplied `AlienAntEmpire_Assets_v2.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
 | `assets/menu/menu_bg_main.png` (`異星蟻國_黃昏帝都`) | User-supplied approved project artwork | Authorized by the project owner for this game | Not required |
+| V3 background, four ground units, six flyer layers, three banners, three intro images and copy | User-supplied `AlienAntEmpire_Assets_v3.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
+| V4 battle background, flag soldier, heavy enemy, body/wings flyer, three intro images and copy | User-supplied `AlienAntEmpire_Assets_v4.zip` | Created for this project using OpenAI-generated and programmatically prepared assets, per supplied `LICENSES.md` | Not required |
 
-The original package records are retained in `assets/docs/ASSETS-V2-MANIFEST.json`, `ASSETS-V2-INTEGRATION.md`, `ASSETS-V2-COPY-DECK.md`, and `ASSETS-V2-LICENSES.md`.
-
-| V3 background, four ground units, six flyer layers, three banners, three intro images and formal copy | User-supplied `AlienAntEmpire_Assets_v3.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
-
-The V3 package records are retained in `assets/docs/MANIFEST.json`, `assets/docs/INTEGRATION.md`, `assets/docs/COPY_DECK.md`, and `assets/docs/ASSETS-V3-LICENSES.md`. Its manifest lists audio paths but the ZIP contains no audio files; the already approved V2 OGG files remain in use.
+Package records are retained in `assets/docs/`: V2 files with the `ASSETS-V2-` prefix, V3's `MANIFEST.json` and files with the `ASSETS-V3-` prefix, and V4's `ASSETS-V4-MANIFEST.json`, `ASSETS-V4-LICENSES.md`, `INTEGRATION.md`, and `COPY_DECK.md`. The V3 and V4 ZIPs contain no audio payloads. The existing approved V2 OGG files remain in use.
 
 ## Original project code
 
