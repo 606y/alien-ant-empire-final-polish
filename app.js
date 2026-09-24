@@ -13,12 +13,31 @@
     ['異變','琥珀聖殿中的蟻群升蛹','受污染的土壤改變了巢穴，也改變了族群。甲殼更堅硬，兵種更分化，王國從黑暗中學會組織、繁衍與戰鬥。'],
     ['蟻國','黃昏戰場上的蟻國對決','如今四方勢力盤據森林，蟻巢不再只是巢穴，而是一個會擴張、會征服、也會被戰火吞噬的帝國。']
   ];
-  let introStep=0;
+  let introStep=0,cinematicActive=false,cinematicTimer=0,cinematicStallTimer=0;
+  const cinematicVideo=$('cinematicVideo');
   function audioLabel(){const text=audio.muted?'聲音：關':'聲音：開';$('menuAudio').textContent=text;$('menuAudio').setAttribute('aria-pressed',String(!audio.muted));}
   function renderIntro(){const slide=introSlides[introStep];$('introChapter').textContent=slide[0];$('introTitle').textContent=slide[1];$('introText').textContent=slide[2];document.querySelectorAll('.intro-progress span').forEach((el,i)=>el.classList.toggle('active',i===introStep));menuArt.setIntroStep(introStep);const copy=document.querySelector('.intro-copy');copy.style.animation='none';requestAnimationFrame(()=>copy.style.animation='');$('nextIntro').textContent=introStep===introSlides.length-1?'進入蟻國':'繼續';}
   function closeIntro(){audio.unlock();$('intro').classList.add('hidden');$('mainMenu').classList.add('hidden');s.speed=0;last=performance.now();renderStatus();}
   function showIntro(){introStep=0;renderIntro();$('mainMenu').classList.add('hidden');$('intro').classList.remove('hidden');}
-  s.speed=0;audioLabel();if(!hasSave){$('continueGame').textContent='開始新蟻國';$('newGame').classList.add('hidden');}
+  function finishCinematic(){
+    if(!cinematicActive)return;
+    cinematicActive=false;clearTimeout(cinematicTimer);clearTimeout(cinematicStallTimer);cinematicTimer=0;cinematicStallTimer=0;
+    const video=$('cinematicVideo');video.pause();$('cinematic').classList.add('hidden');
+    showIntro();audio.resumeAfterCinematic();
+  }
+  function failCinematic(reason){if(!cinematicActive)return;console.warn('V6.1 cinematic unavailable; continuing with V6 first scene:',reason);finishCinematic();}
+  function startCinematic(){
+    const video=cinematicVideo;cinematicActive=true;video.muted=audio.muted;
+    if(!video.getAttribute('src'))video.src=video.dataset.src;
+    $('mainMenu').classList.add('hidden');$('cinematic').classList.remove('hidden');
+    try{if(video.readyState>0)video.currentTime=0;}catch{}
+    cinematicTimer=setTimeout(()=>{if(cinemaIsWaiting())failCinematic('playback did not start within 20 seconds');},20000);
+    try{const result=video.play();result?.catch(error=>failCinematic(error?.message||String(error)));}
+    catch(error){failCinematic(error?.message||String(error));}
+  }
+  function cinemaIsWaiting(){const video=$('cinematicVideo');return cinematicActive&&(video.paused||video.readyState<2);}
+  function startNewGame(){audio.suspendForCinematic();audio.unlock();resetGame();startCinematic();}
+  s.speed=0;audioLabel();if(!hasSave){$('continueGame').textContent='建立新蟻國';$('newGame').classList.add('hidden');}
   function button(text,action,extra=''){return `<button data-action="${action}" ${extra}>${text}</button>`;}
   function actions(...buttons){return `<div class="actions">${buttons.join('')}</div>`;}
   function stepper(value,action,label,{min=0,max=Infinity,id='',editable=false}={}){return `<div class="stepper">${button('−',action,`data-delta="-1" data-id="${id}" aria-label="減少${label}" ${value<=min?'disabled':''}`)}${editable?`<input class="number-input" data-edit-input type="number" value="${value}" min="${min}" max="${max}" inputmode="numeric" aria-label="${label}">`:`<output>${value}</output>`}${button('＋',action,`data-delta="1" data-id="${id}" aria-label="增加${label}" ${value>=max?'disabled':''}`)}</div>`;}
@@ -314,6 +333,7 @@
   }
   function frame(now){
     const dt=Math.min(.3,(now-last)/1000);last=now;
+    if(cinematicActive){requestAnimationFrame(frame);return;}
     const cameraSpeed=520*dt;if(keys.has('a')||keys.has('arrowleft'))world.pan(cameraSpeed,0);if(keys.has('d')||keys.has('arrowright'))world.pan(-cameraSpeed,0);if(keys.has('w')||keys.has('arrowup'))world.pan(0,cameraSpeed);if(keys.has('s')||keys.has('arrowdown'))world.pan(0,-cameraSpeed);
     if(!document.hidden){acc+=dt*s.speed;while(acc>=.25){E.tick(s,.25);acc-=.25;}}
     uiTime+=dt;contextTime+=dt;saveTime+=dt;notices(now);
@@ -323,10 +343,15 @@
     if(commandMarker&&now>commandMarker.until)commandMarker=null;audio.setScene(s.ants.some(a=>a.action==='戰鬥')?'combat':view==='surface'?'surface':'nest');world.draw(s,{selected:selection,target:eventFocusUntil>now?toast?.k??E.HOME:context?.k??null,digging,commandMarker},dt);requestAnimationFrame(frame);
   }
   $('menuAudio').onclick=()=>{audio.toggle();audioLabel();};
-  $('continueGame').onclick=()=>{audio.unlock();audio.ui();if(hasSave){$('mainMenu').classList.add('hidden');s.speed=menuResumeSpeed;last=performance.now();renderStatus();}else{resetGame();showIntro();}};
-  $('newGame').onclick=()=>{audio.unlock();audio.ui();resetGame();showIntro();};
+  $('continueGame').onclick=()=>{if(hasSave){audio.unlock();audio.ui();$('mainMenu').classList.add('hidden');s.speed=menuResumeSpeed;last=performance.now();renderStatus();}else startNewGame();};
+  $('newGame').onclick=()=>startNewGame();
+  $('cinematicVideo').addEventListener('ended',finishCinematic);
+  $('cinematicVideo').addEventListener('playing',()=>{clearTimeout(cinematicTimer);clearTimeout(cinematicStallTimer);cinematicTimer=0;cinematicStallTimer=0;});
+  $('cinematicVideo').addEventListener('waiting',()=>{if(!cinematicActive)return;clearTimeout(cinematicStallTimer);cinematicStallTimer=setTimeout(()=>failCinematic('playback stalled for 15 seconds'),15000);});
+  $('cinematicVideo').addEventListener('error',()=>failCinematic($('cinematicVideo').error?.message||'video resource failed'));
+  $('skipCinematic').onclick=finishCinematic;
   $('skipIntro').onclick=()=>{audio.back();closeIntro();};
   $('nextIntro').onclick=()=>{audio.ui();if(introStep<introSlides.length-1){introStep++;if(introStep===1)audio.introMutation();renderIntro();}else closeIntro();};
-  window.addEventListener('pagehide',()=>save());document.addEventListener('visibilitychange',()=>{if(document.hidden)save();last=performance.now();acc=0;});
+  window.addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save();last=performance.now();acc=0;});
   renderStatus();requestAnimationFrame(frame);
 })();

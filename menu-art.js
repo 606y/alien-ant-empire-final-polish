@@ -148,7 +148,7 @@
   function drawV6Foreground(context,w,h,time){
     const config=assets?.manifest?.menuV6;if(!config)return;
     const mobile=w<620,flag=ready(config.flag.key),heavy=ready(config.heavy.key);
-    if(flag){const c=config.flag,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom);
+    if(flag){const c=config.flag,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom)-(mobile?c.mobileLift:c.lift);
       const layer=isolateSprite(flag,c.key,[[0,.06],[.82,.07],[.83,.30],[.72,.36],[.56,.42],[.43,.53],[.22,.65],[0,.69]]),scale=height/flag.naturalHeight;
       const sway=Math.sin(time*.00074)*.044+Math.sin(time*.00118+1.1)*.011;
       context.save();context.translate(x-flag.naturalWidth*scale/2,bottom-height);context.scale(scale,scale);
@@ -157,7 +157,7 @@
       context.drawImage(layer.base,0,0);context.restore();
     }
     if(heavy){const c=config.heavy,height=h*(mobile?c.mobileHeight:c.height),width=height*heavy.naturalWidth/heavy.naturalHeight;
-      const x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom);
+      const x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom)-(mobile?c.mobileLift:c.lift);
       // V6 hammer and both arms are one supplied image. Keep the pose intact rather than dislocating a weapon cutout.
       context.drawImage(heavy,x-width/2,bottom-height,width,height);
     }

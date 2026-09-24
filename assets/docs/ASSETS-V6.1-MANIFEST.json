@@ -1,0 +1,22 @@
+{
+  "version": "v6.1",
+  "purpose": "V6 menu vertical-position patch + formal 10-second cinematic intro",
+  "menu_patch": "placement_v6_1.json",
+  "cinematic_intro": {
+    "video": "video/intro_cinematic_v6_10s.mp4",
+    "poster": "video/intro_cinematic_v6_poster.jpg",
+    "duration_seconds": 10.0,
+    "resolution": "1920x1080",
+    "fps": 30,
+    "audio": "embedded AAC stereo"
+  },
+  "flow": [
+    "main_menu",
+    "new_game_click",
+    "cinematic_intro_10s",
+    "existing_v6_intro_slide_1",
+    "existing_v6_intro_slide_2",
+    "existing_v6_intro_slide_3",
+    "game"
+  ]
+}

@@ -68,8 +68,8 @@
       menuV2:['menuBgAnimationBase','menuBgMain','flyerScout01','flyerGuard01','flyerHeavy01']
     },
     menuV6:{
-      flag:{key:'flagAntV6',x:.43,bottom:.99,height:.285,mobileX:.50,mobileBottom:.56,mobileHeight:.18},
-      heavy:{key:'heavyHammerV6',x:.83,bottom:.99,height:.315,mobileX:.84,mobileBottom:.56,mobileHeight:.19},
+      flag:{key:'flagAntV6',x:.43,bottom:.99,height:.285,lift:92,mobileX:.50,mobileBottom:.56,mobileHeight:.18,mobileLift:68},
+      heavy:{key:'heavyHammerV6',x:.83,bottom:.99,height:.315,lift:82,mobileX:.84,mobileBottom:.56,mobileHeight:.19,mobileLift:62},
       flyer:{body:'flyerBodyV6',wings:'flyerWingsV6',height:.115,mobileHeight:.105}
     },
     menuV5:{

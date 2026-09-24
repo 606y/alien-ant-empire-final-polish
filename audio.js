@@ -3,19 +3,21 @@
   'use strict';
   class AntAudio{
     constructor(){
-      this.assets=root.AntAssets;this.scene='nest';this.unlocked=false;this.externalBgm=null;this.last={};this.switchToken=0;this.colonyTimer=0;
+      this.assets=root.AntAssets;this.scene='nest';this.unlocked=false;this.externalBgm=null;this.last={};this.switchToken=0;this.colonyTimer=0;this.cinematicActive=false;
       try{this.muted=localStorage.getItem('alien-ant-audio-muted')==='1';}catch{this.muted=false;}
-      this.onVisibility=()=>{if(document.hidden)this.pauseLoop();else if(this.unlocked&&!this.muted)this.syncExternalAudio();this.scheduleColonyPulse();};
+      this.onVisibility=()=>{if(document.hidden)this.pauseLoop();else if(this.unlocked&&!this.muted&&!this.cinematicActive)this.syncExternalAudio();this.scheduleColonyPulse();};
       this.onWingPass=()=>this.throttled('wingPass',18000,.26);
       document.addEventListener('visibilitychange',this.onVisibility);root.addEventListener('ant:wingpass',this.onWingPass);
       this.assets?.ready.then(()=>{if(this.unlocked&&!document.hidden)this.syncExternalAudio();});
     }
     ensure(){return null;}
-    unlock(){if(this.unlocked)return;this.unlocked=true;if(!this.muted&&!document.hidden)this.syncExternalAudio();this.scheduleColonyPulse();}
+    suspendForCinematic(){this.cinematicActive=true;this.switchToken++;this.pauseLoop();this.externalBgm=null;clearTimeout(this.colonyTimer);this.colonyTimer=0;}
+    resumeAfterCinematic(){if(!this.cinematicActive)return;this.cinematicActive=false;if(this.unlocked&&!this.muted&&!document.hidden)this.syncExternalAudio();this.scheduleColonyPulse();}
+    unlock(){if(this.unlocked)return;this.unlocked=true;if(!this.muted&&!document.hidden&&!this.cinematicActive)this.syncExternalAudio();this.scheduleColonyPulse();}
     setMuted(value){
       this.muted=!!value;try{localStorage.setItem('alien-ant-audio-muted',this.muted?'1':'0');}catch{}
       if(this.externalBgm)this.externalBgm.muted=this.muted;
-      if(this.muted)this.pauseLoop();else if(this.unlocked&&!document.hidden)this.syncExternalAudio();
+      if(this.muted)this.pauseLoop();else if(this.unlocked&&!document.hidden&&!this.cinematicActive)this.syncExternalAudio();
       this.scheduleColonyPulse();
     }
     toggle(){this.unlock();this.setMuted(!this.muted);return !this.muted;}
@@ -25,7 +27,7 @@
       return new Promise(resolve=>{if(!audio){resolve();return;}const started=performance.now();audio.volume=from;const step=now=>{const progress=Math.max(0,Math.min(1,(now-started)/duration));audio.volume=Math.max(0,Math.min(1,from+(to-from)*progress));if(progress<1)requestAnimationFrame(step);else resolve();};requestAnimationFrame(step);});
     }
     async syncExternalAudio(){
-      if(!this.unlocked||this.muted||document.hidden)return false;
+      if(!this.unlocked||this.muted||document.hidden||this.cinematicActive)return false;
       const key={nest:'bgmNest',surface:'bgmSurface',combat:'bgmCombat'}[this.scene],ready=this.assets?.audio(key),token=++this.switchToken;
       if(!ready){this.pauseLoop();this.externalBgm=null;return false;}
       if(this.externalBgm?.dataset.assetKey===key){this.externalBgm.muted=false;await this.externalBgm.play().catch(()=>{});return true;}
@@ -36,7 +38,7 @@
       await audio.play().catch(()=>{});if(token===this.switchToken)await this.fade(audio,0,.27,520);return true;
     }
     playAsset(key,volume=.4){
-      const audio=this.assets?.cloneAudio(key);if(!audio||this.muted||!this.unlocked||document.hidden)return false;
+      const audio=this.assets?.cloneAudio(key);if(!audio||this.muted||!this.unlocked||document.hidden||this.cinematicActive)return false;
       audio.volume=volume;audio.play().catch(()=>{});return true;
     }
     throttled(key,interval,volume){const now=performance.now();if(now-(this.last[key]||0)<interval)return false;this.last[key]=now;return this.playAsset(key,volume);}
@@ -52,7 +54,7 @@
     }
     scheduleColonyPulse(){
       clearTimeout(this.colonyTimer);this.colonyTimer=0;
-      if(!this.unlocked||this.muted||document.hidden||this.scene!=='nest')return;
+      if(!this.unlocked||this.muted||document.hidden||this.cinematicActive||this.scene!=='nest')return;
       this.colonyTimer=setTimeout(()=>{this.playAsset('colonyPulse',.18);this.scheduleColonyPulse();},19000+Math.random()*5000);
     }
     destroy(){clearTimeout(this.colonyTimer);this.switchToken++;this.pauseLoop();document.removeEventListener('visibilitychange',this.onVisibility);root.removeEventListener('ant:wingpass',this.onWingPass);}

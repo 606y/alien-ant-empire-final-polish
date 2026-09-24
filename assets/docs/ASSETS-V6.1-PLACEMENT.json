@@ -1,0 +1,23 @@
+{
+  "version": "v6.1",
+  "menu_patch": {
+    "desktop_1366x768": {
+      "flag_ant": {
+        "keep_current_x": true,
+        "keep_current_scale": true,
+        "move_up_px": 92,
+        "note": "旗幟兵整組上移，保留目前旗布動畫，不改角色造型或動畫方式。"
+      },
+      "heavy_enemy": {
+        "keep_current_x": true,
+        "keep_current_scale": true,
+        "move_up_px": 82,
+        "note": "厚甲整組上移，提高存在感；本次仍保持完整靜態姿勢，不拆武器。"
+      }
+    },
+    "mobile_390x844": {
+      "flag_ant": {"keep_current_x": true, "keep_current_scale": true, "move_up_px": 68},
+      "heavy_enemy": {"keep_current_x": true, "keep_current_scale": true, "move_up_px": 62}
+    }
+  }
+}
