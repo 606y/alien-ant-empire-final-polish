@@ -39,7 +39,7 @@ test('formal menu, intro and audio controller keep safe fallbacks',()=>{
   assert.doesNotMatch(menu,/drawProcedural|drawFlagSlice|drawGuardSlice/);
   assert.match(audio,/bgmNest/);assert.match(audio,/uiBack/);assert.match(audio,/impactMutation/);
   assert.match(audio,/this\.fade\(old/);assert.match(audio,/this\.muted/);
-  for(const text of ['森林深處的異物','蟻群開始改變','森林從來不是無主之地','進入蟻國'])assert.match(app+html,new RegExp(text));
+  for(const text of ['森林深處的異物','蟻群不再只是蟻群','森林從來不是無主之地','進入蟻國'])assert.match(app+html,new RegExp(text));
   assert.match(docs,/Assets v2/);assert.match(read('assets/LICENSES.md'),/No third-party copyrighted assets are included\./);
 });
 

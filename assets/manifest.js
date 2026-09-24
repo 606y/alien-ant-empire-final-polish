@@ -1,36 +1,54 @@
-/* Assets v3 integration slots. Enable entries when the owner supplies formal files. */
+/* Assets v3 formal package with V2 fallback. */
 (function(root){
   'use strict';
   root.AntAssetManifest={
     version:3,
     images:{
-      menuBgV3:{src:'assets/menu/v3/menu_bg_v3.png',enabled:false},
+      menuBgV3:{src:'assets/menu/v3/menu_bg_v3.png',enabled:true},
       menuBgAnimationBase:{src:'assets/menu/menu_bg_animation_base.png',enabled:true},
       menuBgMain:{src:'assets/menu/menu_bg_main.png',enabled:true},
       menuFogOverlay:{src:'assets/menu/menu_fog_overlay.png',enabled:false},
       menuForegroundOverlay:{src:'assets/menu/menu_foreground_overlay.png',enabled:false},
-      flyerScoutBodyV3:{src:'assets/menu/v3/flyers/flyer_scout_body.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:8}},
-      flyerScoutWingsV3:{src:'assets/menu/v3/flyers/flyer_scout_wings.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:16}},
-      flyerGuardBodyV3:{src:'assets/menu/v3/flyers/flyer_guard_body.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:8}},
-      flyerGuardWingsV3:{src:'assets/menu/v3/flyers/flyer_guard_wings.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:14}},
-      flyerHeavyBodyV3:{src:'assets/menu/v3/flyers/flyer_heavy_body.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:6}},
-      flyerHeavyWingsV3:{src:'assets/menu/v3/flyers/flyer_heavy_wings.png',enabled:false,animation:{frames:1,columns:1,rows:1,fps:12}},
+      groundSoldierV3:{src:'assets/menu/v3/ground/soldier_01.png',enabled:true},
+      groundHeavyV3:{src:'assets/menu/v3/ground/heavy_01.png',enabled:true},
+      groundMandibleV3:{src:'assets/menu/v3/ground/mandible_01.png',enabled:true},
+      groundRoyalGuardV3:{src:'assets/menu/v3/ground/royal_guard_01.png',enabled:true},
+      banner01V3:{src:'assets/menu/v3/banners/banner_01.png',enabled:true},
+      banner02V3:{src:'assets/menu/v3/banners/banner_02.png',enabled:true},
+      banner03V3:{src:'assets/menu/v3/banners/banner_03.png',enabled:true},
+      flyerScoutBodyV3:{src:'assets/menu/v3/flyers/flyer_scout_body.png',enabled:true,animation:{frames:1,columns:1,rows:1,fps:8}},
+      flyerScoutWingsV3:{src:'assets/menu/v3/flyers/flyer_scout_wings.png',enabled:true,animation:{frames:1,columns:1,rows:1,fps:16}},
+      flyerGuardBodyV3:{src:'assets/menu/v3/flyers/flyer_guard_body.png',enabled:true,animation:{frames:1,columns:1,rows:1,fps:8}},
+      flyerGuardWingsV3:{src:'assets/menu/v3/flyers/flyer_guard_wings.png',enabled:true,animation:{frames:1,columns:1,rows:1,fps:14}},
+      flyerHeavyBodyV3:{src:'assets/menu/v3/flyers/flyer_heavy_body.png',enabled:true,animation:{frames:1,columns:1,rows:1,fps:6}},
+      flyerHeavyWingsV3:{src:'assets/menu/v3/flyers/flyer_heavy_wings.png',enabled:true,animation:{frames:1,columns:1,rows:1,fps:12}},
       flyerScout01:{src:'assets/menu/animated/flyer_scout_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:.40,toX:1.15,y:.14,size:.25,driftY:.018,cycle:43000,phase:0,turn:.025,opacity:.98}},
       flyerGuard01:{src:'assets/menu/animated/flyer_guard_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:1.16,toX:.47,y:.25,size:.31,driftY:.016,cycle:61000,phase:.31,turn:.022,opacity:.98}},
       flyerHeavy01:{src:'assets/menu/animated/flyer_heavy_01.png',enabled:true,animation:{frames:1,fps:12},motion:{fromX:.45,toX:1.18,y:.37,size:.37,driftY:.013,cycle:79000,phase:.62,turn:.018,opacity:.98}},
-      intro01FallV3:{src:'assets/intro/v3/intro_01_fall_v3.png',enabled:false},
-      intro02MutationV3:{src:'assets/intro/v3/intro_02_mutation_v3.png',enabled:false},
-      intro03EmpiresV3:{src:'assets/intro/v3/intro_03_empires_v3.png',enabled:false},
+      intro01FallV3:{src:'assets/intro/v3/intro_01_fall_v3.png',enabled:true},
+      intro02MutationV3:{src:'assets/intro/v3/intro_02_mutation_v3.png',enabled:true},
+      intro03EmpiresV3:{src:'assets/intro/v3/intro_03_empires_v3.png',enabled:true},
       intro01Fall:{src:'assets/intro/intro_01_fall.png',enabled:true},
       intro02Mutation:{src:'assets/intro/intro_02_mutation.png',enabled:true},
       intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
     menuBackground:['menuBgV3','menuBgAnimationBase','menuBgMain'],
+    menuGroundV3:[
+      {key:'groundSoldierV3',x:.48,y:.60,height:.057,mobileX:.47,mobileY:.61,mobileHeight:.058,motion:'patrol',phase:0},
+      {key:'groundHeavyV3',x:.59,y:.75,height:.071,mobileX:.69,mobileY:.76,mobileHeight:.07,motion:'sentry',phase:1.3},
+      {key:'groundMandibleV3',x:.78,y:.72,height:.072,motion:'sentry',phase:2.6},
+      {key:'groundRoyalGuardV3',x:.87,y:.54,height:.096,motion:'guard',phase:3.8}
+    ],
+    menuBannersV3:[
+      {key:'banner01V3',x:.53,y:.475,height:.11,phase:0},
+      {key:'banner02V3',x:.72,y:.57,height:.12,phase:1.8},
+      {key:'banner03V3',x:.91,y:.39,height:.135,phase:3.4}
+    ],
     menuFlyersV3:[
-      {body:'flyerScoutBodyV3',wings:'flyerScoutWingsV3',fallback:'flyerScout01',motion:{fromX:.35,toX:1.18,y:.14,size:.25,driftY:.014,cycle:42000,phase:0,turn:.028},wing:{frequency:16,angle:.09,offsetX:0,offsetY:0,scale:1,order:'back'}},
-      {body:'flyerGuardBodyV3',wings:'flyerGuardWingsV3',fallback:'flyerGuard01',motion:{fromX:1.16,toX:.42,y:.25,size:.31,driftY:.011,cycle:62000,phase:.31,turn:.02},wing:{frequency:14,angle:.075,offsetX:0,offsetY:0,scale:1,order:'back'}},
-      {body:'flyerHeavyBodyV3',wings:'flyerHeavyWingsV3',fallback:'flyerHeavy01',motion:{fromX:.42,toX:1.18,y:.37,size:.37,driftY:.008,cycle:82000,phase:.62,turn:.014},wing:{frequency:12,angle:.06,offsetX:0,offsetY:0,scale:1,order:'back'}}
+      {body:'flyerScoutBodyV3',wings:'flyerScoutWingsV3',motion:{fromX:.49,toX:.66,y:.19,height:.082,driftY:.02,cycle:25000,phase:.08,turn:.035},wing:{frequency:19,angle:.13,phase:.2}},
+      {body:'flyerGuardBodyV3',wings:'flyerGuardWingsV3',motion:{fromX:.7,toX:.82,y:.32,height:.094,driftY:.013,cycle:31000,phase:.32,turn:.025},wing:{frequency:15,angle:.11,phase:1.3}},
+      {body:'flyerHeavyBodyV3',wings:'flyerHeavyWingsV3',motion:{fromX:.88,toX:.78,y:.42,height:.108,driftY:.009,cycle:41000,phase:.57,turn:.018},wing:{frequency:10,angle:.09,phase:2.4}}
     ],
     menuFlyers:['flyerScout01','flyerGuard01','flyerHeavy01'],
     introSequenceV3:['intro01FallV3','intro02MutationV3','intro03EmpiresV3'],

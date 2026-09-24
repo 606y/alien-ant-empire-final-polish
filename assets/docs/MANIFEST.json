@@ -1,0 +1,68 @@
+{
+  "version": "3.0",
+  "menu": {
+    "background": "menu/v3/menu_bg_v3.png",
+    "ground": [
+      {
+        "id": "soldier",
+        "path": "menu/v3/ground/soldier_01.png",
+        "role": "兵蟻"
+      },
+      {
+        "id": "heavy",
+        "path": "menu/v3/ground/heavy_01.png",
+        "role": "厚甲"
+      },
+      {
+        "id": "mandible",
+        "path": "menu/v3/ground/mandible_01.png",
+        "role": "巨顎／重裝"
+      },
+      {
+        "id": "royal_guard",
+        "path": "menu/v3/ground/royal_guard_01.png",
+        "role": "王族護衛"
+      }
+    ],
+    "flyers": {
+      "scout": {
+        "body": "menu/v3/flyers/flyer_scout_body.png",
+        "wings": "menu/v3/flyers/flyer_scout_wings.png"
+      },
+      "guard": {
+        "body": "menu/v3/flyers/flyer_guard_body.png",
+        "wings": "menu/v3/flyers/flyer_guard_wings.png"
+      },
+      "heavy": {
+        "body": "menu/v3/flyers/flyer_heavy_body.png",
+        "wings": "menu/v3/flyers/flyer_heavy_wings.png"
+      }
+    },
+    "banners": [
+      "menu/v3/banners/banner_01.png",
+      "menu/v3/banners/banner_02.png",
+      "menu/v3/banners/banner_03.png"
+    ]
+  },
+  "intro": [
+    "intro/v3/intro_01_fall_v3.png",
+    "intro/v3/intro_02_mutation_v3.png",
+    "intro/v3/intro_03_empires_v3.png"
+  ],
+  "copy": "docs/COPY_DECK.md",
+  "integration": "docs/INTEGRATION.md",
+  "audio": {
+    "bgm": [
+      "audio/bgm/bgm_nest.ogg",
+      "audio/bgm/bgm_surface.ogg",
+      "audio/bgm/bgm_combat.ogg"
+    ],
+    "sfx": [
+      "audio/sfx/ui_confirm.ogg",
+      "audio/sfx/ui_back.ogg",
+      "audio/sfx/wing_pass.ogg",
+      "audio/sfx/colony_pulse.ogg",
+      "audio/sfx/impact_mutation.ogg"
+    ]
+  }
+}

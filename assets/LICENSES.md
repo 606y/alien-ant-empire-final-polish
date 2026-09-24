@@ -11,6 +11,10 @@
 
 The original package records are retained in `assets/docs/ASSETS-V2-MANIFEST.json`, `ASSETS-V2-INTEGRATION.md`, `ASSETS-V2-COPY-DECK.md`, and `ASSETS-V2-LICENSES.md`.
 
+| V3 background, four ground units, six flyer layers, three banners, three intro images and formal copy | User-supplied `AlienAntEmpire_Assets_v3.zip` | Created for this project through OpenAI tools or programmatic generation, per supplied `LICENSES.md` | Not required |
+
+The V3 package records are retained in `assets/docs/MANIFEST.json`, `assets/docs/INTEGRATION.md`, `assets/docs/COPY_DECK.md`, and `assets/docs/ASSETS-V3-LICENSES.md`. Its manifest lists audio paths but the ZIP contains no audio files; the already approved V2 OGG files remain in use.
+
 ## Original project code
 
 Menu presentation (`menu-art.js`), intro motion, audio playback (`audio.js`), game visuals (`world.js`), UI (`style.css`) and fallback backgrounds are original project code. The interface uses operating-system font fallbacks; no font files are bundled or downloaded.

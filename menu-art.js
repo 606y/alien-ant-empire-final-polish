@@ -46,9 +46,10 @@
     return {sx:(frame%columns)*sw,sy:Math.floor(frame/columns)*sh,sw,sh};
   }
   function flight(motion,w,h,time,index){
-    const cycle=Math.max(24000,motion.cycle||52000),progress=((time/cycle)+(motion.phase||0))%1,eased=.5-.5*Math.cos(progress*Math.PI*2);
-    const fromX=motion.fromX??.42,toX=motion.toX??1.16,direction=(Math.sign(toX-fromX)||1)*(progress<.5?1:-1);
-    return {x:(fromX+(toX-fromX)*eased)*w,y:(motion.y??.2)*h+Math.sin(progress*Math.PI*2+index*.83)*h*(motion.driftY??.015),direction,turn:Math.sin(progress*Math.PI*2+index*.7)*(motion.turn??.02),width:Math.min(w,h)*(motion.size??.28)};
+    const cycle=Math.max(18000,motion.cycle||30000),progress=((time/cycle)+(motion.phase||0))%1,eased=.5-.5*Math.cos(progress*Math.PI*2);
+    const fromX=motion.fromX??.5,toX=motion.toX??.7,direction=(Math.sign(toX-fromX)||1)*(progress<.5?1:-1);
+    const height=h*(motion.height??.08);
+    return {x:(fromX+(toX-fromX)*eased)*w,y:(motion.y??.2)*h+Math.sin(progress*Math.PI*2+index*.83)*h*(motion.driftY??.015),direction,turn:Math.sin(progress*Math.PI*2+index*.7)*(motion.turn??.02),height,width:height};
   }
   function drawV2Flyer(context,key,w,h,time,index){
     const image=ready(key);if(!image)return false;
@@ -59,26 +60,51 @@
   function drawV3Flyer(context,group,w,h,time,index){
     const body=ready(group.body),wings=ready(group.wings);if(!body||!wings)return false;
     const pose=flight(group.motion||{},w,h,time,index),bodyFrame=spriteFrame(body,assets.manifest.images[group.body],time,index),wingFrame=spriteFrame(wings,assets.manifest.images[group.wings],time,index);
-    const bodyHeight=pose.width*bodyFrame.sh/bodyFrame.sw,wing=group.wing||{},wingWidth=pose.width*(wing.scale||1),wingHeight=wingWidth*wingFrame.sh/wingFrame.sw;
-    const drawBody=()=>context.drawImage(body,bodyFrame.sx,bodyFrame.sy,bodyFrame.sw,bodyFrame.sh,-pose.width/2,-bodyHeight/2,pose.width,bodyHeight);
-    const drawWings=()=>{
-      const pivotX=wing.pivotX??.5,pivotY=wing.pivotY??.5,offsetX=(wing.offsetX||0)*pose.width,offsetY=(wing.offsetY||0)*bodyHeight;
-      const vibration=Math.sin(time*Math.PI*2*(wing.frequency||14)/1000+index*1.7)*(wing.angle??.075);
-      context.save();context.translate(offsetX+(pivotX-.5)*wingWidth,offsetY+(pivotY-.5)*wingHeight);context.rotate(vibration);
-      context.drawImage(wings,wingFrame.sx,wingFrame.sy,wingFrame.sw,wingFrame.sh,-pivotX*wingWidth,-pivotY*wingHeight,wingWidth,wingHeight);context.restore();
-    };
+    const bodyWidth=pose.height*bodyFrame.sw/bodyFrame.sh,wingWidth=pose.height*wingFrame.sw/wingFrame.sh,wingHeight=pose.height,wing=group.wing||{};
+    const wingBeat=Math.sin(time*Math.PI*2*(wing.frequency||14)/1000+(wing.phase||0));
     context.save();context.translate(pose.x,pose.y);context.rotate(pose.turn);if(pose.direction<0)context.scale(-1,1);
-    if(wing.order==='front'){drawBody();drawWings();}else{drawWings();drawBody();}
+    // Both supplied layers share a square canvas. Only the wings change shape at flight frequency.
+    context.save();context.translate(0,-wingHeight*.1);context.rotate(wingBeat*(wing.angle||.1));context.scale(1,.8+.18*wingBeat);
+    context.drawImage(wings,wingFrame.sx,wingFrame.sy,wingFrame.sw,wingFrame.sh,-wingWidth/2,-wingHeight/2,wingWidth,wingHeight);context.restore();
+    context.drawImage(body,bodyFrame.sx,bodyFrame.sy,bodyFrame.sw,bodyFrame.sh,-bodyWidth/2,-pose.height/2,bodyWidth,pose.height);
     context.restore();return true;
+  }
+  function drawGround(context,w,h,time){
+    const mobile=w<620,groups=assets?.manifest?.menuGroundV3||[];let visible=0;
+    for(const item of groups){if(mobile&&item.mobileX===undefined)continue;const image=ready(item.key);if(!image)continue;
+      const height=h*(mobile?(item.mobileHeight||item.height):item.height),width=height*image.naturalWidth/image.naturalHeight;
+      let x=(mobile?item.mobileX:item.x)*w,y=(mobile?item.mobileY:item.y)*h,tilt=0;
+      if(item.motion==='patrol'){
+        const progress=(time/16500+item.phase*.17)%1;
+        const stride=progress<.27?progress/.27:progress<.63?1:progress<.89?1-(progress-.63)/.26:0;
+        x+=(stride-.5)*Math.min(16,w*.016);y-=Math.sin(progress*Math.PI*2)*.6;
+      }else{tilt=Math.sin(time*.00045+item.phase)*.008;y+=Math.sin(time*.00058+item.phase)*.6;}
+      context.save();context.translate(x,y);context.rotate(tilt);context.globalAlpha=.94;context.drawImage(image,-width/2,-height,width,height);context.restore();visible++;
+    }
+    return visible;
+  }
+  function drawBanners(context,w,h,time){
+    if(w<620)return 0;let visible=0;
+    for(const item of assets?.manifest?.menuBannersV3||[]){const image=ready(item.key);if(!image)continue;
+      const height=h*item.height,width=height*image.naturalWidth/image.naturalHeight,left=item.x*w-width*.16,top=item.y*h;
+      const poleWidth=image.naturalWidth*.21;
+      context.drawImage(image,0,0,poleWidth,image.naturalHeight,left,top,width*.21,height);
+      const sway=Math.sin(time*.00065+item.phase)*.018;
+      context.save();context.translate(left+width*.21,top+height*.12);context.rotate(sway);
+      context.drawImage(image,poleWidth,0,image.naturalWidth-poleWidth,image.naturalHeight,0,-height*.12,width*.79,height);
+      context.restore();visible++;
+    }
+    return visible;
   }
   function v3FlyersReady(){const groups=assets?.manifest?.menuFlyersV3||[];return groups.length>0&&groups.every(group=>ready(group.body)&&ready(group.wings));}
   function drawMenu(canvas,time){
     const {context,w,h}=fit(canvas),background=preferred(assets?.manifest?.menuBackground||['menuBgAnimationBase','menuBgMain']);
     setMenuBackdrop(canvas,background,w,h);context.clearRect(0,0,w,h);if(!background)fallback(context,w,h);
     if(background)localCityLights(context,w,h,time);
+    if(background?.key==='menuBgV3'){drawBanners(context,w,h,time);drawGround(context,w,h,time);}
     let visible=0;
     if(v3FlyersReady()){
-      canvas.dataset.flyerMode='v3';for(const [index,group] of assets.manifest.menuFlyersV3.entries()){if(visible>=3)break;if(drawV3Flyer(context,group,w,h,time,index))visible++;}
+      canvas.dataset.flyerMode='v3';for(const [index,group] of assets.manifest.menuFlyersV3.entries()){if(visible>=(w<620?2:3))break;if(drawV3Flyer(context,group,w,h,time,index))visible++;}
     }else{
       canvas.dataset.flyerMode='v2';for(const [index,key] of (assets?.manifest?.menuFlyers||[]).entries()){if(visible>=3)break;if(drawV2Flyer(context,key,w,h,time,index))visible++;}
     }
@@ -103,7 +129,7 @@
   }
   class MenuArt{
     constructor(menu,intro){
-      this.menu=menu;this.intro=intro;this.introStep=0;this.previousIntroStep=0;this.transitionAt=performance.now();this.raf=0;this.lastWingPass=performance.now();this.frame=this.frame.bind(this);this.refresh=this.refresh.bind(this);
+      this.menu=menu;this.intro=intro;this.introStep=0;this.previousIntroStep=0;this.transitionAt=performance.now();this.raf=0;this.lastWingPass=performance.now();this.frame=this.frame.bind(this);this.refresh=this.refresh.bind(this);this.lastFrame=0;
       this.observer=new MutationObserver(this.refresh);if(document.body)this.observer.observe(document.body,{attributes:true,subtree:true,attributeFilter:['class','hidden']});
       document.addEventListener('visibilitychange',this.refresh);this.refresh();assets?.ready.then(this.refresh);
     }
@@ -111,7 +137,7 @@
     refresh(){const active=!document.hidden&&(this.visible(this.menu)||this.visible(this.intro));if(active&&!this.raf)this.raf=requestAnimationFrame(this.frame);if(!active&&this.raf){cancelAnimationFrame(this.raf);this.raf=0;}}
     setIntroStep(value){this.previousIntroStep=this.introStep;this.introStep=value;this.transitionAt=performance.now();this.refresh();}
     frame(time){
-      this.raf=0;let active=false;
+      this.raf=0;if(this.lastFrame&&time-this.lastFrame<(root.innerWidth<620?30:17)){this.raf=requestAnimationFrame(this.frame);return;}this.lastFrame=time;let active=false;
       if(this.visible(this.menu)){const count=drawMenu(this.menu,time);active=true;if(count&&time-this.lastWingPass>22000){this.lastWingPass=time;root.dispatchEvent(new CustomEvent('ant:wingpass'));}}
       if(this.visible(this.intro)){drawIntro(this.intro,time,this.introStep,this.previousIntroStep,this.transitionAt);active=true;}
       if(active&&!document.hidden)this.raf=requestAnimationFrame(this.frame);
