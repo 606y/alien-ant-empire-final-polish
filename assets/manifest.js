@@ -1,9 +1,18 @@
-/* Assets v5 presentation with V4, V3 and V2 fallback. */
+/* Assets v6 presentation with V5, V4, V3 and V2 fallback. */
 (function(root){
   'use strict';
   root.AntAssetManifest={
-    version:5,
+    version:6,
     images:{
+      menuBgV6:{src:'assets/menu/v6/background/menu_bg_battle_v6.png',enabled:true},
+      menuBgV6Alt:{src:'assets/menu/v6/background/menu_bg_battle_v6_alt.png',enabled:true},
+      flagAntV6:{src:'assets/menu/v6/characters/flag_ant_v6.png',enabled:true},
+      heavyHammerV6:{src:'assets/menu/v6/characters/heavy_hammer_v6.png',enabled:true},
+      flyerBodyV6:{src:'assets/menu/v6/flyer/flyer_body_v6.png',enabled:true},
+      flyerWingsV6:{src:'assets/menu/v6/flyer/flyer_wings_v6.png',enabled:true},
+      intro01FallV6:{src:'assets/intro/v6/intro_01_fall_v6.png',enabled:true},
+      intro02MutationV6:{src:'assets/intro/v6/intro_02_mutation_v6.png',enabled:true},
+      intro03EmpiresV6:{src:'assets/intro/v6/intro_03_empires_v6.png',enabled:true},
       menuBgV5:{src:'assets/menu/v5/background/menu_bg_battle_v5.png',enabled:true},
       flagAntV5:{src:'assets/menu/v5/foreground/flag_ant_v5.png',enabled:true},
       heavyEnemyV5:{src:'assets/menu/v5/foreground/heavy_enemy_v5.png',enabled:true},
@@ -49,12 +58,19 @@
       intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
-    menuBackground:['menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'],
+    menuBackground:['menuBgV6','menuBgV6Alt','menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'],
     imageTiers:{
-      primary:['menuBgV5','flagAntV5','heavyEnemyV5','flyerBodyV5','flyerWingsV5','intro01FallV5','intro02MutationV5','intro03EmpiresV5'],
+      primary:['menuBgV6','flagAntV6','heavyHammerV6','flyerBodyV6','flyerWingsV6','intro01FallV6','intro02MutationV6','intro03EmpiresV6'],
+      menuV6Alt:['menuBgV6Alt'],
+      menuV5:['menuBgV5','flagAntV5','heavyEnemyV5','flyerBodyV5','flyerWingsV5'],
       menuV4:['menuBgV4','flagSoldierV4','heavyEnemyV4','flyerBodyV4','flyerWingsV4'],
       menuV3:['menuBgV3','groundSoldierV3','groundHeavyV3','groundMandibleV3','groundRoyalGuardV3','banner01V3','banner02V3','banner03V3','flyerScoutBodyV3','flyerScoutWingsV3','flyerGuardBodyV3','flyerGuardWingsV3','flyerHeavyBodyV3','flyerHeavyWingsV3'],
       menuV2:['menuBgAnimationBase','menuBgMain','flyerScout01','flyerGuard01','flyerHeavy01']
+    },
+    menuV6:{
+      flag:{key:'flagAntV6',x:.43,bottom:.99,height:.285,mobileX:.50,mobileBottom:.56,mobileHeight:.18},
+      heavy:{key:'heavyHammerV6',x:.83,bottom:.99,height:.315,mobileX:.84,mobileBottom:.56,mobileHeight:.19},
+      flyer:{body:'flyerBodyV6',wings:'flyerWingsV6',height:.115,mobileHeight:.105}
     },
     menuV5:{
       flag:{key:'flagAntV5',x:.45,bottom:.98,height:.275,mobileX:.49,mobileBottom:.55,mobileHeight:.18},
@@ -83,6 +99,7 @@
       {body:'flyerHeavyBodyV3',wings:'flyerHeavyWingsV3',motion:{fromX:.88,toX:.78,y:.42,height:.108,driftY:.009,cycle:41000,phase:.57,turn:.018},wing:{frequency:10,angle:.09,phase:2.4}}
     ],
     menuFlyers:['flyerScout01','flyerGuard01','flyerHeavy01'],
+    introSequenceV6:['intro01FallV6','intro02MutationV6','intro03EmpiresV6'],
     introSequenceV5:['intro01FallV5','intro02MutationV5','intro03EmpiresV5'],
     introSequenceV4:['intro01FallV4','intro02MutationV4','intro03EmpiresV4'],
     introSequenceV3:['intro01FallV3','intro02MutationV3','intro03EmpiresV3'],

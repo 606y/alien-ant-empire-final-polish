@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const root=path.join(__dirname,'..'),read=name=>fs.readFileSync(path.join(root,name),'utf8');
 test('v4 package paths are enabled ahead of v3 and v2 fallbacks',()=>{
   const manifestJson=JSON.parse(read('assets/docs/ASSETS-V4-MANIFEST.json')),context={window:{}};vm.runInNewContext(read('assets/manifest.js'),context);const m=context.window.AntAssetManifest;
-  assert.equal(m.version,5);assert.equal(m.menuBackground[1],'menuBgV4');
+  assert.equal(m.version,6);assert.equal(m.menuBackground[3],'menuBgV4');
   const paths=[manifestJson.menu.background,...Object.values(manifestJson.menu.foreground),...Object.values(manifestJson.menu.flyer),...manifestJson.intro];
   for(const file of paths){const dest='assets/'+file,entry=Object.values(m.images).find(v=>v.src===dest);assert.ok(entry,dest);assert.equal(entry.enabled,true,dest);assert.ok(fs.existsSync(path.join(root,dest)),dest)}
   assert.deepEqual(Array.from(m.introSequenceV4),['intro01FallV4','intro02MutationV4','intro03EmpiresV4']);

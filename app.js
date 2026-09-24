@@ -9,9 +9,9 @@
   let view='nest',context=null,selection=[],candidates=[],selectionTools=false,commandMode=null,split=false,digging=false,royalPlacement=false,commandMarker=null,postGameReview=false,journalFilter='all',broodId=s.broods[0]?.id,broodDraft=null,mergePreview=[],infoMode='',jobDraft=null,edit=null,last=performance.now(),acc=0,uiTime=0,contextTime=0,saveTime=0,toast=null,toastUntil=0,feedbackUntil=0,seenEvent=s.events[0],seenUiNotice=s.uiNotice?.id||0,lastNotice=-100,eventFocusUntil=0,lastSaved='尚未儲存',dialogSpeed=0,selectionLessonShown=false,commandLessonShown=false,inputHintUntil=performance.now()+5000;
   const stateNames=['卵','幼蟲','蛹'],jobNames={nurse:'育幼',forage:'覓食',dig:'挖掘',scout:'偵察',defense:'防守／戰鬥'};
   const introSlides=[
-    ['墜落','森林深處的異物','數百年前，一艘不屬於這個世界的飛行堡壘墜入森林深處。\n殘骸被泥土與根系吞沒，異質物質卻開始緩慢滲入大地。'],
-    ['異變','琥珀王座的甦醒','在被污染又被滋養的巢室深處，新的蟻后甦醒。\n甲殼、血脈與巢穴一同異變，第一批蟻族自孵化聖殿中誕生。'],
-    ['蟻國','蟻國的黃昏決戰','你的蟻國將在擴張中迎戰其他勢力。\n築巢、育成、征服，直到最後一座敵國沉默為止。']
+    ['墜落','森林深處的異物','數百年前，一艘不屬於這個世界的飛行器墜入森林深處。殘骸被泥土與根系吞沒，異質物質卻開始緩慢滲入大地。'],
+    ['異變','琥珀聖殿中的蟻群升蛹','受污染的土壤改變了巢穴，也改變了族群。甲殼更堅硬，兵種更分化，王國從黑暗中學會組織、繁衍與戰鬥。'],
+    ['蟻國','黃昏戰場上的蟻國對決','如今四方勢力盤據森林，蟻巢不再只是巢穴，而是一個會擴張、會征服、也會被戰火吞噬的帝國。']
   ];
   let introStep=0;
   function audioLabel(){const text=audio.muted?'聲音：關':'聲音：開';$('menuAudio').textContent=text;$('menuAudio').setAttribute('aria-pressed',String(!audio.muted));}

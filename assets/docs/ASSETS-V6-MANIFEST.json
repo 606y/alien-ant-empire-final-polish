@@ -1,0 +1,17 @@
+{
+  "version": "v6",
+  "package_name": "AlienAntEmpire_Assets_v6",
+  "menu": {
+    "background": "assets/menu/v6/background/menu_bg_battle_v6.png",
+    "background_alt": "assets/menu/v6/background/menu_bg_battle_v6_alt.png",
+    "flag_ant": "assets/menu/v6/characters/flag_ant_v6.png",
+    "heavy_enemy": "assets/menu/v6/characters/heavy_hammer_v6.png",
+    "flyer_body": "assets/menu/v6/flyer/flyer_body_v6.png",
+    "flyer_wings": "assets/menu/v6/flyer/flyer_wings_v6.png"
+  },
+  "intro": {
+    "intro_01_fall": "assets/intro/v6/intro_01_fall_v6.png",
+    "intro_02_mutation": "assets/intro/v6/intro_02_mutation_v6.png",
+    "intro_03_empires": "assets/intro/v6/intro_03_empires_v6.png"
+  }
+}

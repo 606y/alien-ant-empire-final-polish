@@ -10,7 +10,9 @@
 | V4 battle background, flag soldier, heavy enemy, body/wings flyer, three intro images and copy | User-supplied `AlienAntEmpire_Assets_v4.zip` | Created for this project using OpenAI-generated and programmatically prepared assets, per supplied `LICENSES.md` | Not required |
 | V5 battle background, flag bearer, heavy enemy, body/wings flyer, three intro images and copy | User-supplied `AlienAntEmpire_Assets_v5.zip` | Generated for this project, per supplied `LICENSES.md` | Not required |
 
-Package records are retained in `assets/docs/`: V2 files with the `ASSETS-V2-` prefix, V3's `MANIFEST.json` and files with the `ASSETS-V3-` prefix, V4 files with the `ASSETS-V4-` prefix, and V5's `ASSETS-V5-MANIFEST.json`, `ASSETS-V5-LICENSES.md`, `INTEGRATION.md`, and `COPY_DECK.md`. The V3, V4 and V5 ZIPs contain no audio payloads. The existing approved V2 OGG files remain in use.
+| V6 battle backgrounds, flag bearer, heavy hammer enemy, body/wings flyer, three intro images and copy | User-supplied Google Drive `AlienAntEmpire_Assets_v6.zip` | Original project assets generated for this project, per supplied `LICENSES.md` | Not required |
+
+Package records are retained in `assets/docs/`: V2/V3/V4/V5 records remain archived; V6 records are `ASSETS-V6-MANIFEST.json`, `ASSETS-V6-LICENSES.md`, `ASSETS-V6-README.txt`, and the active `COPY_DECK.md`. The V3, V4, V5 and V6 ZIPs contain no audio payloads. The existing approved V2 OGG files remain in use.
 
 ## Original project code
 

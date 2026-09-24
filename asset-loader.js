@@ -17,7 +17,9 @@
       const audioJobs=Object.entries(audio).map(([key,item])=>item.enabled?this.loadAudio(key,item):(this.states.set(key,'fallback'),Promise.resolve(false)));
       if(!tiers){await Promise.allSettled([...Object.entries(images).filter(([,item])=>item.enabled).map(([key,item])=>this.loadImage(key,item)),...audioJobs]);return this;}
       await Promise.allSettled([loadKeys(tiers.primary),...audioJobs]);
-      if(this.state('menuBgV5')!=='ready'){
+      if(this.state('menuBgV6')!=='ready')await loadKeys(tiers.menuV6Alt);
+      if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready')await loadKeys(tiers.menuV5);
+      if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready'&&this.state('menuBgV5')!=='ready'){
         await loadKeys(tiers.menuV4);
         if(this.state('menuBgV4')!=='ready'){
           await loadKeys(tiers.menuV3);
@@ -25,8 +27,10 @@
           else if(!(this.manifest.menuFlyersV3||[]).every(group=>this.state(group.body)==='ready'&&this.state(group.wings)==='ready'))await loadKeys(this.manifest.menuFlyers||[]);
         }
       }
-      for(let i=0;i<(this.manifest.introSequenceV5||[]).length;i++){
-        if(this.state(this.manifest.introSequenceV5[i])==='ready')continue;
+      for(let i=0;i<(this.manifest.introSequenceV6||[]).length;i++){
+        if(this.state(this.manifest.introSequenceV6[i])==='ready')continue;
+        await loadKeys([this.manifest.introSequenceV5?.[i]]);
+        if(this.state(this.manifest.introSequenceV5?.[i])==='ready')continue;
         await loadKeys([this.manifest.introSequenceV4?.[i]]);
         if(this.state(this.manifest.introSequenceV4?.[i])==='ready')continue;
         await loadKeys([this.manifest.introSequenceV3?.[i]]);

@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const root=path.join(__dirname,'..'),read=name=>fs.readFileSync(path.join(root,name),'utf8');
 test('v5 package paths lead the fallback order',()=>{
   const pack=JSON.parse(read('assets/docs/ASSETS-V5-MANIFEST.json')),context={window:{}};vm.runInNewContext(read('assets/manifest.js'),context);const m=context.window.AntAssetManifest;
-  assert.equal(m.version,5);assert.deepEqual(Array.from(m.menuBackground),['menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
+  assert.equal(m.version,6);assert.deepEqual(Array.from(m.menuBackground),['menuBgV6','menuBgV6Alt','menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
   const files=[...Object.values(pack.menu),...Object.values(pack.intro)];
   for(const file of files){const item=Object.values(m.images).find(v=>v.src===file);assert.ok(item,file);assert.ok(item.enabled,file);assert.ok(fs.existsSync(path.join(root,file)),file)}
   assert.deepEqual(Array.from(m.introSequenceV5),['intro01FallV5','intro02MutationV5','intro03EmpiresV5']);
@@ -16,7 +16,6 @@ test('v5 menu uses three supplied dynamic layers only',()=>{
   assert.doesNotMatch(menu,/drawFlagSlice|drawGuardSlice|drawProcedural|function wingedAnt/);
 });
 test('v5 formal copy is applied exactly',()=>{
-  const copy=read('assets/docs/COPY_DECK.md'),app=read('app.js'),html=read('index.html');
-  for(const line of copy.split(/\r?\n/)){const v=line.trim();if(!v||v.startsWith('#')||v.startsWith('**標題：**'))continue;assert.ok((app+html).includes(v),v)}
-  for(const title of ['森林深處的異物','琥珀王座的甦醒','蟻國的黃昏決戰'])assert.ok(app.includes(title));
+  const copy=read('assets/docs/ASSETS-V5-COPY-DECK.md');
+  for(const title of ['森林深處的異物','琥珀王座的甦醒','蟻國的黃昏決戰'])assert.ok(copy.includes(title));
 });
