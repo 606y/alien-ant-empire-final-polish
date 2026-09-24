@@ -1,9 +1,17 @@
-/* Assets v4 presentation with V3 and V2 fallback. */
+/* Assets v5 presentation with V4, V3 and V2 fallback. */
 (function(root){
   'use strict';
   root.AntAssetManifest={
-    version:4,
+    version:5,
     images:{
+      menuBgV5:{src:'assets/menu/v5/background/menu_bg_battle_v5.png',enabled:true},
+      flagAntV5:{src:'assets/menu/v5/foreground/flag_ant_v5.png',enabled:true},
+      heavyEnemyV5:{src:'assets/menu/v5/foreground/heavy_enemy_v5.png',enabled:true},
+      flyerBodyV5:{src:'assets/menu/v5/flyer/flyer_body_v5.png',enabled:true},
+      flyerWingsV5:{src:'assets/menu/v5/flyer/flyer_wings_v5.png',enabled:true},
+      intro01FallV5:{src:'assets/intro/v5/intro_01_fall_v5.png',enabled:true},
+      intro02MutationV5:{src:'assets/intro/v5/intro_02_mutation_v5.png',enabled:true},
+      intro03EmpiresV5:{src:'assets/intro/v5/intro_03_empires_v5.png',enabled:true},
       menuBgV4:{src:'assets/menu/v4/background/menu_bg_battle_v4.png',enabled:true},
       flagSoldierV4:{src:'assets/menu/v4/foreground/flag_soldier_back.png',enabled:true},
       heavyEnemyV4:{src:'assets/menu/v4/foreground/heavy_enemy.png',enabled:true},
@@ -41,11 +49,17 @@
       intro03Empires:{src:'assets/intro/intro_03_empires.png',enabled:true},
       logoMain:{src:'assets/logo/logo_main.png',enabled:false}
     },
-    menuBackground:['menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'],
+    menuBackground:['menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'],
     imageTiers:{
-      primary:['menuBgV4','flagSoldierV4','heavyEnemyV4','flyerBodyV4','flyerWingsV4','intro01FallV4','intro02MutationV4','intro03EmpiresV4'],
+      primary:['menuBgV5','flagAntV5','heavyEnemyV5','flyerBodyV5','flyerWingsV5','intro01FallV5','intro02MutationV5','intro03EmpiresV5'],
+      menuV4:['menuBgV4','flagSoldierV4','heavyEnemyV4','flyerBodyV4','flyerWingsV4'],
       menuV3:['menuBgV3','groundSoldierV3','groundHeavyV3','groundMandibleV3','groundRoyalGuardV3','banner01V3','banner02V3','banner03V3','flyerScoutBodyV3','flyerScoutWingsV3','flyerGuardBodyV3','flyerGuardWingsV3','flyerHeavyBodyV3','flyerHeavyWingsV3'],
       menuV2:['menuBgAnimationBase','menuBgMain','flyerScout01','flyerGuard01','flyerHeavy01']
+    },
+    menuV5:{
+      flag:{key:'flagAntV5',x:.45,bottom:.98,height:.275,mobileX:.49,mobileBottom:.55,mobileHeight:.18},
+      heavy:{key:'heavyEnemyV5',x:.81,bottom:.99,height:.31,mobileX:.84,mobileBottom:.55,mobileHeight:.19},
+      flyer:{body:'flyerBodyV5',wings:'flyerWingsV5',height:.112,mobileHeight:.105}
     },
     menuV4:{
       flag:{key:'flagSoldierV4',x:.55,bottom:.98,height:.21,mobileX:.58,mobileBottom:.56,mobileHeight:.135},
@@ -69,6 +83,7 @@
       {body:'flyerHeavyBodyV3',wings:'flyerHeavyWingsV3',motion:{fromX:.88,toX:.78,y:.42,height:.108,driftY:.009,cycle:41000,phase:.57,turn:.018},wing:{frequency:10,angle:.09,phase:2.4}}
     ],
     menuFlyers:['flyerScout01','flyerGuard01','flyerHeavy01'],
+    introSequenceV5:['intro01FallV5','intro02MutationV5','intro03EmpiresV5'],
     introSequenceV4:['intro01FallV4','intro02MutationV4','intro03EmpiresV4'],
     introSequenceV3:['intro01FallV3','intro02MutationV3','intro03EmpiresV3'],
     introSequence:['intro01Fall','intro02Mutation','intro03Empires'],

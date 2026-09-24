@@ -1,0 +1,16 @@
+{
+  "version": "v5",
+  "title": "Alien Ant Empire Assets v5",
+  "menu": {
+    "background": "assets/menu/v5/background/menu_bg_battle_v5.png",
+    "flagBearer": "assets/menu/v5/foreground/flag_ant_v5.png",
+    "heavyEnemy": "assets/menu/v5/foreground/heavy_enemy_v5.png",
+    "flyerBody": "assets/menu/v5/flyer/flyer_body_v5.png",
+    "flyerWings": "assets/menu/v5/flyer/flyer_wings_v5.png"
+  },
+  "intro": {
+    "slide1": "assets/intro/v5/intro_01_fall_v5.png",
+    "slide2": "assets/intro/v5/intro_02_mutation_v5.png",
+    "slide3": "assets/intro/v5/intro_03_empires_v5.png"
+  }
+}

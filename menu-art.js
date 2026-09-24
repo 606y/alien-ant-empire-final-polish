@@ -145,10 +145,48 @@
       gradient.addColorStop(0,'rgba(255,145,45,'+(.07+.045*pulse)+')');gradient.addColorStop(1,'rgba(255,70,10,0)');context.fillStyle=gradient;context.fillRect(x*w-r,y*h-r,r*2,r*2);
     }context.restore();
   }
+  function drawV5Foreground(context,w,h,time){
+    const config=assets?.manifest?.menuV5;if(!config)return;
+    const mobile=w<620,flag=ready(config.flag.key),heavy=ready(config.heavy.key);
+    if(flag){const c=config.flag,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom);
+      const layer=isolateSprite(flag,c.key,[[.25,.13],[.54,.11],[.53,.37],[.49,.49],[.46,.59],[.42,.73],[.2,.88],[0,.88],[0,.62],[.26,.42]]),scale=height/flag.naturalHeight;
+      const sway=Math.sin(time*.0009)*.045+Math.sin(time*.00043+1.2)*.018;
+      context.save();context.translate(x-flag.naturalWidth*scale/2,bottom-height);context.scale(scale,scale);
+      // Independent V5 sprite only: move cloth behind its stationary pole and soldier.
+      context.save();context.translate(.53*flag.naturalWidth,.12*flag.naturalHeight);context.rotate(sway);context.drawImage(layer.part,-.53*flag.naturalWidth,-.12*flag.naturalHeight);context.restore();
+      context.drawImage(layer.base,0,0);context.restore();
+    }
+    if(heavy){const c=config.heavy,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom);
+      const progress=(time/6000)%1,ease=t=>t*t*(3-2*t);let angle=0;
+      if(progress<.18)angle=0;
+      else if(progress<.42)angle=-.10*ease((progress-.18)/.24);
+      else if(progress<.55)angle=-.10;
+      else if(progress<.68)angle=-.10+.26*ease((progress-.55)/.13);
+      else if(progress<.77)angle=.16;
+      else angle=.16*(1-ease((progress-.77)/.23));
+      drawPartSprite(context,heavy,c.key,[[0,.02],[1,.02],[1,.52],[.79,.58],[.56,.6],[.36,.64],[0,.69]],x,bottom,height,[.5,.6],angle);
+    }
+  }
+  function drawV5Flyer(context,w,h,time){
+    const config=assets?.manifest?.menuV5?.flyer;if(!config)return 0;
+    const body=ready(config.body),wings=ready(config.wings);if(!body||!wings)return 0;
+    const mobile=w<620,height=h*(mobile?config.mobileHeight:config.height),cycle=(time/42000+.07)%1;
+    let travel;if(cycle<.43){const t=cycle/.43;travel=t*t*(3-2*t);}else if(cycle<.55)travel=1;else if(cycle<.94){const t=(cycle-.55)/.39;travel=1-t*t*(3-2*t);}else travel=0;
+    const x=w*((mobile?.46:.43)+(mobile?.29:.34)*travel),y=h*(mobile?.17:.2)+Math.sin(cycle*Math.PI*2)*h*.02;
+    const tilt=Math.sin(cycle*Math.PI*2)*.022,face=cycle<.55?1:-1,wingHeight=height*.98,wingWidth=wingHeight*wings.naturalWidth/wings.naturalHeight;
+    const beat=Math.sin(time*Math.PI*2*17/1000),backX=height*.015,backY=-height*.12;
+    context.save();context.translate(x,y);context.rotate(tilt);if(face<0)context.scale(-1,1);
+    context.save();context.translate(backX,backY);context.rotate(beat*.13);context.scale(1,.75+.22*beat);
+    context.drawImage(wings,-wingWidth*.5,-wingHeight*.63,wingWidth,wingHeight);context.restore();
+    context.drawImage(body,-height/2,-height/2,height,height);context.restore();return 1;
+  }
   function v3FlyersReady(){const groups=assets?.manifest?.menuFlyersV3||[];return groups.length>0&&groups.every(group=>ready(group.body)&&ready(group.wings));}
   function drawMenu(canvas,time){
-    const {context,w,h}=fit(canvas),background=preferred(assets?.manifest?.menuBackground||['menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
+    const {context,w,h}=fit(canvas),background=preferred(assets?.manifest?.menuBackground||['menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
     setMenuBackdrop(canvas,background,w,h);context.clearRect(0,0,w,h);if(!background)fallback(context,w,h);
+    if(background?.key==='menuBgV5'){
+      canvas.dataset.flyerMode='v5';drawV5Foreground(context,w,h,time);return drawV5Flyer(context,w,h,time);
+    }
     if(background?.key==='menuBgV4'){
       canvas.dataset.flyerMode='v4';battleFire(context,w,h,time);drawV4Foreground(context,w,h,time);return drawV4Flyer(context,w,h,time);
     }
@@ -163,7 +201,7 @@
     return visible;
   }
   function introImage(step){
-    const v4=assets?.manifest?.introSequenceV4?.[step],v3=assets?.manifest?.introSequenceV3?.[step],v2=assets?.manifest?.introSequence?.[step];return preferred([v4,v3,v2]);
+    const v5=assets?.manifest?.introSequenceV5?.[step],v4=assets?.manifest?.introSequenceV4?.[step],v3=assets?.manifest?.introSequenceV3?.[step],v2=assets?.manifest?.introSequence?.[step];return preferred([v5,v4,v3,v2]);
   }
   function drawIntroLayer(context,selection,w,h,time,step,alpha){
     if(!selection)return;

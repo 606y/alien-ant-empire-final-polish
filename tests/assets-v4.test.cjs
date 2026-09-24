@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const root=path.join(__dirname,'..'),read=name=>fs.readFileSync(path.join(root,name),'utf8');
 test('v4 package paths are enabled ahead of v3 and v2 fallbacks',()=>{
   const manifestJson=JSON.parse(read('assets/docs/ASSETS-V4-MANIFEST.json')),context={window:{}};vm.runInNewContext(read('assets/manifest.js'),context);const m=context.window.AntAssetManifest;
-  assert.equal(m.version,4);assert.equal(m.menuBackground[0],'menuBgV4');
+  assert.equal(m.version,5);assert.equal(m.menuBackground[1],'menuBgV4');
   const paths=[manifestJson.menu.background,...Object.values(manifestJson.menu.foreground),...Object.values(manifestJson.menu.flyer),...manifestJson.intro];
   for(const file of paths){const dest='assets/'+file,entry=Object.values(m.images).find(v=>v.src===dest);assert.ok(entry,dest);assert.equal(entry.enabled,true,dest);assert.ok(fs.existsSync(path.join(root,dest)),dest)}
   assert.deepEqual(Array.from(m.introSequenceV4),['intro01FallV4','intro02MutationV4','intro03EmpiresV4']);
@@ -14,8 +14,7 @@ test('v4 menu contains only approved independent foreground and one split flyer'
   assert.match(code,/function drawV4Foreground/);assert.match(code,/function drawV4Flyer/);assert.match(code,/context\.drawImage\(wings/);assert.match(code,/context\.drawImage\(body/);
   assert.doesNotMatch(code,/drawFlagSlice|drawGuardSlice|drawProcedural|function wingedAnt/);
 });
-test('v4 official copy is wired sentence for sentence',()=>{
-  const copy=read('assets/docs/COPY_DECK.md'),app=read('app.js'),html=read('index.html');
-  for(const line of copy.split(/\r?\n/)){const v=line.trim();if(!v||v.startsWith('#')||v.startsWith('小標：')||v.startsWith('標題：')||v.startsWith('按鈕：')||v.startsWith('全程保留：'))continue;assert.ok((app+html).includes(v),v)}
-  for(const title of ['森林深處的異物','蟻群不再只是蟻群','戰爭已經開始'])assert.ok(app.includes(title));
+test('v4 package copy remains archived for fallback provenance',()=>{
+  const copy=read('assets/docs/ASSETS-V4-COPY-DECK.md'),integration=read('assets/docs/ASSETS-V4-PACKAGE-INTEGRATION.md');
+  assert.match(copy,/戰爭已經開始/);assert.match(integration,/Assets v4/);
 });

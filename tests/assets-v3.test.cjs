@@ -3,8 +3,8 @@ const root=path.join(__dirname,'..'),read=name=>fs.readFileSync(path.join(root,n
 
 test('supplied v3 image slots are enabled and complete with v2 fallback',()=>{
   const context={window:{}};vm.runInNewContext(read('assets/manifest.js'),context);const manifest=context.window.AntAssetManifest;
-  assert.equal(manifest.version,4);
-  assert.deepEqual(Array.from(manifest.menuBackground),['menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
+  assert.equal(manifest.version,5);
+  assert.deepEqual(Array.from(manifest.menuBackground),['menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
   const files=['assets/menu/v3/menu_bg_v3.png','assets/intro/v3/intro_01_fall_v3.png','assets/intro/v3/intro_02_mutation_v3.png','assets/intro/v3/intro_03_empires_v3.png'];
   for(const caste of ['scout','guard','heavy'])for(const part of ['body','wings'])files.push(`assets/menu/v3/flyers/flyer_${caste}_${part}.png`);
   for(const file of files){const entry=Object.values(manifest.images).find(item=>item.src===file);assert.ok(entry,file);assert.equal(entry.enabled,true,file);assert.equal(fs.existsSync(path.join(root,file)),true,file);}
