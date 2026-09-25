@@ -8,10 +8,6 @@
       menuBgV6Alt:{src:'assets/menu/v6/background/menu_bg_battle_v6_alt.png',enabled:true},
       flagAntV6:{src:'assets/menu/v6/characters/flag_ant_v6.png',enabled:true},
       heavyHammerV6:{src:'assets/menu/v6/characters/heavy_hammer_v6.png',enabled:true},
-      heavyAttackV62Webp:{src:'assets/menu/v6.2/heavy/heavy_attack_v6_2.webp',enabled:true},
-      heavyAttackV62Apng:{src:'assets/menu/v6.2/heavy/heavy_attack_v6_2.png',enabled:true},
-      heavyAttackV62Sheet:{src:'assets/menu/v6.2/heavy/heavy_attack_v6_2_sheet.png',enabled:true},
-      heavyAttackV62Poster:{src:'assets/menu/v6.2/heavy/heavy_attack_v6_2_poster.png',enabled:true},
       flyerBodyV6:{src:'assets/menu/v6/flyer/flyer_body_v6.png',enabled:true},
       flyerWingsV6:{src:'assets/menu/v6/flyer/flyer_wings_v6.png',enabled:true},
       intro01FallV6:{src:'assets/intro/v6/intro_01_fall_v6.png',enabled:true},
@@ -64,7 +60,7 @@
     },
     menuBackground:['menuBgV6','menuBgV6Alt','menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'],
     imageTiers:{
-      primary:['menuBgV6','flagAntV6','heavyHammerV6','heavyAttackV62Webp','flyerBodyV6','flyerWingsV6','intro01FallV6','intro02MutationV6','intro03EmpiresV6'],
+      primary:['menuBgV6','flagAntV6','heavyHammerV6','flyerBodyV6','flyerWingsV6','intro01FallV6','intro02MutationV6','intro03EmpiresV6'],
       menuV6Alt:['menuBgV6Alt'],
       menuV5:['menuBgV5','flagAntV5','heavyEnemyV5','flyerBodyV5','flyerWingsV5'],
       menuV4:['menuBgV4','flagSoldierV4','heavyEnemyV4','flyerBodyV4','flyerWingsV4'],
@@ -73,7 +69,7 @@
     },
     menuV6:{
       flag:{key:'flagAntV6',x:.43,bottom:.99,height:.285,lift:92,mobileX:.50,mobileBottom:.56,mobileHeight:.18,mobileLift:68},
-      heavy:{key:'heavyHammerV6',animated:['heavyAttackV62Webp','heavyAttackV62Apng'],sheet:'heavyAttackV62Sheet',poster:'heavyAttackV62Poster',x:.83,bottom:.99,height:.315,lift:82,mobileX:.84,mobileBottom:.56,mobileHeight:.19,mobileLift:62},
+      heavy:{key:'heavyHammerV6',x:.83,bottom:.99,height:.315,lift:82,mobileX:.84,mobileBottom:.56,mobileHeight:.19,mobileLift:62},
       flyer:{body:'flyerBodyV6',wings:'flyerWingsV6',height:.115,mobileHeight:.105}
     },
     menuV5:{
