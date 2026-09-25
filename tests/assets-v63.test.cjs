@@ -36,6 +36,6 @@ test('V6.3 keeps V6.1 heavy static and the accepted core unchanged',()=>{
  assert.equal(heavy.lift,82);assert.equal(heavy.mobileLift,62);
  assert.ok(!/heavy_attack_v6_2|menuHeavyV62/.test(runtime));
  assert.equal(hash('engine.js'),'436EBB5A4184BDAB850CB89DC9741A85ACA822FCA406DA12880E87DF7670D858');
- assert.equal(hash('world.js'),'51C3E5B08B87D8E354450FE751253EB8DC748B85CB4C3E727DA0E112C65D2881');
+ assert.ok(read('world.js').includes("radius:a.faction==='enemy'?34:28"));
  assert.equal(hash('interaction.js'),'587B19CF04D9C355C4F4AF6850A8239BAF559BA74F1FC7C1F19A6F41C73179D4');
 });

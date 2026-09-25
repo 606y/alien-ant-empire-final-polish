@@ -1,0 +1,37 @@
+{
+  "version": "v7",
+  "camera": "keep existing projection, zoom, pan and hit regions",
+  "nest": {
+    "backdrop_top": "#17100b",
+    "backdrop_mid": "#0f0d0a",
+    "backdrop_bottom": "#050706",
+    "texture": "world/textures/nest_soil_tile.svg",
+    "tunnel_base": "#1a120d",
+    "tunnel_rim": "world/textures/tunnel_rim_overlay.svg",
+    "owned_tint": "rgba(198,139,63,0.10)",
+    "enemy_tint": "rgba(179,74,53,0.16)"
+  },
+  "surface": {
+    "backdrop_top": "#172015",
+    "backdrop_mid": "#15150f",
+    "backdrop_bottom": "#090a08",
+    "texture": "world/textures/surface_ground_tile.svg",
+    "owned_tint": "rgba(189,141,69,0.10)",
+    "enemy_tint": "rgba(176,72,53,0.15)"
+  },
+  "units": {
+    "player": "units/player/*.svg",
+    "enemies": "units/enemies/*.svg",
+    "facing": "all sprites face right in source; rotate in Canvas by movement/combat angle; never mirror",
+    "selection": "world/effects/selection_ring.svg",
+    "command_markers": "world/effects/command_*.svg"
+  },
+  "rooms": "rooms/*.svg",
+  "visual_only_guards": [
+    "do not alter pathfinding",
+    "do not alter target/hit regions",
+    "do not alter simulation coordinates",
+    "do not alter camera constraints",
+    "do not alter enemy AI or combat values"
+  ]
+}

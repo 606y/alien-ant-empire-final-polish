@@ -252,16 +252,17 @@
   }
   class MenuArt{
     constructor(menu,intro){
-      this.menu=menu;this.intro=intro;this.introStep=0;this.previousIntroStep=0;this.transitionAt=performance.now();this.raf=0;this.lastWingPass=performance.now();this.frame=this.frame.bind(this);this.refresh=this.refresh.bind(this);this.lastFrame=0;
+      this.menu=menu;this.intro=intro;this.introStep=0;this.previousIntroStep=0;this.transitionAt=performance.now();this.raf=0;this.lastWingPass=performance.now();this.frame=this.frame.bind(this);this.refresh=this.refresh.bind(this);this.lastFrame=0;this.menuFrameWaiters=[];
       this.observer=new MutationObserver(this.refresh);if(document.body)this.observer.observe(document.body,{attributes:true,subtree:true,attributeFilter:['class','hidden']});
       document.addEventListener('visibilitychange',this.refresh);this.refresh();assets?.ready.then(this.refresh);
     }
     visible(element){return !!element&&element.offsetParent!==null;}
     refresh(){const active=!document.hidden&&(this.visible(this.menu)||this.visible(this.intro));if(active&&!this.raf)this.raf=requestAnimationFrame(this.frame);if(!active&&this.raf){cancelAnimationFrame(this.raf);this.raf=0;}}
+    whenNextMenuFrame(){return new Promise(resolve=>{this.menuFrameWaiters.push(resolve);this.refresh();});}
     setIntroStep(value){this.previousIntroStep=this.introStep;this.introStep=value;this.transitionAt=performance.now();this.refresh();}
     frame(time){
       this.raf=0;if(this.lastFrame&&time-this.lastFrame<(root.innerWidth<620?30:17)){this.raf=requestAnimationFrame(this.frame);return;}this.lastFrame=time;let active=false;
-      if(this.visible(this.menu)){const count=drawMenu(this.menu,time);active=true;if(count&&time-this.lastWingPass>22000){this.lastWingPass=time;root.dispatchEvent(new CustomEvent('ant:wingpass'));}}
+      if(this.visible(this.menu)){const count=drawMenu(this.menu,time);for(const done of this.menuFrameWaiters.splice(0))done();active=true;if(count&&time-this.lastWingPass>22000){this.lastWingPass=time;root.dispatchEvent(new CustomEvent('ant:wingpass'));}}
       if(this.visible(this.intro)){drawIntro(this.intro,time,this.introStep,this.previousIntroStep,this.transitionAt);active=true;}
       if(active&&!document.hidden)this.raf=requestAnimationFrame(this.frame);
     }

@@ -1,0 +1,127 @@
+
+/* Alien Ant Empire V7 visual skin — authored by ChatGPT art direction.
+   Engineering may integrate selectors, but should not redesign values. */
+:root{
+  --v7-bg:#090b0a;
+  --v7-panel:#12100d;
+  --v7-panel-2:#1a130e;
+  --v7-line:#6f4624;
+  --v7-line-hi:#c7924a;
+  --v7-text:#f0e2c7;
+  --v7-muted:#a58d70;
+  --v7-gold:#d5a356;
+  --v7-amber:#f39a37;
+  --v7-red:#c65a45;
+  --v7-green:#8fa563;
+  --v7-shadow:rgba(0,0,0,.72);
+}
+body{background:var(--v7-bg);color:var(--v7-text);}
+#game{background:var(--v7-bg);}
+.statusbar{
+  background:linear-gradient(180deg,#18120e 0%,#0b0c0a 100%);
+  border-bottom:1px solid #8b572b;
+  box-shadow:0 8px 28px rgba(0,0,0,.42);
+}
+.brand{color:#e8d6b9;text-shadow:0 1px 10px #000;}
+.brand>span{color:var(--v7-gold);}
+.brand small{color:#806b54;}
+.resources{gap:10px;}
+.resource{
+  position:relative;
+  min-height:38px;
+  padding:5px 12px 5px 38px;
+  border:1px solid #6d4726;
+  border-radius:9px;
+  background:linear-gradient(180deg,rgba(38,25,16,.92),rgba(10,11,9,.96));
+  box-shadow:inset 0 1px 0 rgba(240,188,102,.12);
+  color:#a99375;
+}
+.resource::before{
+  content:"";
+  position:absolute;left:9px;top:50%;width:21px;height:21px;transform:translateY(-50%);
+  background:center/contain no-repeat;
+  opacity:.96;
+}
+.resource:nth-child(1)::before{background-image:url("icons/resources/worker.svg");}
+.resource:nth-child(2)::before{background-image:url("icons/resources/soldier.svg");}
+.resource:nth-child(3)::before{background-image:url("icons/resources/food.svg");}
+.resource:nth-child(4)::before{background-image:url("icons/resources/enemy.svg");}
+.resource:nth-child(5)::before{background-image:url("icons/resources/brood.svg");}
+.resource.danger::before{background-image:url("icons/resources/queen.svg");}
+.resource strong{color:#f1dfbf;font-weight:650;}
+.resource.danger strong{color:#e9825e;}
+.time-controls #game button,dialog button{
+  border:1px solid #49301d;
+  background:#0c0d0b;
+  color:#a98a65;
+  border-radius:8px;
+}
+.time-controls button.active{
+  color:#ffd28a;
+  background:linear-gradient(180deg,#4b2b12,#24160c);
+  border-color:#c1863b;
+}
+.world-caption{
+  padding:10px 14px 11px;
+  border-left:2px solid #b27435;
+  background:linear-gradient(90deg,rgba(8,8,7,.78),rgba(8,8,7,0));
+  text-shadow:0 2px 8px #000;
+}
+.world-caption>span{color:#e6c989;}
+.world-caption small{color:#aa9271;}
+.hint,.feedback,.event-toast{
+  border:1px solid #734c29;
+  background:rgba(10,9,8,.88);
+  color:#d8bd91;
+  box-shadow:0 10px 35px rgba(0,0,0,.38);
+}
+.world-nav{
+  background:linear-gradient(180deg,#100e0b,#070908);
+  border-top:1px solid #714724;
+  box-shadow:0 -8px 28px rgba(0,0,0,.38);
+}
+.world-nav #game button,dialog button{
+  color:#9f8768;
+  border:1px solid transparent;
+  border-radius:8px;
+}
+.world-nav button.active{
+  color:#f2ce85;
+  background:linear-gradient(180deg,rgba(103,58,24,.45),rgba(28,18,11,.55));
+  border-color:#9b6530;
+}
+.context,dialog{
+  border:1px solid #84562b;
+  background:linear-gradient(180deg,rgba(27,19,13,.985),rgba(9,10,8,.985));
+  box-shadow:0 22px 80px rgba(0,0,0,.72), inset 0 1px 0 rgba(238,183,92,.10);
+}
+.context-header h1,.dialog-header h2{color:#f0ddbc;}
+.context-header small,.dialog-body h3{color:#c6954e;}
+.context-body p,.dialog-body p,.nav-note{color:#9e876a;}
+#game button,dialog button{
+  border:1px solid #65411f;
+  color:#ddc39b;
+  background:linear-gradient(180deg,#21160f,#0d0c0a);
+  border-radius:8px;
+}
+#game button:hover,dialog button:hover{background:linear-gradient(180deg,#3a2413,#17100c);}
+#game button.active,#game .primary,#game button[aria-pressed=true],dialog button.active,dialog .primary,dialog button[aria-pressed=true]{
+  color:#1b1008;
+  background:linear-gradient(180deg,#efba65,#b8722c);
+  border-color:#f2c374;
+}
+.selection-bar{
+  background:rgba(13,11,9,.94);
+  border-color:#a36b34;
+  box-shadow:0 9px 35px rgba(0,0,0,.42);
+}
+.meter{background:#2a1b10;}
+.meter span{background:linear-gradient(90deg,#8c4d1f,#e4a74f);}
+.observation,.summary-item{background:#0e0e0b;border:1px solid #3c2a19;}
+.setting-row,.job-row,.individual,.log-item{border-color:rgba(134,86,42,.28);}
+@media(max-width:600px){
+  .resources{gap:5px;}
+  .resource{padding:3px 5px 3px 28px;border-radius:7px;}
+  .resource::before{left:5px;width:18px;height:18px;}
+  .context{border-radius:16px 16px 0 0;}
+}

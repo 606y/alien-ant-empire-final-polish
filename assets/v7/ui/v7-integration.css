@@ -1,0 +1,44 @@
+/* V7 supplied asset bindings for the existing game DOM. Values come from v7-ui-theme.css. */
+:root{
+  --bg:var(--v7-bg);--panel:var(--v7-panel);--line:var(--v7-line);
+  --muted:var(--v7-muted);--text:var(--v7-text);--accent:var(--v7-gold);--red:var(--v7-red);
+}
+.resource{background-image:url("frames/resource_chip.svg");background-size:100% 100%;background-repeat:no-repeat;}
+.world-nav button span{display:none;}
+.world-nav button::before{
+  content:"";display:block;flex:none;width:22px;height:22px;
+  background-position:center;background-repeat:no-repeat;background-size:contain;
+}
+.world-nav button[data-view="nest"]::before{background-image:url("icons/nav/nest.svg");}
+.world-nav button[data-view="surface"]::before{background-image:url("icons/nav/surface.svg");}
+.world-nav #colonyButton::before{background-image:url("icons/nav/colony.svg");}
+.world-nav #journalButton::before{background-image:url("icons/nav/journal.svg");}
+.world-nav #settingsButton::before{background-image:url("icons/nav/settings.svg");}
+.context,dialog{
+  background-image:url("frames/panel_frame.svg");
+  background-size:100% 100%;background-repeat:no-repeat;
+}
+.context .actions button,.context .segments button,.context .presets button,
+.world-nav button,.time-controls button,dialog .segments button,dialog .settings-actions button{
+  background-image:url("frames/button_normal.svg");background-size:100% 100%;background-repeat:no-repeat;
+}
+.context .actions button.active,.context .actions button.primary,.context .segments button.active,
+.world-nav button.active,.time-controls button.active,dialog .segments button.active{
+  background-image:url("frames/button_active.svg");
+}
+@media(max-width:600px){
+  .world-nav button::before{width:20px;height:20px;}
+  .world-nav button{min-height:44px;}
+}
+
+@media(max-width:600px){
+  .statusbar{gap:2px;}
+  .resources{flex:1;min-width:0;justify-content:flex-start;gap:3px;}
+  .resource{padding:3px 4px 3px 23px;min-height:36px;gap:2px;}
+  .resource::before{left:3px;width:17px;height:17px;}
+  .resource>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+  .resource strong{font-size:14px;}
+  .time-controls{flex:none;}
+  #game .time-controls button[data-speed="0"]{min-width:54px;}
+  #game .time-controls button{padding:8px 3px;}
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="72" viewBox="0 0 256 72">
+<defs></defs>
+
+<path d="M18 4 H238 L252 18 V54 L238 68 H18 L4 54 V18 Z" fill="#15100c" stroke="#865426" stroke-width="2"/>
+<path d="M24 11 H232 L244 23" fill="none" stroke="#d5a45b" stroke-width="1.5" opacity=".4"/>
+<path d="M18 62 H238" stroke="#3a1e10" stroke-width="4" opacity=".9"/>
+
+</svg>

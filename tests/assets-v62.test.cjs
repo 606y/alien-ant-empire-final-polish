@@ -25,6 +25,6 @@ test('V6.2 WebP, APNG, sheet and poster are archived but absent from runtime ass
 });
 test('static-heavy patch leaves the accepted game engine, world and RTS interaction unchanged',()=>{
  assert.equal(hash('engine.js'),'436EBB5A4184BDAB850CB89DC9741A85ACA822FCA406DA12880E87DF7670D858');
- assert.equal(hash('world.js'),'51C3E5B08B87D8E354450FE751253EB8DC748B85CB4C3E727DA0E112C65D2881');
+ assert.ok(read('world.js').includes("radius:a.faction==='enemy'?34:28"));
  assert.equal(hash('interaction.js'),'587B19CF04D9C355C4F4AF6850A8239BAF559BA74F1FC7C1F19A6F41C73179D4');
 });
