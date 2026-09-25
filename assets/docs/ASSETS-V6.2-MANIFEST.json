@@ -1,0 +1,40 @@
+{
+  "version": "v6.2",
+  "type": "menu_heavy_and_intro_video_patch",
+  "base_version": "v6.1",
+  "assets": {
+    "heavy": {
+      "preferred": "heavy/heavy_attack_v6_2.webp",
+      "fallback_apng": "heavy/heavy_attack_v6_2.png",
+      "sprite_sheet": "heavy/heavy_attack_v6_2_sheet.png",
+      "poster": "heavy/heavy_attack_v6_2_poster.png",
+      "facing": "left",
+      "loop_seconds": 3.1
+    },
+    "intro_video": {
+      "file": "video/intro_cinematic_v6_2_dreamina.mp4",
+      "duration_seconds": 10.183333,
+      "resolution": "1248x704",
+      "fps": 60,
+      "codec": "H.264",
+      "watermark": "Dreamina free-plan watermark retained and accepted for current build"
+    }
+  },
+  "flow": [
+    "main_menu",
+    "create_new_empire",
+    "intro_cinematic_v6_2_dreamina.mp4",
+    "v6_story_scene_1",
+    "v6_story_scene_2",
+    "v6_story_scene_3",
+    "game"
+  ],
+  "locks": {
+    "do_not_redraw_art": true,
+    "do_not_mirror_heavy": true,
+    "do_not_split_heavy_weapon": true,
+    "do_not_edit_video_content": true,
+    "do_not_remove_watermark": true,
+    "do_not_modify_core_gameplay": true
+  }
+}

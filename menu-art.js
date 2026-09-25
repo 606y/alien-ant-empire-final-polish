@@ -145,7 +145,19 @@
       gradient.addColorStop(0,'rgba(255,145,45,'+(.07+.045*pulse)+')');gradient.addColorStop(1,'rgba(255,70,10,0)');context.fillStyle=gradient;context.fillRect(x*w-r,y*h-r,r*2,r*2);
     }context.restore();
   }
-  function drawV6Foreground(context,w,h,time){
+  function updateV62HeavyOverlay(canvas,w,h,enabled){
+    const element=document.getElementById('menuHeavyV62'),config=assets?.manifest?.menuV6?.heavy;
+    if(!element||!config||!enabled){element?.classList.add('hidden');return false;}
+    const selected=preferred(config.animated);
+    if(!selected){element.classList.add('hidden');return false;}
+    const mobile=w<620,height=h*(mobile?config.mobileHeight:config.height),width=height*selected.image.naturalWidth/selected.image.naturalHeight;
+    const x=w*(mobile?config.mobileX:config.x),bottom=h*(mobile?config.mobileBottom:config.bottom)-(mobile?config.mobileLift:config.lift);
+    const layout=[selected.key,w,h].join(':');
+    if(element.dataset.layout!==layout){element.dataset.layout=layout;element.style.left=(x-width/2)+'px';element.style.top=(bottom-height)+'px';element.style.width=width+'px';element.style.height=height+'px';}
+    if(element.dataset.assetKey!==selected.key){element.dataset.assetKey=selected.key;element.src=selected.image.src;}
+    element.classList.remove('hidden');return true;
+  }
+  function drawV6Foreground(context,w,h,time,animatedHeavy=false){
     const config=assets?.manifest?.menuV6;if(!config)return;
     const mobile=w<620,flag=ready(config.flag.key),heavy=ready(config.heavy.key);
     if(flag){const c=config.flag,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom)-(mobile?c.mobileLift:c.lift);
@@ -156,10 +168,12 @@
       context.drawImage(layer.part,-.83*flag.naturalWidth,-.13*flag.naturalHeight);context.restore();
       context.drawImage(layer.base,0,0);context.restore();
     }
-    if(heavy){const c=config.heavy,height=h*(mobile?c.mobileHeight:c.height),width=height*heavy.naturalWidth/heavy.naturalHeight;
-      const x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom)-(mobile?c.mobileLift:c.lift);
-      // V6 hammer and both arms are one supplied image. Keep the pose intact rather than dislocating a weapon cutout.
-      context.drawImage(heavy,x-width/2,bottom-height,width,height);
+    if(!animatedHeavy){const c=config.heavy,selection=preferred([c.sheet,c.poster]),source=selection?.image||heavy;
+      if(source){const height=h*(mobile?c.mobileHeight:c.height),width=height*(selection?.key===c.sheet?1:source.naturalWidth/source.naturalHeight);
+        const x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom)-(mobile?c.mobileLift:c.lift);
+        if(selection?.key===c.sheet){const frameDurations=[520,300,260,320,170,520,360,650],cycle=time%3100;let elapsed=0,frame=0;for(;frame<7&&cycle>=elapsed+frameDurations[frame];frame++)elapsed+=frameDurations[frame];const sw=source.naturalWidth/4,sh=source.naturalHeight/2;context.drawImage(source,(frame%4)*sw,Math.floor(frame/4)*sh,sw,sh,x-width/2,bottom-height,width,height);}
+        else context.drawImage(source,x-width/2,bottom-height,width,height);
+      }
     }
   }
   function drawV6Flyer(context,w,h,time){
@@ -215,8 +229,9 @@
     const {context,w,h}=fit(canvas),background=preferred(assets?.manifest?.menuBackground||['menuBgV6','menuBgV6Alt','menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
     setMenuBackdrop(canvas,background,w,h);context.clearRect(0,0,w,h);if(!background)fallback(context,w,h);
     if(background?.key==='menuBgV6'||background?.key==='menuBgV6Alt'){
-      canvas.dataset.flyerMode='v6';drawV6Foreground(context,w,h,time);return drawV6Flyer(context,w,h,time);
+      canvas.dataset.flyerMode='v6';drawV6Foreground(context,w,h,time,updateV62HeavyOverlay(canvas,w,h,true));return drawV6Flyer(context,w,h,time);
     }
+    updateV62HeavyOverlay(canvas,w,h,false);
     if(background?.key==='menuBgV5'){
       canvas.dataset.flyerMode='v5';drawV5Foreground(context,w,h,time);return drawV5Flyer(context,w,h,time);
     }

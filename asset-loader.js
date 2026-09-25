@@ -17,6 +17,9 @@
       const audioJobs=Object.entries(audio).map(([key,item])=>item.enabled?this.loadAudio(key,item):(this.states.set(key,'fallback'),Promise.resolve(false)));
       if(!tiers){await Promise.allSettled([...Object.entries(images).filter(([,item])=>item.enabled).map(([key,item])=>this.loadImage(key,item)),...audioJobs]);return this;}
       await Promise.allSettled([loadKeys(tiers.primary),...audioJobs]);
+      if(this.state('heavyAttackV62Webp')!=='ready')await loadKeys(['heavyAttackV62Apng']);
+      if(this.state('heavyAttackV62Webp')!=='ready'&&this.state('heavyAttackV62Apng')!=='ready')await loadKeys(['heavyAttackV62Sheet']);
+      if(this.state('heavyAttackV62Webp')!=='ready'&&this.state('heavyAttackV62Apng')!=='ready'&&this.state('heavyAttackV62Sheet')!=='ready')await loadKeys(['heavyAttackV62Poster']);
       if(this.state('menuBgV6')!=='ready')await loadKeys(tiers.menuV6Alt);
       if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready')await loadKeys(tiers.menuV5);
       if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready'&&this.state('menuBgV5')!=='ready'){
