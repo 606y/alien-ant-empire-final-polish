@@ -1,0 +1,41 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
+const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex').toUpperCase();
+test('V6.3 supplied CapCut MP4 is the only formal cinematic source',()=>{
+ const manifest=JSON.parse(read('assets/docs/ASSETS-V6.3-MANIFEST.json')),html=read('index.html'),file='assets/'+manifest.formal_intro.path;
+ assert.equal(file,'assets/video/intro_cinematic_v6_3_capcut_badged.mp4');
+ assert.equal(hash(file),'2E97D623062AC1026F33F3EED3EE885C6D16A96786B54B20E63367620F40CB85');
+ assert.equal(fs.readFileSync(path.join(root,file)).toString('ascii',4,8),'ftyp');
+ assert.match(html,/id="cinematicVideo" playsinline/);
+ assert.ok(html.includes('data-src="'+file+'"'));
+ assert.ok(!html.includes('intro_cinematic_v6_2_dreamina.mp4'));
+ assert.ok(!html.includes('intro_cinematic_v6_10s.mp4'));
+ assert.ok(!html.includes('intro_badge_v6_3.png'));
+ assert.ok(!html.includes('cinematicBadge'));
+ assert.equal(manifest.formal_intro.badge_baked_in,true);
+ assert.ok(fs.existsSync(path.join(root,'assets/video/intro_badge_v6_3.png')));
+});
+test('V6.3 natural end, skip and load failure all enter V6 scene one with native audio behavior',()=>{
+ const app=read('app.js'),audio=read('audio.js'),css=read('style.css'),html=read('index.html');
+ assert.match(app,/function startNewGame\(\)\{audio\.suspendForCinematic\(\);audio\.unlock\(\);resetGame\(\);startCinematic\(\);\}/);
+ assert.match(app,/video\.muted=audio\.muted/);
+ assert.match(app,/function finishCinematic\(\)/);
+ assert.match(app,/showIntro\(\);audio\.resumeAfterCinematic\(\)/);
+ assert.match(app,/cinematicVideo'\)\.addEventListener\('ended',finishCinematic\)/);
+ assert.match(app,/skipCinematic'\)\.onclick=finishCinematic/);
+ assert.match(app,/function failCinematic\(reason\).*finishCinematic\(\)/);
+ assert.match(app,/V6\.3 cinematic unavailable/);
+ assert.match(audio,/suspendForCinematic/);assert.match(audio,/resumeAfterCinematic/);
+ assert.match(css,/\.cinematic video\{[^}]*object-fit:contain[^}]*filter:none[^}]*transform:none/);
+ assert.ok(!/cinematicBadge|intro_badge_v6_3/.test(html+app+css));
+});
+test('V6.3 keeps V6.1 heavy static and the accepted core unchanged',()=>{
+ const context={window:{}};vm.runInNewContext(read('assets/manifest.js'),context);
+ const m=context.window.AntAssetManifest,heavy=m.menuV6.heavy,runtime=['index.html','assets/manifest.js','asset-loader.js','menu-art.js','style.css'].map(read).join('\n');
+ assert.equal(m.images[heavy.key].src,'assets/menu/v6/characters/heavy_hammer_v6.png');
+ assert.equal(heavy.lift,82);assert.equal(heavy.mobileLift,62);
+ assert.ok(!/heavy_attack_v6_2|menuHeavyV62/.test(runtime));
+ assert.equal(hash('engine.js'),'436EBB5A4184BDAB850CB89DC9741A85ACA822FCA406DA12880E87DF7670D858');
+ assert.equal(hash('world.js'),'51C3E5B08B87D8E354450FE751253EB8DC748B85CB4C3E727DA0E112C65D2881');
+ assert.equal(hash('interaction.js'),'587B19CF04D9C355C4F4AF6850A8239BAF559BA74F1FC7C1F19A6F41C73179D4');
+});

@@ -27,8 +27,8 @@ test('formal unmodified MP4 contains ten seconds of 30 fps video and an audio tr
 });
 test('new-game film preserves the existing three slides and has a skip and failure path',()=>{
  const html=read('index.html'),app=read('app.js'),audio=read('audio.js'),css=read('style.css');
- assert.match(html,/id="cinematicVideo" playsinline/);assert.match(html,/intro_cinematic_v6_2_dreamina\.mp4/);assert.doesNotMatch(html,/intro_cinematic_v6_10s\.mp4/);
- assert.match(app,/function startNewGame/);assert.match(app,/function finishCinematic/);assert.match(app,/showIntro\(\);audio\.resumeAfterCinematic\(\)/);assert.match(app,/skipCinematic/);assert.match(app,/console\.warn\('V6\.2 cinematic unavailable/);
+ assert.match(html,/id="cinematicVideo" playsinline/);assert.match(html,/intro_cinematic_v6_3_capcut_badged\.mp4/);assert.doesNotMatch(html,/intro_cinematic_v6_10s\.mp4/);
+ assert.match(app,/function startNewGame/);assert.match(app,/function finishCinematic/);assert.match(app,/showIntro\(\);audio\.resumeAfterCinematic\(\)/);assert.match(app,/skipCinematic/);assert.match(app,/console\.warn\('V6\.3 cinematic unavailable/);
  assert.match(audio,/suspendForCinematic/);assert.match(audio,/resumeAfterCinematic/);assert.match(css,/object-fit:contain/);
  assert.ok(read('assets/LICENSES.md').includes('V6.1 cinematic MP4'));
 });

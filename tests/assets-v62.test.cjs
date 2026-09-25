@@ -1,11 +1,11 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),binary=p=>fs.readFileSync(path.join(root,p));
 const hash=p=>crypto.createHash('sha256').update(binary(p)).digest('hex').toUpperCase();
-test('V6.2 keeps the exact supplied Dreamina film and never selects the V6.1 film',()=>{
+test('V6.2 Dreamina film remains archived but is no longer selected',()=>{
  const manifest=JSON.parse(read('assets/docs/ASSETS-V6.2-MANIFEST.json')),html=read('index.html'),app=read('app.js'),video='assets/'+manifest.assets.intro_video.file;
  assert.equal(video,'assets/video/intro_cinematic_v6_2_dreamina.mp4');assert.equal(hash(video),'867DE2CDE233246D63840FCD2F4B9EC560C23037A898CD9B1B9DF03AA9A79F62');
- assert.match(html,/id="cinematicVideo" playsinline/);assert.ok(html.includes(video));assert.ok(!html.includes('intro_cinematic_v6_10s.mp4'));assert.ok(!html.includes('intro_cinematic_v6_poster.jpg'));
- assert.match(app,/function startNewGame/);assert.match(app,/function finishCinematic/);assert.match(app,/showIntro\(\);audio\.resumeAfterCinematic\(\)/);assert.match(app,/skipCinematic/);assert.match(app,/V6\.2 cinematic unavailable/);
+ assert.match(html,/id="cinematicVideo" playsinline/);assert.ok(!html.includes(video));assert.ok(!html.includes('intro_cinematic_v6_10s.mp4'));assert.ok(!html.includes('intro_cinematic_v6_poster.jpg'));
+ assert.match(app,/function startNewGame/);assert.match(app,/function finishCinematic/);assert.match(app,/showIntro\(\);audio\.resumeAfterCinematic\(\)/);assert.match(app,/skipCinematic/);assert.match(app,/V6\.3 cinematic unavailable/);
 });
 test('formal heavy uses the approved V6.1 static image and exact raised placements',()=>{
  const context={window:{}};vm.runInNewContext(read('assets/manifest.js'),context);const m=context.window.AntAssetManifest,heavy=m.menuV6.heavy,art=read('menu-art.js');

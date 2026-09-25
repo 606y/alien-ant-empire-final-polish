@@ -1,0 +1,40 @@
+{
+  "version": "v6.3",
+  "base_version": "v6.2-static-heavy",
+  "purpose": "replace Dreamina intro with CapCut intro and project badge cover",
+  "formal_intro": {
+    "path": "video/intro_cinematic_v6_3_capcut_badged.mp4",
+    "duration_seconds": 10.125,
+    "resolution": "1344x768",
+    "fps": 24,
+    "video_codec": "H.264",
+    "audio_codec": "AAC",
+    "badge_baked_in": true,
+    "badge_position_source_pixels": {
+      "x": 10,
+      "y": 6,
+      "display_width": 195
+    },
+    "source_badge": "video/intro_badge_v6_3.png"
+  },
+  "menu": {
+    "heavy": "keep V6.1 heavy_hammer_v6.png static rendering already restored in V6.2",
+    "flag_animation": "keep current",
+    "main_flyer": "keep current"
+  },
+  "flow": [
+    "main_menu",
+    "create_new_empire",
+    "intro_cinematic_v6_3_capcut_badged.mp4",
+    "v6_story_scene_1",
+    "v6_story_scene_2",
+    "v6_story_scene_3",
+    "game"
+  ],
+  "locks": {
+    "do_not_reanimate_heavy": true,
+    "do_not_modify_intro_art": true,
+    "do_not_add_runtime_badge_overlay": true,
+    "do_not_modify_core_gameplay": true
+  }
+}

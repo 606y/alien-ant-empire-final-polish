@@ -25,7 +25,7 @@
     const video=$('cinematicVideo');video.pause();$('cinematic').classList.add('hidden');
     showIntro();audio.resumeAfterCinematic();
   }
-  function failCinematic(reason){if(!cinematicActive)return;console.warn('V6.2 cinematic unavailable; continuing with V6 first scene:',reason);finishCinematic();}
+  function failCinematic(reason){if(!cinematicActive)return;console.warn('V6.3 cinematic unavailable; continuing with V6 first scene:',reason);finishCinematic();}
   function startCinematic(){
     const video=cinematicVideo;cinematicActive=true;video.muted=audio.muted;
     if(!video.getAttribute('src'))video.src=video.dataset.src;
