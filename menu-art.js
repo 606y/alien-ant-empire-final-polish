@@ -145,8 +145,8 @@
       gradient.addColorStop(0,'rgba(255,145,45,'+(.07+.045*pulse)+')');gradient.addColorStop(1,'rgba(255,70,10,0)');context.fillStyle=gradient;context.fillRect(x*w-r,y*h-r,r*2,r*2);
     }context.restore();
   }
-  function drawV6Foreground(context,w,h,time){
-    const config=assets?.manifest?.menuV6;if(!config)return;
+  function drawV6Foreground(context,w,h,time,config=assets?.manifest?.menuV6){
+    if(!config)return;
     const mobile=w<620,flag=ready(config.flag.key),heavy=ready(config.heavy.key);
     if(flag){const c=config.flag,height=h*(mobile?c.mobileHeight:c.height),x=w*(mobile?c.mobileX:c.x),bottom=h*(mobile?c.mobileBottom:c.bottom)-(mobile?c.mobileLift:c.lift);
       const layer=isolateSprite(flag,c.key,[[0,.06],[.82,.07],[.83,.30],[.72,.36],[.56,.42],[.43,.53],[.22,.65],[0,.69]]),scale=height/flag.naturalHeight;
@@ -162,8 +162,8 @@
       context.drawImage(heavy,x-width/2,bottom-height,width,height);
     }
   }
-  function drawV6Flyer(context,w,h,time){
-    const config=assets?.manifest?.menuV6?.flyer;if(!config)return 0;
+  function drawV6Flyer(context,w,h,time,config=assets?.manifest?.menuV6?.flyer){
+    if(!config)return 0;
     const body=ready(config.body),wings=ready(config.wings);if(!body||!wings)return 0;
     const mobile=w<620,height=h*(mobile?config.mobileHeight:config.height),cycle=(time/44000+.06)%1;
     let travel;if(cycle<.43){const t=cycle/.43;travel=t*t*(3-2*t);}else if(cycle<.55)travel=1;else if(cycle<.94){const t=(cycle-.55)/.39;travel=1-t*t*(3-2*t);}else travel=0;
@@ -212,8 +212,11 @@
   }
   function v3FlyersReady(){const groups=assets?.manifest?.menuFlyersV3||[];return groups.length>0&&groups.every(group=>ready(group.body)&&ready(group.wings));}
   function drawMenu(canvas,time){
-    const {context,w,h}=fit(canvas),background=preferred(assets?.manifest?.menuBackground||['menuBgV6','menuBgV6Alt','menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain']);
+    const {context,w,h}=fit(canvas),background=preferred(['menuBgV71',...(assets?.manifest?.menuBackground||['menuBgV6','menuBgV6Alt','menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'])]);
     setMenuBackdrop(canvas,background,w,h);context.clearRect(0,0,w,h);if(!background)fallback(context,w,h);
+    if(background?.key==='menuBgV71'){
+      canvas.dataset.flyerMode='v71';drawV6Foreground(context,w,h,time,assets.manifest.menuV71);return drawV6Flyer(context,w,h,time,assets.manifest.menuV71.flyer);
+    }
     if(background?.key==='menuBgV6'||background?.key==='menuBgV6Alt'){
       canvas.dataset.flyerMode='v6';drawV6Foreground(context,w,h,time);return drawV6Flyer(context,w,h,time);
     }

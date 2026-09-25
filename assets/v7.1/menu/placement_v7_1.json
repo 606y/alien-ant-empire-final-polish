@@ -1,0 +1,55 @@
+{
+  "version": "v7.1",
+  "referenceViewport": {
+    "width": 1366,
+    "height": 768
+  },
+  "desktop": {
+    "flag": {
+      "x": 0.45,
+      "bottom": 0.99,
+      "height": 0.31,
+      "liftPx": 100,
+      "facing": "right-center"
+    },
+    "heavy": {
+      "x": 0.8,
+      "bottom": 0.99,
+      "height": 0.35,
+      "liftPx": 88,
+      "facing": "left-center"
+    },
+    "flyer": {
+      "keepV6Motion": true,
+      "height": 0.115
+    }
+  },
+  "mobile": {
+    "flag": {
+      "x": 0.5,
+      "bottom": 0.56,
+      "height": 0.18,
+      "liftPx": 68,
+      "facing": "right-center"
+    },
+    "heavy": {
+      "x": 0.84,
+      "bottom": 0.56,
+      "height": 0.19,
+      "liftPx": 62,
+      "facing": "left-center"
+    },
+    "flyer": {
+      "keepV6Motion": true,
+      "height": 0.105
+    }
+  },
+  "rules": {
+    "heavyStatic": true,
+    "flagFabricAnimation": "keep-current-v6",
+    "flyerMotion": "keep-current-v6",
+    "noMirror": true,
+    "noHeroRedesign": true,
+    "backgroundPurpose": "reduce local density behind heroes and establish invader-left / defender-right confrontation"
+  }
+}

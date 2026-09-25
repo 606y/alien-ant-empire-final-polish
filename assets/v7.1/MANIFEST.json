@@ -1,0 +1,67 @@
+{
+  "project": "Alien Ant Empire / 異星蟻國",
+  "version": "v7.1",
+  "scope": "main-menu confrontation composition patch",
+  "base": "V6.3 opening + V7 in-game art integration",
+  "art_lock": {
+    "left_flag_ant_role": "invader",
+    "left_flag_ant_facing": "right-center",
+    "right_heavy_role": "defender",
+    "right_heavy_facing": "left-center",
+    "heavy_static": true,
+    "keep_v6_flag_animation": true,
+    "keep_v6_flyer_motion": true
+  },
+  "files": [
+    {
+      "path": "docs/ART_DIRECTION.md",
+      "bytes": 1230,
+      "sha256": "d75a0eab0f699c0145acd32a46cd1c8b93a697c6e89e78e4e8a8934f43e04458"
+    },
+    {
+      "path": "docs/COPY_DECK.md",
+      "bytes": 352,
+      "sha256": "aa9a5ac396f2e12e0e885fd0885edae1e30b6462b153c6bbf9bd5497bbb4be93"
+    },
+    {
+      "path": "docs/INTEGRATION.md",
+      "bytes": 2600,
+      "sha256": "fe5ce528822d8694318bdc265536191fbefd4d1c8123ea271dac589308a99475"
+    },
+    {
+      "path": "docs/LICENSES.md",
+      "bytes": 723,
+      "sha256": "c14e4567b33bd7b640153fc7436efd42e5cf4778b67a66d5da049a71ce66fd74"
+    },
+    {
+      "path": "menu/background/menu_bg_confrontation_v7_1.png",
+      "bytes": 2282563,
+      "sha256": "8cfa1738b6ad8aadba8f6929b7842eb0d816b7197c9b175366af59e83ecba44b"
+    },
+    {
+      "path": "menu/characters/flag_ant_v7_1.png",
+      "bytes": 1533446,
+      "sha256": "e1120c1a1da65bf87ae9a71f36bd767e5ce2cd0e1f26381a30cb3e2dc276628f"
+    },
+    {
+      "path": "menu/characters/heavy_hammer_v7_1.png",
+      "bytes": 1907152,
+      "sha256": "7ccf8edad0b94e83a403f278e18765c62c7b1b88059aa1cb52d592d1fc21cf4b"
+    },
+    {
+      "path": "menu/flyer/flyer_body_v7_1.png",
+      "bytes": 1548777,
+      "sha256": "5d0d9b0a3ee178531077c510dc5cebb6a3fecad2e3a233787cb2b9a62a9a65d3"
+    },
+    {
+      "path": "menu/flyer/flyer_wings_v7_1.png",
+      "bytes": 1620245,
+      "sha256": "f07d82d4752e694a7fea932f667fabc38e57b3d1ad0f6f61a9c7243c390011fc"
+    },
+    {
+      "path": "menu/placement_v7_1.json",
+      "bytes": 1099,
+      "sha256": "79a822c0eec5fcf7b5876a631a23cd6f2839cbc237621786eb7c85b217370887"
+    }
+  ]
+}

@@ -17,15 +17,20 @@
       const audioJobs=()=>Object.entries(audio).map(([key,item])=>item.enabled?this.loadAudio(key,item):(this.states.set(key,'fallback'),Promise.resolve(false)));
       if(!tiers){await Promise.allSettled([...Object.entries(images).filter(([,item])=>item.enabled).map(([key,item])=>this.loadImage(key,item)),...audioJobs()]);this.resolveMenuReady(this);return this;}
       const primary=tiers.primary||[];
-      await loadKeys(primary.filter(key=>!key.startsWith('intro')));
-      if(this.state('menuBgV6')!=='ready')await loadKeys(tiers.menuV6Alt);
-      if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready')await loadKeys(tiers.menuV5);
-      if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready'&&this.state('menuBgV5')!=='ready'){
-        await loadKeys(tiers.menuV4);
-        if(this.state('menuBgV4')!=='ready'){
-          await loadKeys(tiers.menuV3);
-          if(this.state('menuBgV3')!=='ready')await loadKeys(tiers.menuV2);
-          else if(!(this.manifest.menuFlyersV3||[]).every(group=>this.state(group.body)==='ready'&&this.state(group.wings)==='ready'))await loadKeys(this.manifest.menuFlyers||[]);
+      await loadKeys(tiers.menuV71);
+      const v71Ready=(tiers.menuV71||[]).length===5&&tiers.menuV71.every(key=>this.state(key)==='ready');
+      if(!v71Ready){
+        this.states.set('menuBgV71','fallback');
+        await loadKeys(primary.filter(key=>!key.startsWith('intro')));
+        if(this.state('menuBgV6')!=='ready')await loadKeys(tiers.menuV6Alt);
+        if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready')await loadKeys(tiers.menuV5);
+        if(this.state('menuBgV6')!=='ready'&&this.state('menuBgV6Alt')!=='ready'&&this.state('menuBgV5')!=='ready'){
+          await loadKeys(tiers.menuV4);
+          if(this.state('menuBgV4')!=='ready'){
+            await loadKeys(tiers.menuV3);
+            if(this.state('menuBgV3')!=='ready')await loadKeys(tiers.menuV2);
+            else if(!(this.manifest.menuFlyersV3||[]).every(group=>this.state(group.body)==='ready'&&this.state(group.wings)==='ready'))await loadKeys(this.manifest.menuFlyers||[]);
+          }
         }
       }
       this.resolveMenuReady(this);

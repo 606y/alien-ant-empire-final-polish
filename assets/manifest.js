@@ -4,6 +4,11 @@
   root.AntAssetManifest={
     version:6,
     images:{
+      menuBgV71:{src:'assets/v7.1/menu/background/menu_bg_confrontation_v7_1.png',enabled:true},
+      flagAntV71:{src:'assets/v7.1/menu/characters/flag_ant_v7_1.png',enabled:true},
+      heavyHammerV71:{src:'assets/v7.1/menu/characters/heavy_hammer_v7_1.png',enabled:true},
+      flyerBodyV71:{src:'assets/v7.1/menu/flyer/flyer_body_v7_1.png',enabled:true},
+      flyerWingsV71:{src:'assets/v7.1/menu/flyer/flyer_wings_v7_1.png',enabled:true},
       menuBgV6:{src:'assets/menu/v6/background/menu_bg_battle_v6.png',enabled:true},
       menuBgV6Alt:{src:'assets/menu/v6/background/menu_bg_battle_v6_alt.png',enabled:true},
       flagAntV6:{src:'assets/menu/v6/characters/flag_ant_v6.png',enabled:true},
@@ -60,12 +65,18 @@
     },
     menuBackground:['menuBgV6','menuBgV6Alt','menuBgV5','menuBgV4','menuBgV3','menuBgAnimationBase','menuBgMain'],
     imageTiers:{
+      menuV71:['menuBgV71','flagAntV71','heavyHammerV71','flyerBodyV71','flyerWingsV71'],
       primary:['menuBgV6','flagAntV6','heavyHammerV6','flyerBodyV6','flyerWingsV6','intro01FallV6','intro02MutationV6','intro03EmpiresV6'],
       menuV6Alt:['menuBgV6Alt'],
       menuV5:['menuBgV5','flagAntV5','heavyEnemyV5','flyerBodyV5','flyerWingsV5'],
       menuV4:['menuBgV4','flagSoldierV4','heavyEnemyV4','flyerBodyV4','flyerWingsV4'],
       menuV3:['menuBgV3','groundSoldierV3','groundHeavyV3','groundMandibleV3','groundRoyalGuardV3','banner01V3','banner02V3','banner03V3','flyerScoutBodyV3','flyerScoutWingsV3','flyerGuardBodyV3','flyerGuardWingsV3','flyerHeavyBodyV3','flyerHeavyWingsV3'],
       menuV2:['menuBgAnimationBase','menuBgMain','flyerScout01','flyerGuard01','flyerHeavy01']
+    },
+    menuV71:{
+      flag:{key:'flagAntV71',x:.45,bottom:.99,height:.31,lift:100,mobileX:.50,mobileBottom:.56,mobileHeight:.18,mobileLift:68},
+      heavy:{key:'heavyHammerV71',x:.80,bottom:.99,height:.35,lift:88,mobileX:.84,mobileBottom:.56,mobileHeight:.19,mobileLift:62},
+      flyer:{body:'flyerBodyV71',wings:'flyerWingsV71',height:.115,mobileHeight:.105}
     },
     menuV6:{
       flag:{key:'flagAntV6',x:.43,bottom:.99,height:.285,lift:92,mobileX:.50,mobileBottom:.56,mobileHeight:.18,mobileLift:68},
