@@ -1,0 +1,16 @@
+/* V7.2 layout integration; formal art values remain in v7_2-ui-patch.css. */
+.resources .resource{background-image:none !important;padding-left:14px !important;}
+.context .actions,.context .secondary-actions{position:static !important;}
+.context .actions button,.context .secondary-actions button{position:static !important;}
+@media(max-width:600px){
+  #game{grid-template-rows:90px minmax(0,1fr) 64px;}
+  .statusbar{display:grid;grid-template-rows:34px 44px;justify-items:center;align-content:center;padding:3px 6px;gap:2px;}
+  .resources{width:100%;justify-content:space-between;gap:2px;min-width:0;}
+  .resources .resource,.resources .resource.extra{display:inline-flex !important;min-width:0;padding:3px 4px !important;min-height:32px;gap:3px;font-size:11px;}
+  .resources .resource>span{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:nowrap;}
+  .resources .resource strong{font-size:12px;}
+  .time-controls{justify-self:center;}
+  .time-controls button{min-height:44px;}
+  .context .actions{display:flex;flex-direction:column;}
+  .context .actions button{min-height:46px;flex:none;width:100%;}
+}

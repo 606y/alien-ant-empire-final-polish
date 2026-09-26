@@ -316,7 +316,9 @@
     pointers.delete(e.pointerId);if(!pointers.size)gesture=null;else if(gesture){const p=[...pointers.values()][0];gesture.moved=true;gesture.lastX=p.x;gesture.lastY=p.y;}
   });
   $('map').addEventListener('pointercancel',e=>{clearTimeout(longPressTimer);$('selectionRect').classList.add('hidden');pointers.delete(e.pointerId);gesture=null;});
-  $('map').addEventListener('contextmenu',e=>e.preventDefault());
+  for(const type of ['contextmenu','selectstart','dragstart'])$('map').addEventListener(type,e=>e.preventDefault());
+  // Only the game canvas suppresses browser touch gestures; controls and dialogs retain native behavior.
+  for(const type of ['touchstart','touchmove'])$('map').addEventListener(type,e=>{if(e.cancelable)e.preventDefault();},{passive:false});
   $('map').addEventListener('wheel',e=>{e.preventDefault();world.zoom(e.deltaY>0?.9:1.1);},{passive:false});
   document.addEventListener('keydown',e=>{keys.add(e.key.toLowerCase());if(e.key==='Escape'&&!$('info').open){royalPlacement=false;clearSelected();closeContext(false);}if((e.key==='b'||e.key==='B')&&selection.length&&!$('info').open){openContext({kind:'roomCreate',k:selectedAnts()[0]?.k??E.HOME});}});document.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>keys.clear());
   function notices(now){

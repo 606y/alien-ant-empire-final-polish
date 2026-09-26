@@ -25,3 +25,7 @@ Menu presentation (`menu-art.js`), intro motion, audio playback (`audio.js`), ga
 ## Third-party assets
 
 No third-party copyrighted assets are included.
+
+## V7.2 user-provided formal assets
+
+The images and UI patch in assets/v7.2/ were supplied by the project owner via the connected Google Drive archive AlienAntEmpire_Assets_v7_2.zip. See assets/v7.2/docs/LICENSES.md for the supplied package notes. No new third-party assets were downloaded for this integration.

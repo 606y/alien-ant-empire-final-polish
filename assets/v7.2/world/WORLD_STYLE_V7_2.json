@@ -1,0 +1,44 @@
+{
+  "version": "v7.2",
+  "art_direction": "cinematic naturalistic ant empire; not cartoon; gameplay remains top-down/map readable",
+  "backdrops": {
+    "nest": "world/nest/nest_atmosphere_v7_2.jpg",
+    "surface": "world/surface/surface_atmosphere_v7_2.jpg",
+    "render_rule": "draw as cover-style environmental matte before map/tile layer; opacity 0.60-0.72; map cells and targets stay above it"
+  },
+  "tiles": {
+    "nest": "world/tiles/nest_soil_v7_2.jpg",
+    "surface": "world/tiles/surface_floor_v7_2.jpg",
+    "rule": "use as low-contrast texture; no giant repeated motifs"
+  },
+  "player_units": {
+    "worker": "units/player/worker_v7_2.png",
+    "soldier_normal": "units/player/soldier_normal_v7_2.png",
+    "soldier_armor": "units/player/soldier_armor_v7_2.png",
+    "soldier_jaw": "units/player/soldier_jaw_v7_2.png",
+    "soldier_acid": "units/player/soldier_acid_v7_2.png",
+    "queen": "units/player/queen_v7_2.png"
+  },
+  "enemy_units": {
+    "near": "units/enemies/near_v7_2.png",
+    "hunter": "units/enemies/hunter_v7_2.png",
+    "armored": "units/enemies/armored_v7_2.png",
+    "deep_forest": "units/enemies/deep_forest_v7_2.png",
+    "queens": "units/enemies/*_queen_v7_2.png"
+  },
+  "props": [
+    "world/props/fungi_v7_2.png",
+    "world/props/eggs_v7_2.png",
+    "world/props/root_v7_2.png",
+    "world/props/rock_v7_2.png",
+    "world/props/leaf_v7_2.png",
+    "world/props/mushroom_v7_2.png"
+  ],
+  "visual_rules": [
+    "do not change world coordinates, target radii, hitboxes, pathfinding, AI or simulation",
+    "unit images are whole sprites; no CSS body-part animation",
+    "world must feel like a physical nest/forest, but interactive map remains readable",
+    "no flat green full-screen management-board look",
+    "no cartoon plant/bug glyphs as world objects"
+  ]
+}

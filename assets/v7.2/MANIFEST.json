@@ -1,0 +1,220 @@
+{
+  "project": "Alien Ant Empire / 異星蟻國",
+  "version": "v7.2",
+  "base": "V7 game art + V7.1 menu",
+  "scope": "in-game visual correction after user playtest",
+  "user_findings": [
+    "top resource icons waste space and are unclear",
+    "queen/ants too simplistic and cartoon-like",
+    "context panel double frame overlaps text",
+    "nest/surface lack world-scene feeling",
+    "mobile long-press triggers browser selection/copy UI"
+  ],
+  "runtime_priority": {
+    "units": "units/player/*_v7_2.png and units/enemies/*_v7_2.png",
+    "photo_cutouts": "panel illustration fallback only, not world sprites"
+  },
+  "core_gameplay_change": false,
+  "files": [
+    {
+      "path": "docs/ART_DIRECTION.md",
+      "bytes": 1010,
+      "sha256": "2bf19a89c3d898a8f04521a8aa1f3760303036a158aa45d1b9a0457e6ddf7232"
+    },
+    {
+      "path": "docs/COPY_DECK.md",
+      "bytes": 424,
+      "sha256": "dd0c398e7de57f46825f201184b73f57b6ee538c7c5117735637a608db6f204a"
+    },
+    {
+      "path": "docs/INTEGRATION.md",
+      "bytes": 3286,
+      "sha256": "96896567756bb45fd1452a86c490ce2d2f34adf66024a8d3a7a35f314d21367a"
+    },
+    {
+      "path": "docs/LICENSES.md",
+      "bytes": 370,
+      "sha256": "00ef2a018e23b0585cfefce95713faeac47e62d9da90bb02d413231268ea2bef"
+    },
+    {
+      "path": "docs/MOBILE_TOUCH_FIX.md",
+      "bytes": 1380,
+      "sha256": "65b38845170f3dbed8e225e8898df1707f9553378e97b47df216a59738e238bd"
+    },
+    {
+      "path": "ui/panel_texture_v7_2.png",
+      "bytes": 169468,
+      "sha256": "3acc4a0d977e5b40735fac2f51ae22dae5c7a9a0062de7bd26ba35dbfa7bcef5"
+    },
+    {
+      "path": "ui/v7_2-ui-patch.css",
+      "bytes": 4369,
+      "sha256": "2066d7ba7b55439fde844a03127e9fd20e75d847c411e86410a3056199aa785e"
+    },
+    {
+      "path": "units/enemies/armored_queen_v7_2.png",
+      "bytes": 131341,
+      "sha256": "d57eb8615b4aa384302b8c228be87c10244f83fe9ef06ce965fc3e86819df472"
+    },
+    {
+      "path": "units/enemies/armored_v7_2.png",
+      "bytes": 63108,
+      "sha256": "6a984057ed807b9d3b1d5f31999a4232cdec5f974896c2be4e6196d31d7ada87"
+    },
+    {
+      "path": "units/enemies/deep_forest_queen_v7_2.png",
+      "bytes": 137648,
+      "sha256": "33e402245dec219a018f58a464d5533670030597a18266933a0a6a1349c73c87"
+    },
+    {
+      "path": "units/enemies/deep_forest_v7_2.png",
+      "bytes": 80830,
+      "sha256": "528d51c9d306bab26e24ff80e37ad2987eec85e8b584f29eea5dca2365d5dcd2"
+    },
+    {
+      "path": "units/enemies/hunter_queen_v7_2.png",
+      "bytes": 135244,
+      "sha256": "16a8bc1bde7ee95ee561b0448ec965094a9ab514fef7f7b697a795c631f70c9c"
+    },
+    {
+      "path": "units/enemies/hunter_v7_2.png",
+      "bytes": 106076,
+      "sha256": "b9e30e1b9889139d295f8e0e0ed57b244f1174b23e01a92b0a3c8d6b7bf56178"
+    },
+    {
+      "path": "units/enemies/near_queen_v7_2.png",
+      "bytes": 140233,
+      "sha256": "6d935d49a08204dc220f8de1163ba66378818d8fe28206279b4363c39c4b3a23"
+    },
+    {
+      "path": "units/enemies/near_v7_2.png",
+      "bytes": 67376,
+      "sha256": "44a5f0e4617c063f1bc5dcc7c34e8a2793460a36b489af42d5a5ccf45d2a26bd"
+    },
+    {
+      "path": "units/photo/enemy_photo_v7_2.png",
+      "bytes": 94415,
+      "sha256": "6d42ef98c4710991d0984a81f8bff6ba9b5b1b016c14b17f6d7f277bc78e0b35"
+    },
+    {
+      "path": "units/photo/queen_photo_v7_2.png",
+      "bytes": 125301,
+      "sha256": "68af9acbb88cbf65ea58896311452937a7a860f561d8c115e9a72c00db68f0e9"
+    },
+    {
+      "path": "units/photo/soldier_acid_photo_v7_2.png",
+      "bytes": 99676,
+      "sha256": "6c59f367894825b6bd3f5ad50d16975d0795b41440754e17b34736aea7740b09"
+    },
+    {
+      "path": "units/photo/soldier_armor_photo_v7_2.png",
+      "bytes": 99676,
+      "sha256": "6c59f367894825b6bd3f5ad50d16975d0795b41440754e17b34736aea7740b09"
+    },
+    {
+      "path": "units/photo/soldier_jaw_photo_v7_2.png",
+      "bytes": 99676,
+      "sha256": "6c59f367894825b6bd3f5ad50d16975d0795b41440754e17b34736aea7740b09"
+    },
+    {
+      "path": "units/photo/soldier_normal_photo_v7_2.png",
+      "bytes": 99676,
+      "sha256": "6c59f367894825b6bd3f5ad50d16975d0795b41440754e17b34736aea7740b09"
+    },
+    {
+      "path": "units/photo/soldier_photo_v7_2.png",
+      "bytes": 99676,
+      "sha256": "6c59f367894825b6bd3f5ad50d16975d0795b41440754e17b34736aea7740b09"
+    },
+    {
+      "path": "units/photo/worker_photo_v7_2.png",
+      "bytes": 76392,
+      "sha256": "954fba1b3c34e30e6500396cb40a284cf9326a80cb3f335634604282d932f1fe"
+    },
+    {
+      "path": "units/player/queen_v7_2.png",
+      "bytes": 144467,
+      "sha256": "ba8eb67381c796bc4ac3e39976ba30cb5bfaaa57ab1c1a633e2aca01c23037e8"
+    },
+    {
+      "path": "units/player/soldier_acid_v7_2.png",
+      "bytes": 83550,
+      "sha256": "493a7d8683de281b7caa9efe412f475e7b8c86b0686598479efa465fe667f59d"
+    },
+    {
+      "path": "units/player/soldier_armor_v7_2.png",
+      "bytes": 70461,
+      "sha256": "bcaf9100c8040b1f76d9afaebfd49ff8526c230cec113a30dc6c454b5a95f428"
+    },
+    {
+      "path": "units/player/soldier_jaw_v7_2.png",
+      "bytes": 126417,
+      "sha256": "ac3de624e8d799642097e9c7fa35f4ee623179b3fa50d2a962144dc7aa2086d5"
+    },
+    {
+      "path": "units/player/soldier_normal_v7_2.png",
+      "bytes": 66415,
+      "sha256": "5efd0896c05406ea5fa4198c281f1aeea02b4fbea061242c0f21f49f6df8d99d"
+    },
+    {
+      "path": "units/player/worker_v7_2.png",
+      "bytes": 66647,
+      "sha256": "99f96f7b7d09268b6b7d665c6ad3ea7f4183505d849bb9edaf539d8cf18f2c1d"
+    },
+    {
+      "path": "world/WORLD_STYLE_V7_2.json",
+      "bytes": 1805,
+      "sha256": "02120123465e8bfe1742f5f21cbb95a4aa4983ef5b65144ae2e3f88c9d81908a"
+    },
+    {
+      "path": "world/nest/nest_atmosphere_v7_2.jpg",
+      "bytes": 370946,
+      "sha256": "2f7f5668f43c97f6683c6aa91393df35ef9a407a05e441192ad020f09c6cfe56"
+    },
+    {
+      "path": "world/props/eggs_v7_2.png",
+      "bytes": 14481,
+      "sha256": "23914b67bf9c896578f38520c2fd4b45fa13cb73beb99b65266bb2c952b2e373"
+    },
+    {
+      "path": "world/props/fungi_v7_2.png",
+      "bytes": 12597,
+      "sha256": "b0dc3c93e499698e841d358b0d1e5a662efa8f3ca3210a39a20c63c688526971"
+    },
+    {
+      "path": "world/props/leaf_v7_2.png",
+      "bytes": 6011,
+      "sha256": "2aabde6bc9ba84652c95453a4e042bd8b92aa138cf9d2453bf21badf475fa596"
+    },
+    {
+      "path": "world/props/mushroom_v7_2.png",
+      "bytes": 4855,
+      "sha256": "65b525284eff5dccbe79d3d6870aa8d46e7b691ff91af56bb69a7fa2fcd34080"
+    },
+    {
+      "path": "world/props/rock_v7_2.png",
+      "bytes": 5722,
+      "sha256": "e6fbc9be80bd39b1806f85dc0e4bc76f5e95b11b63b9a46365017983a93a858b"
+    },
+    {
+      "path": "world/props/root_v7_2.png",
+      "bytes": 6516,
+      "sha256": "06b473813806bec2c83a25a3701d05c8da6a14dedc42eb3e7479c09734136afb"
+    },
+    {
+      "path": "world/surface/surface_atmosphere_v7_2.jpg",
+      "bytes": 172765,
+      "sha256": "39d92b5955573fd6703e088c82fb2c0df27cd40c7ada3db510945b62df4f4cdc"
+    },
+    {
+      "path": "world/tiles/nest_soil_v7_2.jpg",
+      "bytes": 51110,
+      "sha256": "9961a8087d9c42527dd4fae0e0aa20c52ccbb73fc4d6ffffa1b5c556d5eff1b4"
+    },
+    {
+      "path": "world/tiles/surface_floor_v7_2.jpg",
+      "bytes": 21527,
+      "sha256": "021f9daa5025dd8fb0bfe75ef5befeab6b23c76f441526fad1609c0363310c5e"
+    }
+  ]
+}
