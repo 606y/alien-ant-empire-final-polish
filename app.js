@@ -346,7 +346,7 @@
     if(commandMarker&&now>commandMarker.until)commandMarker=null;audio.setScene(s.ants.some(a=>a.action==='戰鬥')?'combat':view==='surface'?'surface':'nest');world.draw(s,{selected:selection,target:eventFocusUntil>now?toast?.k??E.HOME:context?.k??null,digging,commandMarker},dt);requestAnimationFrame(frame);
   }
   $('menuAudio').onclick=()=>{audio.toggle();audioLabel();};
-  $('continueGame').onclick=()=>{if(hasSave){audio.unlock();audio.ui();$('mainMenu').classList.add('hidden');s.speed=menuResumeSpeed;last=performance.now();renderStatus();}else startNewGame();};
+  $('continueGame').onclick=()=>{if(hasSave){audio.leaveMenu();audio.unlock();audio.ui();$('mainMenu').classList.add('hidden');s.speed=menuResumeSpeed;last=performance.now();renderStatus();}else startNewGame();};
   $('newGame').onclick=()=>startNewGame();
   $('cinematicVideo').addEventListener('ended',finishCinematic);
   $('cinematicVideo').addEventListener('playing',()=>{clearTimeout(cinematicTimer);clearTimeout(cinematicStallTimer);cinematicTimer=0;cinematicStallTimer=0;});

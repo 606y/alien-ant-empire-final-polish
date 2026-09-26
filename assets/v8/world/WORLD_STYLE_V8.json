@@ -1,0 +1,64 @@
+{
+  "version": "v8",
+  "visual_positioning": "scene-based 2.5D RTS world; no flat icon-board presentation",
+  "nest": {
+    "world_matte": "world/nest/nest_world_v8.png",
+    "ground_tile": "world/tiles/nest_ground_v8.jpg",
+    "unexplored_tile": "world/tiles/nest_unexplored_v8.jpg",
+    "rule": "background is world-anchored; every frame fills viewport before rooms/units so no void bars appear"
+  },
+  "surface": {
+    "world_matte": "world/surface/surface_battle_world_v8.png",
+    "neutral_reference": "world/surface/surface_explore_reference_v8.jpg",
+    "ground_tile": "world/tiles/surface_ground_v8.jpg",
+    "unexplored_tile": "world/tiles/surface_unexplored_v8.jpg",
+    "rule": "forest floor is continuous world-space terrain; unexplored areas are darkened terrain/fog, never black screen strips"
+  },
+  "resource_props": {
+    "seeds": "world/props/seeds_v8.png",
+    "insect_carcass": "world/props/insect_carcass_v8.png",
+    "fungi": "world/props/fungi_v8.png",
+    "resin": "world/props/resin_v8.png",
+    "ore": "world/props/ore_v8.png",
+    "log": "world/props/log_v8.png",
+    "plant": "world/props/plant_v8.png",
+    "rock": "world/props/rock_v8.png",
+    "root": "world/props/root_v8.png",
+    "water": "world/props/water_v8.png"
+  },
+  "rooms": {
+    "types": [
+      "nursery",
+      "store",
+      "prey",
+      "rest",
+      "military",
+      "mutation",
+      "royal"
+    ],
+    "levels": [
+      1,
+      2,
+      3
+    ],
+    "path_pattern": "rooms/{type}_lv{level}_v8.png",
+    "rule": "room function is shown as a physical chamber scene, not a symbol; use existing room position/hitbox"
+  },
+  "units": {
+    "player": [
+      "worker",
+      "soldier_normal",
+      "soldier_armor",
+      "soldier_jaw",
+      "soldier_acid",
+      "queen"
+    ],
+    "enemy_factions": [
+      "near",
+      "hunter",
+      "armored",
+      "deep_forest"
+    ],
+    "rule": "render whole raster sprite with rotation; do not draw generic ant geometry; silhouettes and faction colors must remain distinct"
+  }
+}

@@ -1,0 +1,40 @@
+
+/* Alien Ant Empire V8 scene-world UI.
+   World readability first; UI avoids hiding the game field. */
+:root{
+  --v8-bg:#090907;
+  --v8-panel:rgba(13,11,8,.92);
+  --v8-panel-soft:rgba(18,14,9,.82);
+  --v8-line:#7a4d25;
+  --v8-gold:#d7a45e;
+  --v8-text:#efe0c3;
+  --v8-muted:#aa9271;
+}
+.resources .resource::before{display:none!important;content:none!important}
+.resources .resource{
+  padding:5px 12px!important;
+  min-height:34px;
+  background:linear-gradient(180deg,rgba(28,20,13,.94),rgba(8,8,7,.96));
+  border:1px solid rgba(151,93,40,.62);
+}
+.context,.dialog{
+  background:linear-gradient(180deg,rgba(20,15,10,.96),rgba(8,8,7,.97))!important;
+  border:1px solid rgba(153,95,41,.72)!important;
+  border-radius:14px!important;
+  box-shadow:0 18px 60px rgba(0,0,0,.58)!important;
+}
+.context::before,.context::after,.dialog::before,.dialog::after{display:none!important;content:none!important}
+.context-body,.dialog-body{position:relative;z-index:1}
+.context .actions,.dialog .actions{position:static!important;margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+.context .actions button,.dialog .actions button{position:static!important}
+.world-nav{background:rgba(8,8,7,.94);backdrop-filter:blur(8px)}
+.world-caption{background:linear-gradient(90deg,rgba(7,7,6,.72),rgba(7,7,6,0))}
+#world,.world-wrap,#map,canvas{
+  -webkit-user-select:none!important;user-select:none!important;
+  -webkit-touch-callout:none!important;-webkit-user-drag:none!important;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(max-width:600px){
+  .resources .resource{padding:4px 7px!important;font-size:12px}
+  .context,.dialog{border-radius:15px 15px 0 0!important}
+}

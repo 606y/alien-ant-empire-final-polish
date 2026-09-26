@@ -33,14 +33,14 @@ test('V7 supplied UI, frame and icon URLs resolve relative to the published styl
 });
 test('V7 world uses cached formal textures, six player castes, four enemy families, seven rooms and command art',()=>{
  const world=read('world.js'),body=world.slice(world.indexOf('    draw(s,'));
- assert.match(world,/this\.v7Started=false/);assert.match(world,/if\(this\.v7Started\)return/);
- assert.match(world,/this\.ctx\.createPattern\(image,'repeat'\)/);assert.doesNotMatch(body,/new Image\(/);
+ assert.match(world,/this\.v8Started=false/);assert.match(world,/if\(this\.v8Started\)return/);
+ assert.match(world,/this\.ctx\.createPattern\(source,'repeat'\)/);assert.doesNotMatch(body,/new Image\(/);
  assert.doesNotMatch(world,/scaleX\(-1\)/);
  for(const name of ['worker','soldier_normal','soldier_armor','soldier_jaw','soldier_acid','queen'])assert.ok(world.includes("'units/player/"+name+"'"));
  for(const name of ['near','hunter','armored','deep_forest'])for(const suffix of ['', '_queen'])assert.ok(world.includes("'units/enemies/"+name+suffix+"'"));
  for(const name of ['nursery','store','prey','rest','military','mutation','royal'])assert.ok(fs.existsSync(path.join(root,'assets/v7/rooms',name+'.svg')));
  for(const name of ['selection_ring','command_move','command_attack','command_gather','command_build','command_cross'])assert.ok(fs.existsSync(path.join(root,'assets/v7/world/effects',name+'.svg')));
- assert.match(world,/this\.v7Images\['rooms\/'\+room\.type\]/);assert.match(world,/this\.v7Images\['world\/effects\/selection_ring'\]/);
+ assert.match(world,/this\.v8RoomCache/);assert.match(world,/this\.v7Images\['world\/effects\/selection_ring'\]/);
  assert.match(world,/this\.v7Images\['world\/effects\/command_'\+commandMarker\.type\]/);
 });
 test('V7 leaves camera, position, hitboxes and accepted gameplay implementation unchanged',()=>{

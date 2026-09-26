@@ -1,0 +1,4 @@
+/* Layout only: retain all five resource labels on a 390px viewport. */
+@media(max-width:600px){.resources .resource,.resources .resource.extra{padding:3px 4px!important;font-size:11px;gap:3px}.resources .resource strong{font-size:12px}.statusbar{grid-template-columns:minmax(0,1fr)}.context .actions{flex-direction:column}.context .actions button{flex:none;min-height:46px}}
+dialog{background:linear-gradient(180deg,rgba(20,15,10,.96),rgba(8,8,7,.97))!important}
+.context input,.context textarea,.dialog-body{user-select:text;-webkit-user-select:text}

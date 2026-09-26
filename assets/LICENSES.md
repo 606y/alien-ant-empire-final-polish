@@ -29,3 +29,7 @@ No third-party copyrighted assets are included.
 ## V7.2 user-provided formal assets
 
 The images and UI patch in assets/v7.2/ were supplied by the project owner via the connected Google Drive archive AlienAntEmpire_Assets_v7_2.zip. See assets/v7.2/docs/LICENSES.md for the supplied package notes. No new third-party assets were downloaded for this integration.
+
+## V8 scene-world assets
+
+The owner-supplied AlienAntEmpire_Assets_v8.zip was retrieved from the connected Google Drive. All 69 package files are preserved byte-for-byte under assets/v8. See assets/v8/docs/LICENSES.md for the supplied original-generated-art and original-synthesized-audio provenance. No additional external art, fonts, or recordings were used.

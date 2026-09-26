@@ -4,3 +4,5 @@ node_modules/
 .deploy-*/
 AlienAntEmpire_Assets_v2.zip
 .asset-import-v2/
+
+.qa-v8/

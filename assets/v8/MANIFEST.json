@@ -1,0 +1,395 @@
+{
+  "project": "Alien Ant Empire / 異星蟻國",
+  "version": "v8",
+  "scope": "scene-based 2.5D in-game world rebuild + five-faction unit art + room evolution + menu audio",
+  "base_gameplay": "Prototype 0.6.4.1",
+  "keep": [
+    "V7.1 main menu visual",
+    "V6.3 CapCut cinematic",
+    "V6 story scenes",
+    "localStorage save schema"
+  ],
+  "supersedes_in_game_visuals": [
+    "V7",
+    "V7.2"
+  ],
+  "core_gameplay_change": false,
+  "player_units": [
+    "worker",
+    "soldier_normal",
+    "soldier_armor",
+    "soldier_jaw",
+    "soldier_acid",
+    "queen"
+  ],
+  "enemy_factions": [
+    "near",
+    "hunter",
+    "armored",
+    "deep_forest"
+  ],
+  "room_types": [
+    "nursery",
+    "store",
+    "prey",
+    "rest",
+    "military",
+    "mutation",
+    "royal"
+  ],
+  "room_levels": [
+    1,
+    2,
+    3
+  ],
+  "audio": {
+    "menu": "audio/bgm_menu_v8.ogg"
+  },
+  "files": [
+    {
+      "path": "audio/bgm_menu_v8.ogg",
+      "bytes": 648906,
+      "sha256": "8cda987b6cac03c671171addd261dc39e765f9cfa0ccca91381884aee1345ae0"
+    },
+    {
+      "path": "concept/player_cast_reference_v8.png",
+      "bytes": 1593038,
+      "sha256": "9589abce3b2968a69386750c191645cfdcc503a11ebac07421d8eab326f4c40d"
+    },
+    {
+      "path": "concept/v8_master_concept_board.png",
+      "bytes": 3459917,
+      "sha256": "1ed670867afb5360626d8378b760a9cf63af6b2793a4703051cace1748342287"
+    },
+    {
+      "path": "docs/ART_DIRECTION_V8.md",
+      "bytes": 1076,
+      "sha256": "7373828ba66184183b59f314f6a772aca903597783d871b89feaaa009fdad7f9"
+    },
+    {
+      "path": "docs/AUDIO.md",
+      "bytes": 891,
+      "sha256": "e2a90c48aedf58b9162206ac12ef3f25e32740bd359891f11a915b72593aba5e"
+    },
+    {
+      "path": "docs/COPY_DECK.md",
+      "bytes": 478,
+      "sha256": "5c05575091195a5918908e4bee983a422c36aaa92559d40c5600593b83b437a3"
+    },
+    {
+      "path": "docs/FACTIONS_AND_UNITS.md",
+      "bytes": 1248,
+      "sha256": "68c5d8a4acbc957eb69c9cbd65e2b66f51248018392ec0c922a5707d3ad2b8f8"
+    },
+    {
+      "path": "docs/INTEGRATION.md",
+      "bytes": 12778,
+      "sha256": "b942e30523e117288bbb8470c4183720b9cd42976785de2e6a4d4c9bfb860193"
+    },
+    {
+      "path": "docs/LICENSES.md",
+      "bytes": 535,
+      "sha256": "601ee402943159f51bdaaef093deb6caf9bf005e9072b06c1d68a090bc763cd1"
+    },
+    {
+      "path": "docs/MOBILE_TOUCH.md",
+      "bytes": 940,
+      "sha256": "087e5bf355aaf0ee099eb548790a5da241d3dc21fbad5bddb8facdff9c291057"
+    },
+    {
+      "path": "docs/ROOM_EVOLUTION.md",
+      "bytes": 974,
+      "sha256": "9b4cafbf34f6abdd884597b2b4865b8314d9349d15da867dee5c47cac5ccf323"
+    },
+    {
+      "path": "rooms/military_lv1_v8.png",
+      "bytes": 427017,
+      "sha256": "5d40d163bd53908963c81ecea0e51840dbfb37bc8fad44a630a1dfca3d5af835"
+    },
+    {
+      "path": "rooms/military_lv2_v8.png",
+      "bytes": 479058,
+      "sha256": "31c52e93d0712cdbff052913000c9f9af86ee48c55628edd5d504a5eaada5600"
+    },
+    {
+      "path": "rooms/military_lv3_v8.png",
+      "bytes": 508825,
+      "sha256": "d15cada2d633a6e59bd4f4f3e9ac7f808690a936eba77e857e9a1954dd0bc224"
+    },
+    {
+      "path": "rooms/mutation_lv1_v8.png",
+      "bytes": 457976,
+      "sha256": "b187ed336511a97e613ec2bdce21eda974d290683724e43575864aee0458b665"
+    },
+    {
+      "path": "rooms/mutation_lv2_v8.png",
+      "bytes": 508702,
+      "sha256": "0f8b12a9607f03bdacc85d0e429a8b1f76e8471a104cb462c43be3fb61af4562"
+    },
+    {
+      "path": "rooms/mutation_lv3_v8.png",
+      "bytes": 523514,
+      "sha256": "8170b254eb0785f46251dc154f5348e05b18eb7394baf518f6273522a1c3711e"
+    },
+    {
+      "path": "rooms/nursery_lv1_v8.png",
+      "bytes": 423822,
+      "sha256": "4ea716deb068365045076da243ca8bb69bd073a50b752b97e12aeb49b8f891f5"
+    },
+    {
+      "path": "rooms/nursery_lv2_v8.png",
+      "bytes": 474404,
+      "sha256": "2cc2932466fd7f1983059093243821d86abc105e7345fd3bcdb5c2089fd32c01"
+    },
+    {
+      "path": "rooms/nursery_lv3_v8.png",
+      "bytes": 498157,
+      "sha256": "cb362c641e1ca898e2c7d07b9f025de2fc59fe520817f0c43cc8e3f9e745371a"
+    },
+    {
+      "path": "rooms/prey_lv1_v8.png",
+      "bytes": 410963,
+      "sha256": "b2c64d3ff140eb91dbf543a6f33d6e555babcc63a1af553fe87fa7ed17e49b2c"
+    },
+    {
+      "path": "rooms/prey_lv2_v8.png",
+      "bytes": 450565,
+      "sha256": "0e62e118aeecb4f49426c7fc4cd0d8028025405f4a780681def50bde0d15988e"
+    },
+    {
+      "path": "rooms/prey_lv3_v8.png",
+      "bytes": 441341,
+      "sha256": "64ec9c2aa6e4c45feba8960badd072189a3d0db1456c827319ddf750ef0a1355"
+    },
+    {
+      "path": "rooms/rest_lv1_v8.png",
+      "bytes": 307772,
+      "sha256": "f82d0fee1da8332d76cd23af9c098e42615d2398c55d67b37b6bd13b3a934cb7"
+    },
+    {
+      "path": "rooms/rest_lv2_v8.png",
+      "bytes": 324603,
+      "sha256": "a3bcd9ae0b60e1387bf2059f7b0fa9d3beb0a892793d9c2e0bed6a33af368ea2"
+    },
+    {
+      "path": "rooms/rest_lv3_v8.png",
+      "bytes": 325153,
+      "sha256": "e7cccf1bc879b427d4ba21af8b2af693c51b4d1099ce64e80b3727b2b2b86a37"
+    },
+    {
+      "path": "rooms/royal_lv1_v8.png",
+      "bytes": 480164,
+      "sha256": "e0ead43ae0a6fc92a25c0931190c09947badb875855697a061ed4b45cd22893a"
+    },
+    {
+      "path": "rooms/royal_lv2_v8.png",
+      "bytes": 516912,
+      "sha256": "9364b8a76a7d292f1aeaa58166a36fdb27e82b0ae445f0a44cd7f3df03db6692"
+    },
+    {
+      "path": "rooms/royal_lv3_v8.png",
+      "bytes": 514843,
+      "sha256": "2465e8151ac08fb1fca22eb93e57730c1640f53933d1fefc928652d1cce432b4"
+    },
+    {
+      "path": "rooms/store_lv1_v8.png",
+      "bytes": 431261,
+      "sha256": "bb89ec61bef014790c192c4744b6695c7acf641f9add79a63bbce2fa758cfe07"
+    },
+    {
+      "path": "rooms/store_lv2_v8.png",
+      "bytes": 476535,
+      "sha256": "3d14640823c7adfc22214f517c0f05e7790ddeeb51c4ec135ecc69f14f576277"
+    },
+    {
+      "path": "rooms/store_lv3_v8.png",
+      "bytes": 492567,
+      "sha256": "a82f84493943e688882bd8a938df4d1a654d082a19b0a089c3eb806dcaca8a19"
+    },
+    {
+      "path": "ui/v8-ui.css",
+      "bytes": 1653,
+      "sha256": "e2e660819ede2e0acf6421ad6a1dcd0faeb85fe0f8f89c7a5615a68ff152c7ab"
+    },
+    {
+      "path": "units/enemies/armored_crest_v8.png",
+      "bytes": 1656,
+      "sha256": "9f6979b6d3e9d44291e13053d0725442eb2a75c54e820077877402ee0e5a054a"
+    },
+    {
+      "path": "units/enemies/armored_queen_v8.png",
+      "bytes": 39408,
+      "sha256": "2f734f25a90b306e77802d15d714438c29e260b53251948d53e4751224aede60"
+    },
+    {
+      "path": "units/enemies/armored_v8.png",
+      "bytes": 49840,
+      "sha256": "62a12f84961f9ca902fd42b3f2a08013be93685f5c4ff7a0612823329e195529"
+    },
+    {
+      "path": "units/enemies/deep_forest_crest_v8.png",
+      "bytes": 1675,
+      "sha256": "d878a2b8e91a589fcfab454e9bb8a70e19c3b3cd1b66263c9144308beec0e6b6"
+    },
+    {
+      "path": "units/enemies/deep_forest_queen_v8.png",
+      "bytes": 41000,
+      "sha256": "77653ffd290ed323fbbb311db53e44de217525d1c6c9b840d32a84d0a5a3834a"
+    },
+    {
+      "path": "units/enemies/deep_forest_v8.png",
+      "bytes": 60037,
+      "sha256": "9e3e39697602d67fda8fa7b9a31995cd80fcaadf4a29a20ac2bda43945c49cfb"
+    },
+    {
+      "path": "units/enemies/hunter_crest_v8.png",
+      "bytes": 1662,
+      "sha256": "22718b23190168d98f3a9149c64c2bdf3c134c1d8262dd1ccd71a51eaf6d7783"
+    },
+    {
+      "path": "units/enemies/hunter_queen_v8.png",
+      "bytes": 39336,
+      "sha256": "bf5ef795759b7a6a29c5a07d09228126a1c586ef4b95b13fce6627b0501d377d"
+    },
+    {
+      "path": "units/enemies/hunter_v8.png",
+      "bytes": 47730,
+      "sha256": "230d61b591664e729767e980e2b7b2dcdf89330742b31a9ec91a2f34de331242"
+    },
+    {
+      "path": "units/enemies/near_crest_v8.png",
+      "bytes": 1668,
+      "sha256": "502e535c349f684c3c4952fb0adf96f469c9f4e7dbde3a80ce35d24011503b58"
+    },
+    {
+      "path": "units/enemies/near_queen_v8.png",
+      "bytes": 44563,
+      "sha256": "6c7c5ea048d44d5e63b91ed8a0540a3160ef0d5ce5c30575d689d801444c209a"
+    },
+    {
+      "path": "units/enemies/near_v8.png",
+      "bytes": 51485,
+      "sha256": "f2da235098cb158cf320f8c988511a85b85eb82f95918a17c21d6b3b75da7c9a"
+    },
+    {
+      "path": "units/player/queen_v8.png",
+      "bytes": 54771,
+      "sha256": "a3eee84f9db2c90e0f5099425c951ba1f624516e607266a7111884f4064f5671"
+    },
+    {
+      "path": "units/player/soldier_acid_v8.png",
+      "bytes": 41402,
+      "sha256": "01842a0718f98140e61645f71ea3e3dcd335d72e4b64ffe95e406de3cc4c22e6"
+    },
+    {
+      "path": "units/player/soldier_armor_v8.png",
+      "bytes": 38977,
+      "sha256": "4eda5ea03624049ad098265bc3127b79fe234480ecb9b467bcca495191e5a07b"
+    },
+    {
+      "path": "units/player/soldier_jaw_v8.png",
+      "bytes": 35870,
+      "sha256": "ecb0b836c3b8d19e4e7640cae5fdb4b45d2f3f47a42ce0202f7f0f02f2a8c7a8"
+    },
+    {
+      "path": "units/player/soldier_normal_v8.png",
+      "bytes": 33547,
+      "sha256": "7415abb1cd7dd7ec76d0e431c3ea8eafd4bb2b5f968ef78f968e7eddb5c1cf04"
+    },
+    {
+      "path": "units/player/worker_v8.png",
+      "bytes": 32345,
+      "sha256": "71569c4b5eefc99725c59990d2484c401c13f39d788eaf2c3194ca95cdd6287f"
+    },
+    {
+      "path": "world/WORLD_STYLE_V8.json",
+      "bytes": 2022,
+      "sha256": "348bdb099eaf29a3ff4e2a89b65f11c65db26859ae3922254169e7453de9e37b"
+    },
+    {
+      "path": "world/nest/nest_world_v8.png",
+      "bytes": 3363949,
+      "sha256": "201363e470df4e00954e9af77ad774b96e048bb1e61475cbce913079ee4c4ab8"
+    },
+    {
+      "path": "world/props/fungi_v8.png",
+      "bytes": 15507,
+      "sha256": "b053dce7db776cdd4f7dfc9d2cdc55985165eaec79f8210e79960feb5d1a1e67"
+    },
+    {
+      "path": "world/props/insect_carcass_v8.png",
+      "bytes": 12225,
+      "sha256": "cccaaee01e03dd0cc7afa313a606a469844d5e26628ab98ab2009ee421b20dc9"
+    },
+    {
+      "path": "world/props/log_v8.png",
+      "bytes": 15837,
+      "sha256": "07525a635e8995e85dd495568e5cb847a1cefdd7d00dc4ed27be46878edc9a42"
+    },
+    {
+      "path": "world/props/ore_v8.png",
+      "bytes": 11981,
+      "sha256": "b2ce160c0c810c7d2cf017af6fde2d01ab62b0ccd40f3ccb9e54e1b9d306fa5e"
+    },
+    {
+      "path": "world/props/plant_v8.png",
+      "bytes": 6302,
+      "sha256": "3dbeb0461bfa65981e46c56c28005584cd3d89e7de61a9fd22f33fdbb1363b91"
+    },
+    {
+      "path": "world/props/resin_v8.png",
+      "bytes": 14416,
+      "sha256": "a960f6fae68a3648ad12cc1bdfebab630de35bfe9424f876cccaa3ce32224ccd"
+    },
+    {
+      "path": "world/props/rock_v8.png",
+      "bytes": 6302,
+      "sha256": "3dbeb0461bfa65981e46c56c28005584cd3d89e7de61a9fd22f33fdbb1363b91"
+    },
+    {
+      "path": "world/props/root_v8.png",
+      "bytes": 17491,
+      "sha256": "f0dd839d988f7f71364f157e3f96ef060bbba9de6101f3ecc5349335334fea94"
+    },
+    {
+      "path": "world/props/seeds_v8.png",
+      "bytes": 12518,
+      "sha256": "215db19f37485a67786f42e114b7624666e79b0d005ce774b26bea5cd6ddbf18"
+    },
+    {
+      "path": "world/props/water_v8.png",
+      "bytes": 14510,
+      "sha256": "17264c23195aa93573e941cb132fdfea1695c0e6f4e58989c76306e5d229fae3"
+    },
+    {
+      "path": "world/surface/surface_battle_world_v8.png",
+      "bytes": 3384219,
+      "sha256": "4eb3034e534313f7df9e0a43664c5c3b8549c66f8ef1b8f0955db22592ab364b"
+    },
+    {
+      "path": "world/surface/surface_explore_reference_v8.jpg",
+      "bytes": 494836,
+      "sha256": "ba0fcc6f982a58ac5e442db809c711da9327b5e506c3d481222936464dc3cdd8"
+    },
+    {
+      "path": "world/tiles/nest_ground_v8.jpg",
+      "bytes": 86776,
+      "sha256": "004a1e15ba1dc74b3b32b39ac7d23c710e6fada3f082d50f187ee84c9820808e"
+    },
+    {
+      "path": "world/tiles/nest_unexplored_v8.jpg",
+      "bytes": 42160,
+      "sha256": "7a40f38073e9781c219e4750334cde6bee9b4d369c412db97a367603d1238620"
+    },
+    {
+      "path": "world/tiles/surface_ground_v8.jpg",
+      "bytes": 116446,
+      "sha256": "47de36cc6fbf8fec5ff99c5df697d9f4555a7eb1332086942ed000e4a1ab97cf"
+    },
+    {
+      "path": "world/tiles/surface_unexplored_v8.jpg",
+      "bytes": 57435,
+      "sha256": "2ca999f921238e21d089df028cc2c76385a48c5871eda48041d02171991bd1bb"
+    }
+  ]
+}

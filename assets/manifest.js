@@ -3,6 +3,7 @@
   'use strict';
   root.AntAssetManifest={
     version:6,
+    menuAudio:{src:'assets/v8/audio/bgm_menu_v8.ogg',loop:true,gain:.5},
     images:{
       menuBgV71:{src:'assets/v7.1/menu/background/menu_bg_confrontation_v7_1.png',enabled:true},
       flagAntV71:{src:'assets/v7.1/menu/characters/flag_ant_v7_1.png',enabled:true},
