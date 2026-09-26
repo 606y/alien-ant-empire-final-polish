@@ -5,32 +5,26 @@ function renderer(){
  const calls=[],images=[];const ctx=new Proxy({createPattern(image){const p={setTransform(m){p.matrix=m},image};calls.push(['pattern',image.src]);return p},measureText:t=>({width:t.length*7})},{get:(o,k)=>k in o?o[k]:(...args)=>calls.push([k,...args])});
  class Img{constructor(){images.push(this);this.naturalWidth=512;this.naturalHeight=512}set src(v){this._src=v;queueMicrotask(()=>this.onload?.())}get src(){return this._src}}
  class Matrix{translate(x,y){this.x=x;this.y=y;return this}scale(s){this.s=s;return this}}
- const scope={window:{},Image:Img,DOMMatrix:Matrix,document:{createElement:()=>({getContext:()=>ctx})}};vm.runInNewContext(world,scope);
+ const scope={window:{AntEngine:require('../engine.js')},Image:Img,DOMMatrix:Matrix,devicePixelRatio:1,performance:{now:()=>0}};vm.runInNewContext(world,scope);
  return {w:new scope.window.AntWorld({getContext:()=>ctx}),calls,images};
 }
 test('V8 official package: all 69 files remain byte-identical to supplied manifest',()=>{
  const m=JSON.parse(read('assets/v8/MANIFEST.json'));assert.equal(m.version,'v8');assert.equal(m.core_gameplay_change,false);assert.equal(m.files.length,69);
  for(const f of m.files){const b=fs.readFileSync(path.join(root,'assets/v8',f.path));assert.equal(b.length,f.bytes,f.path);assert.equal(crypto.createHash('sha256').update(b).digest('hex'),f.sha256,f.path);}
 });
-test('V8 loads 14 independent units, 21 room scenes, 10 props and 6 environment images only once',async()=>{
- const {w,images,calls}=renderer();await w.loadV8();const first=w.v8Ready;await w.loadV8();assert.equal(w.v8Ready,first);assert.equal(images.length,57);
- const keys=Object.keys(w.v8ImageCache);assert.equal(keys.length,51);assert.equal(keys.filter(k=>k.startsWith('units/player')).length,6);assert.equal(keys.filter(k=>k.startsWith('units/enemies')).length,8);assert.equal(keys.filter(k=>k.startsWith('rooms/')).length,21);assert.equal(keys.filter(k=>k.startsWith('props/')).length,10);assert.equal(calls.filter(c=>c[0]==='pattern').length,6);
+test('V9 loads 14 independent V8 units, 7 equipment icons, 10 props and 2 natural tiles once',async()=>{
+ const {w,images,calls}=renderer();await w.loadV8();const first=w.v8Ready;await w.loadV8();assert.equal(w.v8Ready,first);assert.equal(images.length,39);
+ const keys=Object.keys(w.v8ImageCache);assert.equal(keys.length,33);assert.equal(keys.filter(k=>k.startsWith('units/player')).length,6);assert.equal(keys.filter(k=>k.startsWith('units/enemies')).length,8);assert.equal(keys.filter(k=>k.startsWith('equipment/')).length,7);assert.equal(keys.filter(k=>k.startsWith('props/')).length,10);assert.equal(calls.filter(c=>c[0]==='pattern').length,2);
  assert.equal(images.filter(i=>i.src.includes('/units/')&&!i.src.includes('/v8/')).length,0);
  for(const k of keys)assert.ok(fs.existsSync(path.join(root,w.v8ImageCache[k].src)));
 });
 test('environment fills the entire viewport and pattern coordinates follow camera translation and zoom',async()=>{
  const {w,calls}=renderer();await w.loadV8();
- for(const view of ['nest','surface']){w.view=view;for(const scale of [12,45,140])for(const [x,y]of [[-3000,2000],[2000,-3000]]){calls.length=0;w.worldEnvironment(1366,768,x,y,scale);assert.deepEqual(calls.find(c=>c[0]==='fillRect'),['fillRect',0,0,1366,768]);const m=w.v8Patterns[view+'/unexplored'].matrix;assert.equal(m.x,x);assert.equal(m.y,y);assert.equal(m.s,scale*6/512);}}
+ for(const view of ['nest','surface']){w.view=view;for(const scale of [12,45,140])for(const [x,y]of [[-3000,2000],[2000,-3000]]){calls.length=0;w.worldEnvironment(1366,768,x,y,scale);assert.deepEqual(calls.find(c=>c[0]==='fillRect'),['fillRect',0,0,1366,768]);const m=w.v8Patterns[view+'/ground'].matrix;assert.equal(m.x,x);assert.equal(m.y,y);assert.equal(m.s,scale*6/512);}}
  w.v8Patterns={};calls.length=0;w.worldEnvironment(390,844,0,0,1);assert.deepEqual(calls.find(c=>c[0]==='fillRect'),['fillRect',0,0,390,844]);
 });
-test('room maturity changes only the visual source; clipping preserves original center and radius',async()=>{
- const {w,calls}=renderer();await w.loadV8();
- for(const type of ['nursery','store','prey','rest','military','mutation','royal']){const room={type,maturity:0,status:'active'};
- for(const [m,level]of [[0,1],[33,1],[34,2],[66,2],[67,3],[100,3]]){room.maturity=m;const before=JSON.stringify(room);calls.length=0;w.roomScene(room,20,30,40);assert.equal(JSON.stringify(room),before);assert.equal(w.v8RoomCache.get(room).image,w.v8ImageCache['rooms/'+type+'/'+level]);assert.deepEqual(calls.find(c=>c[0]==='ellipse').slice(0,5),['ellipse',20,30,40,28.799999999999997]);const cached=w.v8RoomCache.get(room);w.roomScene(room,20,30,40);assert.equal(w.v8RoomCache.get(room),cached);}}
-});
-test('whole sprite rendering uses actual source with rotation and no mirrored or generic ant fallback',async()=>{
- const {w,calls}=renderer();await w.loadV8();calls.length=0;w.ant(10,20,12,'red',.7,null,true,'units/player/queen');assert.ok(calls.some(c=>c[0]==='rotate'&&c[1]===.7));assert.equal(calls.find(c=>c[0]==='drawImage')[1],w.v8ImageCache['units/player/queen']);assert.ok(!calls.some(c=>c[0]==='scale'));assert.doesNotMatch(world.slice(world.indexOf('    ant('),world.indexOf('    label(')),/lineTo|bezier|bodyPart/);
-});
+test('V9 room maturity changes equipment count without changing room geometry',async()=>{const {w,calls}=renderer();await w.loadV8();for(const type of ['nursery','store','prey','rest','military','mutation','royal']){const room={type,maturity:0,size:1,status:'active'};for(const [m,level]of [[0,1],[34,2],[67,3]]){room.maturity=m;const before=JSON.stringify(room);calls.length=0;w.roomScene(room,20,30,40);assert.equal(JSON.stringify(room),before);assert.equal(calls.filter(c=>c[0]==='drawImage'&&c[1]===w.v8ImageCache['equipment/'+type]).length,level);assert.equal(w.roomRadius(room),.51);}}});
+test('whole sprite rotation uses source facing calibration and no mirroring',async()=>{const {w,calls}=renderer();await w.loadV8();calls.length=0;w.ant(10,20,12,'red',.7,null,true,'units/player/queen');assert.ok(calls.some(c=>c[0]==='rotate'&&Math.abs(c[1]-.12)<1e-9));assert.equal(calls.find(c=>c[0]==='drawImage')[1],w.v8ImageCache['units/player/queen']);assert.ok(!calls.some(c=>c[0]==='scale'));assert.doesNotMatch(world,/scaleX\(-1\)/);});
 test('menu Ogg is supplied stereo 48kHz Vorbis; record actual duration instead of altering official audio',()=>{
  const b=fs.readFileSync(path.join(root,'assets/v8/audio/bgm_menu_v8.ogg')),id=b.indexOf(Buffer.from([1,118,111,114,98,105,115]));assert.ok(id>=0);assert.equal(b[id+11],2);assert.equal(b.readUInt32LE(id+12),48000);
  let p=0,granule=0;while(p<b.length){assert.equal(b.toString('ascii',p,p+4),'OggS');const g=b.readBigUInt64LE(p+6);if(g<2n**63n)granule=Math.max(granule,Number(g));const n=b[p+26];let size=0;for(let i=0;i<n;i++)size+=b[p+27+i];p+=27+n+size;}assert.ok(Math.abs(granule/48000-36)<.001);
@@ -61,4 +55,4 @@ test('V8 integration keeps saved game key, menu art, movie and 430ms mobile gest
 
 
 
-test('repeated official tiles exclude their black footer without altering source files',async()=>{const {w,calls}=renderer();await w.loadV8();const sources=calls.filter(c=>c[0]==='pattern').map(c=>c[1]);assert.equal(sources.length,6);assert.match(world,/source.height=key.startsWith\('nest\/'\)\?398:458/);assert.doesNotMatch(world.slice(world.indexOf('    draw(s,')),/createElement|new Image/);});
+test('V9 reuses pure V7 environment tiles and never loads V8 painted scene tiles',async()=>{const {w,calls}=renderer();await w.loadV8();assert.equal(calls.filter(c=>c[0]==='pattern').length,2);for(const image of Object.values(w.v8ImageCache))assert.doesNotMatch(image.src,/v8\/world\/(?:nest|surface|tiles)\//);assert.match(world,/c\.fillRect\(0,0,w,h\)/);});

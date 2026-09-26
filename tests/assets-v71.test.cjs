@@ -30,9 +30,9 @@ test('V7.1 uses the proven flag-cloth and flyer routines, with a static heavy',(
  assert.match(art,/cycle=\(time\/44000\+\.06\)%1/);assert.match(art,/beat=Math\.sin\(time\*Math\.PI\*2\*17\/1000\)/);
 });
 test('V7 loading, world visuals, V6.3 opening and core implementation remain intact',()=>{
- const html=read('index.html');assert.ok(html.includes('app-ready.js?v=v7'));assert.ok(html.includes('world.js?v=assets-v8-world-rebuild'));assert.ok(html.includes('intro_cinematic_v6_3_capcut_badged.mp4'));
+ const html=read('index.html');assert.ok(html.includes('app-ready.js?v=v7'));assert.ok(html.includes('world.js?v=assets-v9-world-geometry'));assert.ok(html.includes('intro_cinematic_v6_3_capcut_badged.mp4'));
  assert.ok(html.includes('assets/manifest.js?v=assets-v8-world-rebuild'));assert.ok(html.includes('menu-art.js?v=assets-v71-menu-confrontation'));
- assert.ok(read('world.js').includes('assets/v8/world/nest/nest_world_v8.png'));
+ assert.ok(read('world.js').includes('assets/v7/world/textures/nest_soil_tile.svg'));
  assert.equal(hash('engine.js'),'436ebb5a4184bdab850cb89dc9741a85aca822fca406da12880e87df7670d858');
  assert.equal(hash('interaction.js'),'587b19cf04d9c355c4f4af6850a8239baf559ba74f1fc7c1f19a6f41c73179d4');
  assert.ok(read('assets/LICENSES.md').includes('V7.1 confrontation menu background'));
