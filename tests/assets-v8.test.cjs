@@ -12,19 +12,14 @@ test('V8 official package: all 69 files remain byte-identical to supplied manife
  const m=JSON.parse(read('assets/v8/MANIFEST.json'));assert.equal(m.version,'v8');assert.equal(m.core_gameplay_change,false);assert.equal(m.files.length,69);
  for(const f of m.files){const b=fs.readFileSync(path.join(root,'assets/v8',f.path));assert.equal(b.length,f.bytes,f.path);assert.equal(crypto.createHash('sha256').update(b).digest('hex'),f.sha256,f.path);}
 });
-test('V9 loads 14 independent V8 units, 7 equipment icons, 10 props and 2 natural tiles once',async()=>{
- const {w,images,calls}=renderer();await w.loadV8();const first=w.v8Ready;await w.loadV8();assert.equal(w.v8Ready,first);assert.equal(images.length,39);
- const keys=Object.keys(w.v8ImageCache);assert.equal(keys.length,33);assert.equal(keys.filter(k=>k.startsWith('units/player')).length,6);assert.equal(keys.filter(k=>k.startsWith('units/enemies')).length,8);assert.equal(keys.filter(k=>k.startsWith('equipment/')).length,7);assert.equal(keys.filter(k=>k.startsWith('props/')).length,10);assert.equal(calls.filter(c=>c[0]==='pattern').length,2);
- assert.equal(images.filter(i=>i.src.includes('/units/')&&!i.src.includes('/v8/')).length,0);
- for(const k of keys)assert.ok(fs.existsSync(path.join(root,w.v8ImageCache[k].src)));
-});
-test('environment fills the entire viewport and pattern coordinates follow camera translation and zoom',async()=>{
- const {w,calls}=renderer();await w.loadV8();
- for(const view of ['nest','surface']){w.view=view;for(const scale of [12,45,140])for(const [x,y]of [[-3000,2000],[2000,-3000]]){calls.length=0;w.worldEnvironment(1366,768,x,y,scale);assert.deepEqual(calls.find(c=>c[0]==='fillRect'),['fillRect',0,0,1366,768]);const m=w.v8Patterns[view+'/ground'].matrix;assert.equal(m.x,x);assert.equal(m.y,y);assert.equal(m.s,scale*6/512);}}
- w.v8Patterns={};calls.length=0;w.worldEnvironment(390,844,0,0,1);assert.deepEqual(calls.find(c=>c[0]==='fillRect'),['fillRect',0,0,390,844]);
-});
-test('V9 room maturity changes equipment count without changing room geometry',async()=>{const {w,calls}=renderer();await w.loadV8();for(const type of ['nursery','store','prey','rest','military','mutation','royal']){const room={type,maturity:0,size:1,status:'active'};for(const [m,level]of [[0,1],[34,2],[67,3]]){room.maturity=m;const before=JSON.stringify(room);calls.length=0;w.roomScene(room,20,30,40);assert.equal(JSON.stringify(room),before);assert.equal(calls.filter(c=>c[0]==='drawImage'&&c[1]===w.v8ImageCache['equipment/'+type]).length,level);assert.equal(w.roomRadius(room),.51);}}});
-test('whole sprite rotation uses source facing calibration and no mirroring',async()=>{const {w,calls}=renderer();await w.loadV8();calls.length=0;w.ant(10,20,12,'red',.7,null,true,'units/player/queen');assert.ok(calls.some(c=>c[0]==='rotate'&&Math.abs(c[1]-.12)<1e-9));assert.equal(calls.find(c=>c[0]==='drawImage')[1],w.v8ImageCache['units/player/queen']);assert.ok(!calls.some(c=>c[0]==='scale'));assert.doesNotMatch(world,/scaleX\(-1\)/);});
+test('V9 retires V8 sprite runtime while loading existing command art once',async()=>{const {w,images}=renderer();await w.loadV8();const first=w.v8Ready;await w.loadV8();assert.equal(first,w.v8Ready);assert.equal(images.length,6);assert.equal(Object.keys(w.v8ImageCache).length,0);for(const im of images)assert.ok(fs.existsSync(path.join(root,im.src)));});
+
+test('environment delegates exact camera coordinates and has full viewport fallback',()=>{const {w,calls}=renderer();for(const view of ['nest','surface']){w.view=view;w.art={ground(...args){assert.deepEqual(args,[1366,768,-3000,2000,45,view])}};w.worldEnvironment(1366,768,-3000,2000,45)}w.art=null;calls.length=0;w.worldEnvironment(390,844,0,0,1);assert.deepEqual(calls.find(c=>c[0]==='fillRect'),['fillRect',0,0,390,844]);});
+
+test('room display levels remain independent of simulation room geometry',()=>{const {w}=renderer();for(const type of ['nursery','store','prey','rest','military','mutation','royal'])for(const [maturity,level]of [[0,1],[34,2],[67,3]]){const room={type,maturity,size:1,status:'active'},before=JSON.stringify(room);let called=false;w.art={state:{},room(r,x,y,radius){called=true;assert.equal(r,room);assert.deepEqual([x,y,radius],[20,30,40])}};w.roomScene(room,20,30,40);assert.ok(called);assert.equal(w.roomLevel(room),level);assert.equal(w.roomRadius(room),.51);assert.equal(JSON.stringify(room),before)}});
+
+test('articulated unit receives actual movement angle without sprite calibration',()=>{const {w}=renderer();let args;w.art={unit(...a){args=a}};w.ant(10,20,12,'red',.7,null,true,'units/player/queen');assert.deepEqual(args,[10,20,12,.7,null,true,'units/player/queen']);assert.doesNotMatch(world,/scaleX\(-1\)/)});
+
 test('menu Ogg is supplied stereo 48kHz Vorbis; record actual duration instead of altering official audio',()=>{
  const b=fs.readFileSync(path.join(root,'assets/v8/audio/bgm_menu_v8.ogg')),id=b.indexOf(Buffer.from([1,118,111,114,98,105,115]));assert.ok(id>=0);assert.equal(b[id+11],2);assert.equal(b.readUInt32LE(id+12),48000);
  let p=0,granule=0;while(p<b.length){assert.equal(b.toString('ascii',p,p+4),'OggS');const g=b.readBigUInt64LE(p+6);if(g<2n**63n)granule=Math.max(granule,Number(g));const n=b[p+26];let size=0;for(let i=0;i<n;i++)size+=b[p+27+i];p+=27+n+size;}assert.ok(Math.abs(granule/48000-36)<.001);
@@ -55,4 +50,4 @@ test('V8 integration keeps saved game key, menu art, movie and 430ms mobile gest
 
 
 
-test('V9 reuses pure V7 environment tiles and never loads V8 painted scene tiles',async()=>{const {w,calls}=renderer();await w.loadV8();assert.equal(calls.filter(c=>c[0]==='pattern').length,2);for(const image of Object.values(w.v8ImageCache))assert.doesNotMatch(image.src,/v8\/world\/(?:nest|surface|tiles)\//);assert.match(world,/c\.fillRect\(0,0,w,h\)/);});
+test('V9 original atlas files match their provenance hashes',()=>{const m=JSON.parse(read('assets/v9/MANIFEST.json'));assert.equal(m.atlases.length,4);for(const a of m.atlases){const b=fs.readFileSync(path.join(root,'assets/v9',a.path));assert.equal(crypto.createHash('sha256').update(b).digest('hex'),a.sha256);assert.equal(b.toString('ascii',1,4),'PNG')}assert.doesNotMatch(world,/assets\/v8\/(?:units|rooms|props|world)/)});

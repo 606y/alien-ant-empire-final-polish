@@ -1,0 +1,31 @@
+{
+  "version": "V9-scene-art",
+  "source": "Original assets generated with the built-in image generation tool for this project",
+  "atlases": [
+    {
+      "path": "facilities.png",
+      "columns": 4,
+      "rows": 2,
+      "sha256": "092908e8ebdc29e94f3854c998f7e233bb4ceb137a86e051a34c8a954ea7ffa2"
+    },
+    {
+      "path": "objects.png",
+      "columns": 4,
+      "rows": 3,
+      "sha256": "a617b2f110dae7681fe6edb7be98f14f4090e161cdc99ed2c243cdc71ff409a7"
+    },
+    {
+      "path": "ant-bodies.png",
+      "columns": 5,
+      "rows": 2,
+      "sha256": "6c026458444a7cfec304f03fb30b5825f6923f2fda1fed147d3eb7f5098272b6"
+    },
+    {
+      "path": "player-castes.png",
+      "columns": 3,
+      "rows": 2,
+      "sha256": "6ede77fbdf5f01d23d41db36b676dd96ceec42680740d3ec4fa30bc44f8f5b52"
+    }
+  ],
+  "referencePolicy": "User references inform spatial readability only; no reference pixels are included."
+}

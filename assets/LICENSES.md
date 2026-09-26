@@ -33,3 +33,7 @@ The images and UI patch in assets/v7.2/ were supplied by the project owner via t
 ## V8 scene-world assets
 
 The owner-supplied AlienAntEmpire_Assets_v8.zip was retrieved from the connected Google Drive. All 69 package files are preserved byte-for-byte under assets/v8. See assets/v8/docs/LICENSES.md for the supplied original-generated-art and original-synthesized-audio provenance. No additional external art, fonts, or recordings were used.
+
+## V9 original scene artwork
+
+The three PNG atlases in `assets/v9/` were generated specifically for this project with the built-in image generation tool. They contain no copied pixels from the user’s gameplay references. Original Canvas terrain and articulated movement are project code. No additional third-party images, fonts, music, or recordings were downloaded. See `assets/v9/MANIFEST.json` and `assets/v9/docs/ART_DIRECTION.md` for inventory and provenance.
