@@ -11,7 +11,6 @@ QA:
 - `node --test tests/*.test.cjs`
 - `node scripts/verify-v9-browser.cjs` with Chrome and Playwright Core; 1366×768 and 390×844.
 - `node scripts/verify-v9-browser-extra.cjs` for active combat, camera extremes, intro skip and mute.
-- `node scripts/record-v9-acceptance.cjs` records a disposable test-save Canvas video in `.qa-v9/v9-world-acceptance.webm`. This video is engineering evidence and does not include official new art.
+- `node scripts/record-v9-acceptance.cjs` records a disposable test-save Canvas video in `.qa-v9/v9-world-acceptance.webm`. A separate `scripts/record-v9-combat.cjs` records verified damage feedback in `.qa-v9/v9-combat-acceptance.webm`. These videos are engineering evidence and do not include official new art.
 
 This is a geometry and interaction skeleton awaiting the user's official V9 art. Its visual finish is not independently approved.
-
