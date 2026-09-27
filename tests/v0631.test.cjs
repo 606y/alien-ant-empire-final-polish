@@ -4,7 +4,7 @@ const advance=(s,seconds)=>{for(let i=0;i<seconds*4&&!s.ended;i++)E.tick(s,.25);
 function quiet(seed=63101){const s=E.create(seed);s.events=[];s.speed=1;s.rivalPending=false;s.ants=s.ants.filter(a=>a.faction==='player');for(const n of s.colonies){n.birth=-999;n.food=0;}return s;}
 
 test('selected soldiers enter the enemy nest, preserve the expedition command and can win',()=>{
-  const s=quiet(),n=s.colonies.find(n=>n.role==='near'),entry=E.surfaceKey(E.xy(n.home).x,4),ids=E.workers(s).slice(0,8).map(a=>a.id);
+  const s=quiet(),n=s.colonies.find(n=>n.role==='near'),entry=n.zones.entry,ids=E.workers(s).slice(0,8).map(a=>a.id);
   for(const other of s.colonies.filter(other=>other.id!==n.id))Object.assign(other,{queen:0,fallen:true,destroyed:true,alive:false});
   for(const a of E.workers(s).filter(a=>ids.includes(a.id))){a.caste='soldier';a.soldierType='normal';a.maxHp=40;a.hp=40;}
   E.cell(s,entry).seen=true;n.queen=12;const result=C.direct(s,ids,{kind:'enemyNest',k:entry,colony:n.id},entry);assert.equal(result.count,8);assert.match(result.text,/兵蟻 8 隻正在進入敵巢/);
@@ -13,7 +13,7 @@ test('selected soldiers enter the enemy nest, preserve the expedition command an
 });
 
 test('an enemy nest expedition never substitutes workers for a selected non-soldier force',()=>{
-  const s=quiet(),n=s.colonies[0],entry=E.key(E.xy(n.home).x,4),ids=E.laborers(s).slice(0,3).map(a=>a.id);E.cell(s,entry).seen=true;
+  const s=quiet(),n=s.colonies[0],entry=n.zones.entry,ids=E.laborers(s).slice(0,3).map(a=>a.id);E.cell(s,entry).seen=true;
   const result=C.direct(s,ids,{kind:'enemyNest',k:entry,colony:n.id},entry);assert.match(result.error,/至少選取一隻兵蟻/);assert.ok(E.laborers(s).filter(a=>ids.includes(a.id)).every(a=>a.job!=='combat'));
 });
 

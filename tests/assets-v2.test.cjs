@@ -38,7 +38,7 @@ test('formal menu, intro and audio controller keep safe fallbacks',()=>{
   assert.match(menu,/cancelAnimationFrame/);assert.match(menu,/visibilitychange/);
   assert.doesNotMatch(menu,/drawProcedural|drawFlagSlice|drawGuardSlice/);
   assert.match(audio,/bgmNest/);assert.match(audio,/uiBack/);assert.match(audio,/impactMutation/);
-  assert.match(audio,/this\.fade\(old/);assert.match(audio,/this\.muted/);
+  assert.match(audio,/audio\.loop=true/);assert.match(audio,/this\.muted/);
   for(const text of ['森林深處的異物','琥珀聖殿中的蟻群升蛹','黃昏戰場上的蟻國對決','進入蟻國'])assert.match(app+html,new RegExp(text));
   assert.match(docs,/Assets v2/);assert.match(read('assets/LICENSES.md'),/No third-party copyrighted assets are included\./);
 });

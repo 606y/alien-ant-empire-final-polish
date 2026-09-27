@@ -3,7 +3,7 @@
   'use strict';
   class AntAudio{
     constructor(){
-      this.assets=root.AntAssets;this.scene='nest';this.unlocked=false;this.externalBgm=null;this.last={};this.switchToken=0;this.colonyTimer=0;this.cinematicActive=false;
+      this.assets=root.AntAssets;this.scene='nest';this.gameplayActive=false;this.unlocked=false;this.externalBgm=null;this.last={};this.switchToken=0;this.colonyTimer=0;this.cinematicActive=false;
       try{this.muted=localStorage.getItem('alien-ant-audio-muted')==='1';}catch{this.muted=false;}
       const menu=this.assets?.manifest?.menuAudio;this.menuActive=!!menu;this.menuBgm=menu?new Audio(menu.src):null;this.menuAudioStatus='idle';
       if(this.menuBgm){this.menuBgm.loop=true;this.menuBgm.preload='auto';this.menuBgm.volume=menu.gain??.5;this.menuBgm.muted=this.muted;}
@@ -35,22 +35,19 @@
       this.scheduleColonyPulse();
     }
     toggle(){this.unlock();this.setMuted(!this.muted);return !this.muted;}
+    startGameplay(){this.gameplayActive=true;this.unlock();}
     setScene(scene){if(!['nest','surface','combat'].includes(scene)||scene===this.scene)return;this.scene=scene;if(this.unlocked&&!this.muted&&!document.hidden)this.syncExternalAudio();this.scheduleColonyPulse();}
     pauseLoop(){this.menuBgm?.pause();if(this.externalBgm&&!this.externalBgm.paused)this.externalBgm.pause();}
     fade(audio,from,to,duration){
       return new Promise(resolve=>{if(!audio){resolve();return;}const started=performance.now();audio.volume=from;const step=now=>{const progress=Math.max(0,Math.min(1,(now-started)/duration));audio.volume=Math.max(0,Math.min(1,from+(to-from)*progress));if(progress<1)requestAnimationFrame(step);else resolve();};requestAnimationFrame(step);});
     }
     async syncExternalAudio(){
-      if(this.menuActive||!this.unlocked||this.muted||document.hidden||this.cinematicActive)return false;
-      const key={nest:'bgmNest',surface:'bgmSurface',combat:'bgmCombat'}[this.scene],ready=this.assets?.audio(key),token=++this.switchToken;
-      if(!ready){this.pauseLoop();this.externalBgm=null;return false;}
-      if(this.externalBgm?.dataset.assetKey===key){this.externalBgm.muted=false;await this.externalBgm.play().catch(()=>{});return true;}
-      const old=this.externalBgm;
-      if(old){await this.fade(old,old.volume,0,420);old.pause();old.currentTime=0;}
-      if(token!==this.switchToken||this.muted||document.hidden)return false;
-      const audio=this.assets.cloneAudio(key);if(!audio)return false;audio.dataset.assetKey=key;audio.volume=0;audio.muted=false;this.externalBgm=audio;
-      await audio.play().catch(()=>{});if(token===this.switchToken)await this.fade(audio,0,.27,520);return true;
+      if(!this.gameplayActive||this.menuActive||!this.unlocked||this.muted||document.hidden||this.cinematicActive)return false;
+      const key='bgmNest';if(!this.assets?.audio(key))return false;
+      if(!this.externalBgm){const audio=this.assets.cloneAudio(key);if(!audio)return false;audio.dataset.assetKey=key;audio.loop=true;audio.volume=.24;this.externalBgm=audio;}
+      this.externalBgm.muted=false;if(this.externalBgm.paused)await this.externalBgm.play().catch(()=>{});return true;
     }
+
     playAsset(key,volume=.4){
       const audio=this.assets?.cloneAudio(key);if(!audio||this.muted||!this.unlocked||document.hidden||this.cinematicActive)return false;
       audio.volume=volume;audio.play().catch(()=>{});return true;

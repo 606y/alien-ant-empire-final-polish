@@ -214,6 +214,7 @@ class SceneArt{
   const pulse=!dead&&index===0?1+Math.sin(phase*.4)*.025:1;stamp(c,cell,0,0,size*pulse,size*cell.h/cell.w);c.restore();
  }
  entrance(x,y,size,role){
+  if(role!=='player'){const prop={near:'ore',hunter:'roots',armored:'rock',deep_forest:'fungi'}[role]||'rock';this.prop(prop,x-size*.75,y+size*.12,size*.72,-.25);this.prop(prop,x+size*.68,y-size*.24,size*.55,.3);}
   const c=this.world.ctx,p=palettes[role]||palettes.player;c.save();c.translate(x,y);c.scale(size,size);oval(c,.08,.14,.53,.30,'#09110c44');oval(c,0,0,.43,.30,shade(c,0,-.07,.45,'#b49a6d','#7b6445','#433622'));oval(c,0,-.035,.30,.20,'#282218');oval(c,0,-.04,.235,.15,'#101610');for(let i=0;i<9;i++){const a=i/9*TAU;pebble(c,Math.cos(a)*.37,Math.sin(a)*.24,.05,i,'#8b7857')}
   for(const side of [-1,1]){line(c,[[side*.33,.14],[side*.35,-.2]],p.dark,.05);line(c,[[side*.33,.11],[side*.35,-.19]],p.edge,.018)}c.restore();
  }

@@ -41,3 +41,6 @@ The three PNG atlases in `assets/v9/` were generated specifically for this proje
 ## V9.1 original creatures and enemy facilities
 
 The three PNG atlases under `assets/v9.1/` were created for this project with built-in image generation: enemy soldiers, living/dead wildlife, and four cultures of nest equipment. No external artwork, fonts, audio, or reference-image pixels were incorporated. See `assets/v9.1/MANIFEST.json` for dimensions and SHA-256 checksums. V9 contains four original atlases (including player-castes.png).
+## V9.1 release candidate additions
+
+This update reuses the existing approved `assets/audio/bgm/bgm_nest.ogg` and V9/V9.1 atlases. No new third-party art, fonts, music or sound recordings were downloaded or incorporated.

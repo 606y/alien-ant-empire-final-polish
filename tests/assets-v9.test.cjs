@@ -1,4 +1,4 @@
-// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
+// V9.1 authorized growth/ecology/portal/assault changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('fs'),path=require('path'),crypto=require('crypto'),vm=require('vm');
 const E=require('../engine.js'),root=path.resolve(__dirname,'..'),world=fs.readFileSync(path.join(root,'world.js'),'utf8'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
@@ -37,8 +37,8 @@ test('queen and brood visuals and targets use their actual world centers',()=>{
  const s=E.create(91027),{w}=setup(),queen=[];w.ant=(x,y,size,color,angle,a,isQueen,key)=>{if(isQueen&&key==='units/player/queen')queen.push({x,y})};w.draw(s);const qp=E.xy(s.queenK),q=w.screen(qp.x,qp.y);assert.equal(queen[0].x,q.x);assert.equal(queen[0].y,q.y);const b=s.broods[0],bp=E.xy(b.k??E.HOME),v=w.screen(bp.x,bp.y);assert.ok(w.targets.some(t=>t.kind==='brood'&&t.x===v.x&&t.y===v.y));
 });
 test('camera, mobile gestures, save keys and gameplay fingerprints stay fixed',()=>{
- assert.match(html,/world.js\?v=assets-v91-final/);const app=fs.readFileSync(path.join(root,'app.js'),'utf8');assert.match(app,/},430\)/);assert.match(app,/alien-ant-empire-v0641/);
- for(const [p,expected]of [['engine.js','55f1dd2c3d1920805771722ad0f74c2eb2857d3d2a255c002cf1b853a4d96ddc'],['interaction.js','7db6a9712410450b3c4ea543d2bd174f835d8fdf0d22ad2f72d73625c5606f4c']])assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex'),expected);
+ assert.match(html,/world.js\?v=release-v9-1/);const app=fs.readFileSync(path.join(root,'app.js'),'utf8');assert.match(app,/},430\)/);assert.match(app,/alien-ant-empire-v0641/);
+ for(const [p,expected]of [['engine.js','911082b4b0a6a448e5c2a6fc310cec5d650e18ec4a8c7855533990bea475d8d9'],['interaction.js','36c0bf11c1c88abb5ea432fb2cbb5d35addb5109d357550613d20ab93104e635']])assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex'),expected);
  const fp=re=>crypto.createHash('sha256').update((world.match(re)||[]).join('|')).digest('hex');assert.equal(fp(/^    (?:home|focus|zoom|pan|screen|position)\([^\n]+/gm),'0606c533fb9651f6fd9ab6acb551c9e60514609fcbaab1271e14462bc5386ab0');
 });
 

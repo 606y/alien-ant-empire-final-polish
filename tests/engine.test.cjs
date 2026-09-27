@@ -47,7 +47,7 @@ test('protein and mineral exposure produce variable adult traits through larval 
 test('losses remove actual assigned workers; starvation gives a recovery window before threatening queen',()=>{
   const s=peaceful(E.create());s.ants[0].hp=-1;advance(s,.25);
   assert.equal(E.workers(s).length,8);assert.equal(s.deaths,1);
-  s.resources=[];s.routes=[];s.food=0;const health=s.queen;advance(s,10);assert.equal(s.queen,health);advance(s,190);assert.ok(s.queen<health);
+  s.resources=[];s.routes=[];s.food=0;s.ecosystem.next=Object.fromEntries(Object.keys(s.ecosystem.next).map(k=>[k,99999]));const health=s.queen;advance(s,10);assert.equal(s.queen,health);advance(s,190);assert.ok(s.queen<health);
 });
 
 test('three groups cannot duplicate workers and can prefer observed armor',()=>{

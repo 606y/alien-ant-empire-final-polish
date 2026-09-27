@@ -1,4 +1,4 @@
-// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
+// V9.1 authorized growth/ecology/portal/assault changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),binary=p=>fs.readFileSync(path.join(root,p));
 const hash=p=>crypto.createHash('sha256').update(binary(p)).digest('hex').toUpperCase();
@@ -25,7 +25,7 @@ test('V6.2 WebP, APNG, sheet and poster are archived but absent from runtime ass
  assert.ok(fs.existsSync(path.join(root,'assets/menu/v6.2/heavy/heavy_attack_v6_2_sheet.png')));
 });
 test('static-heavy patch leaves the accepted game engine, world and RTS interaction unchanged',()=>{
- assert.equal(hash('engine.js'),'55F1DD2C3D1920805771722AD0F74C2EB2857D3D2A255C002CF1B853A4D96DDC');
+ assert.equal(hash('engine.js'),'911082B4B0A6A448E5C2A6FC310CEC5D650E18EC4A8C7855533990BEA475D8D9');
  assert.ok(read('world.js').includes("radius:a.faction==='enemy'?34:28"));
- assert.equal(hash('interaction.js'),'7DB6A9712410450B3C4EA543D2BD174F835D8FDF0D22AD2F72D73625C5606F4C');
+ assert.equal(hash('interaction.js'),'36C0BF11C1C88ABB5EA432FB2CBB5D35ADDB5109D357550613D20AB93104E635');
 });

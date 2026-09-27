@@ -21,13 +21,13 @@ test('the four enemy archetypes have materially different strength and behavior'
 
 test('a destroyed colony cannot breed, launch expeditions or revive while others continue',()=>{
   const s=E.create(64003),dead=s.colonies.find(n=>n.role==='near'),living=s.colonies.find(n=>n.role==='hunter');dead.queen=0;E.tick(s,.25);const deadCount=s.ants.filter(a=>a.faction==='enemy'&&a.colony===dead.id).length;
-  dead.food=999;dead.birth=999;living.food=999;living.birth=living.birthInterval;E.tick(s,.25);assert.equal(dead.fallen,true);assert.equal(dead.destroyed,true);assert.equal(dead.queen,0);assert.equal(s.ants.filter(a=>a.faction==='enemy'&&a.colony===dead.id).length,deadCount);assert.ok(s.ants.filter(a=>a.faction==='enemy'&&a.colony===living.id).length>living.initialPower);assert.ok(!s.world.expeditions.some(ex=>ex.source===dead.id));
+  dead.food=999;dead.birth=999;living.food=999;living.targetPopulation=living.initialPower+2;living.nextGrowthReview=s.time+90;living.birth=living.growthInterval;E.tick(s,.25);assert.equal(dead.fallen,true);assert.equal(dead.destroyed,true);assert.equal(dead.queen,0);assert.equal(s.ants.filter(a=>a.faction==='enemy'&&a.colony===dead.id).length,deadCount);assert.ok(s.ants.filter(a=>a.faction==='enemy'&&a.colony===living.id).length>living.initialPower);assert.ok(!s.world.expeditions.some(ex=>ex.source===dead.id));
   advance(s,30);assert.equal(dead.queen,0);assert.equal(dead.destroyed,true);
 });
 
 test('a living queen can rebuild one forager from a real reachable food reserve after total field losses',()=>{
   const s=E.create(64033),n=s.colonies.find(n=>n.role==='near');s.ants=s.ants.filter(a=>a.faction!=='enemy'||a.colony!==n.id);s.time=200;n.lastEmergencyBrood=0;n.zeroPopulationSince=0;n.food=0;n.losses=n.initialPower;
-  const reserve=s.resources.filter(r=>!r.queenCorpse&&E.distance(E.xy(n.home),E.xy(r.k))<=24&&E.path(s,n.home,r.k)!==null).sort((a,b)=>E.distance(E.xy(n.home),E.xy(a.k))-E.distance(E.xy(n.home),E.xy(b.k)))[0],before=reserve.amount;
+  const reserve=s.resources.filter(r=>!r.queenCorpse&&E.distance(E.xy(n.zones.entry),E.xy(r.k))<=24&&E.path(s,n.home,r.k)!==null).sort((a,b)=>E.distance(E.xy(n.zones.entry),E.xy(a.k))-E.distance(E.xy(n.zones.entry),E.xy(b.k)))[0],before=reserve.amount;
   assert.ok(reserve&&before>=8);E.tick(s,.25);const rebuilt=s.ants.filter(a=>a.faction==='enemy'&&a.colony===n.id);assert.equal(rebuilt.length,1);assert.equal(rebuilt[0].job,'forage');assert.equal(reserve.amount,before-8);assert.equal(n.recoveryState,'recovering');
   rebuilt[0].hp=-1;n.queen=0;s.time+=181;E.tick(s,.25);assert.equal(n.destroyed,true);assert.equal(s.ants.filter(a=>a.faction==='enemy'&&a.colony===n.id).length,0);
 });
@@ -37,11 +37,11 @@ test('the first three queen deaths do not win; only the fourth ends the campaign
 });
 
 test('all four nest entrances use the same selected-soldier expedition command and preserve identity',()=>{
-  for(const role of ['near','hunter','armored','deep_forest']){const s=E.create(64010+role.length),n=s.colonies.find(n=>n.role===role),soldier=E.workers(s)[0],entry=E.surfaceKey(E.xy(n.home).x,4);s.ants=s.ants.filter(a=>a.faction==='player');soldier.caste='soldier';soldier.soldierType='normal';soldier.maxHp=soldier.hp=200;E.cell(s,entry).seen=true;const result=C.direct(s,[soldier.id],{kind:'enemyNest',k:entry,colony:n.id},entry);assert.equal(result.count,1);const g=s.groups.find(g=>g.command==='ENTER_ENEMY_NEST'&&g.enemyNestId===n.id);assert.ok(g);advance(s,45);const same=E.workers(s).find(a=>a.id===soldier.id);assert.ok(same);assert.equal(same.group,g.id);assert.ok(!E.isSurface(s,same.k));}
+  for(const role of ['near','hunter','armored','deep_forest']){const s=E.create(64010+role.length),n=s.colonies.find(n=>n.role===role),soldier=E.workers(s)[0],entry=n.zones.entry;s.ants=s.ants.filter(a=>a.faction==='player');soldier.caste='soldier';soldier.soldierType='normal';soldier.maxHp=soldier.hp=200;E.cell(s,entry).seen=true;const result=C.direct(s,[soldier.id],{kind:'enemyNest',k:entry,colony:n.id},entry);assert.equal(result.count,1);const g=s.groups.find(g=>g.command==='ENTER_ENEMY_NEST'&&g.enemyNestId===n.id);assert.ok(g);advance(s,85);const same=E.workers(s).find(a=>a.id===soldier.id);assert.ok(same);assert.equal(same.group,g.id);assert.ok(!E.isSurface(s,same.k));}
 });
 
 test('all four surface entrances connect to their underground nests, including expanded-map colonies',()=>{
-  const s=E.create(64019);for(const n of s.colonies){const entry=E.surfaceKey(E.xy(n.home).x,4);assert.ok(E.path(s,entry,n.home),`${n.role} entrance should reach its queen chamber`);assert.ok(E.path(s,E.HOME,n.home),`${n.role} nest should connect to the player world graph`);}
+  const s=E.create(64019);for(const n of s.colonies){const entry=n.zones.entry;assert.ok(E.path(s,entry,n.home),`${n.role} entrance should reach its queen chamber`);assert.ok(E.path(s,E.HOME,n.home),`${n.role} nest should connect to the player world graph`);}
 });
 
 test('workers haul three loads from each enemy queen corpse without a portal loop',()=>{
@@ -49,20 +49,22 @@ test('workers haul three loads from each enemy queen corpse without a portal loo
     const s=E.create(64040+i),n=s.colonies.find(n=>n.role===role);s.food=500;for(const colony of s.colonies)colony.attackDelay=99999;
     n.queen=0;E.tick(s,.25);s.ants=s.ants.filter(a=>a.faction!=='enemy');const corpse=s.resources.find(r=>r.queenCorpse&&r.colony===n.id);assert.ok(corpse,`${role} corpse exists`);E.cell(s,corpse.k).seen=true;
     for(const a of E.laborers(s))C.release(a);const result=C.setGatherMode(s,corpse.k,'queen'),route=s.routes.find(r=>r.k===corpse.k);assert.ok(!result.error,`${role} route starts`);assert.equal(route.corpseId,corpse.id);assert.equal(route.nestId,n.id);assert.equal(route.targetLayer,'enemy_nest_underground');
+    // This is a logistics test: keep combat absent, including newly born enemy units.
+    const logisticsTick=()=>{s.ants=s.ants.filter(a=>a.faction!=='enemy');s.wildlife=[];E.tick(s,.25);};
     const start=corpse.amount,startFood=s.food,carrierIds=new Set(),transitions=new Map();let sawPickup=false,sawSurfaceCargo=false;
     for(let step=0;step<2400&&s.resources.includes(corpse);step++){
-      E.tick(s,.25);for(const a of E.laborers(s).filter(a=>a.haulTask?.corpseId===corpse.id)){if(a.carry>0){sawPickup=true;carrierIds.add(a.id);if(E.isSurface(s,a.k))sawSurfaceCargo=true;}transitions.set(a.id,(a.layerTransitions||[]).filter(t=>t.task===route.id).length);}
+      logisticsTick();for(const a of E.laborers(s).filter(a=>a.haulTask?.corpseId===corpse.id)){if(a.carry>0){sawPickup=true;carrierIds.add(a.id);if(E.isSurface(s,a.k))sawSurfaceCargo=true;}transitions.set(a.id,(a.layerTransitions||[]).filter(t=>t.task===route.id).length);}
       if((route.delivered||0)>=13.5&&corpse.amount<start-9)break;
     }
     assert.ok(sawPickup&&sawSurfaceCargo,`${role} workers pick up and cross layers with cargo`);assert.ok(corpse.amount<=start-13.5,`${role} corpse decreases only after at least three loads`);assert.ok((route.delivered||0)>=13.5,`${role} delivers at least three loads`);assert.ok(s.food>startFood-20,`${role} delivery reaches player storage`);assert.equal(route.portalLoopCount||0,0,`${role} does not trigger portal-loop watchdog`);assert.ok([...transitions.values()].every(count=>count<3),`${role} does not repeat the same portal transition three times in the watchdog window`);assert.ok(carrierIds.size>0);
     // The farthest queen now has a real outer/patrol/defense approach; allow the final
     // loaded workers to traverse that longer route before asserting entity cleanup.
-    for(let step=0;step<5200&&s.resources.includes(corpse);step++)E.tick(s,.25);assert.ok(!s.resources.includes(corpse),`${role} depleted corpse entity is removed`);assert.ok(!s.routes.some(r=>r.id===route.id),`${role} completed corpse task source is removed`);assert.ok(!E.laborers(s).some(a=>a.haulTask?.corpseId===corpse.id),`${role} workers clear corpse task context`);
+    for(let step=0;step<5200&&s.resources.includes(corpse);step++)logisticsTick();assert.ok(!s.resources.includes(corpse),`${role} depleted corpse entity is removed`);assert.ok(!s.routes.some(r=>r.id===route.id),`${role} completed corpse task source is removed`);assert.ok(!E.laborers(s).some(a=>a.haulTask?.corpseId===corpse.id),`${role} workers clear corpse task context`);
   }
 });
 
 test('entering an enemy nest without soldiers gives the correct actionable message',()=>{
-  const s=E.create(64018),n=s.colonies[0],entry=E.surfaceKey(E.xy(n.home).x,4);s.ants=s.ants.filter(a=>a.faction==='player');const result=C.direct(s,[],{kind:'enemyNest',k:entry,colony:n.id},entry);assert.match(result.error,/至少選取一隻兵蟻/);assert.doesNotMatch(result.error,/工蟻/);
+  const s=E.create(64018),n=s.colonies[0],entry=n.zones.entry;s.ants=s.ants.filter(a=>a.faction==='player');const result=C.direct(s,[],{kind:'enemyNest',k:entry,colony:n.id},entry);assert.match(result.error,/至少選取一隻兵蟻/);assert.doesNotMatch(result.error,/工蟻/);
 });
 
 test('global war pressure allows at most two simultaneous expeditions',()=>{

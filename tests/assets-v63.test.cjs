@@ -1,4 +1,4 @@
-// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
+// V9.1 authorized growth/ecology/portal/assault changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex').toUpperCase();
@@ -36,7 +36,7 @@ test('V6.3 keeps V6.1 heavy static and the accepted core unchanged',()=>{
  assert.equal(m.images[heavy.key].src,'assets/menu/v6/characters/heavy_hammer_v6.png');
  assert.equal(heavy.lift,82);assert.equal(heavy.mobileLift,62);
  assert.ok(!/heavy_attack_v6_2|menuHeavyV62/.test(runtime));
- assert.equal(hash('engine.js'),'55F1DD2C3D1920805771722AD0F74C2EB2857D3D2A255C002CF1B853A4D96DDC');
+ assert.equal(hash('engine.js'),'911082B4B0A6A448E5C2A6FC310CEC5D650E18EC4A8C7855533990BEA475D8D9');
  assert.ok(read('world.js').includes("radius:a.faction==='enemy'?34:28"));
- assert.equal(hash('interaction.js'),'7DB6A9712410450B3C4EA543D2BD174F835D8FDF0D22AD2F72D73625C5606F4C');
+ assert.equal(hash('interaction.js'),'36C0BF11C1C88ABB5EA432FB2CBB5D35ADDB5109D357550613D20AB93104E635');
 });

@@ -1,4 +1,4 @@
-// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
+// V9.1 authorized growth/ecology/portal/assault changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex').toLowerCase();
 const scope={window:{}};vm.runInNewContext(read('assets/manifest.js'),scope);const m=scope.window.AntAssetManifest,packageRoot='assets/v7.1/';
@@ -31,10 +31,10 @@ test('V7.1 uses the proven flag-cloth and flyer routines, with a static heavy',(
  assert.match(art,/cycle=\(time\/44000\+\.06\)%1/);assert.match(art,/beat=Math\.sin\(time\*Math\.PI\*2\*17\/1000\)/);
 });
 test('V7 loading, world visuals, V6.3 opening and core implementation remain intact',()=>{
- const html=read('index.html');assert.ok(html.includes('app-ready.js?v=v7'));assert.ok(html.includes('world.js?v=assets-v91-final'));assert.ok(html.includes('intro_cinematic_v6_3_capcut_badged.mp4'));
+ const html=read('index.html');assert.ok(html.includes('app-ready.js?v=v7'));assert.ok(html.includes('world.js?v=release-v9-1'));assert.ok(html.includes('intro_cinematic_v6_3_capcut_badged.mp4'));
  assert.ok(html.includes('assets/manifest.js?v=assets-v8-world-rebuild'));assert.ok(html.includes('menu-art.js?v=assets-v71-menu-confrontation'));
  assert.ok(read('world.js').includes('this.art.ground')); 
- assert.equal(hash('engine.js'),'55f1dd2c3d1920805771722ad0f74c2eb2857d3d2a255c002cf1b853a4d96ddc');
- assert.equal(hash('interaction.js'),'7db6a9712410450b3c4ea543d2bd174f835d8fdf0d22ad2f72d73625c5606f4c');
+ assert.equal(hash('engine.js'),'911082b4b0a6a448e5c2a6fc310cec5d650e18ec4a8c7855533990bea475d8d9');
+ assert.equal(hash('interaction.js'),'36c0bf11c1c88abb5ea432fb2cbb5d35addb5109d357550613d20ab93104e635');
  assert.ok(read('assets/LICENSES.md').includes('V7.1 confrontation menu background'));
 });
