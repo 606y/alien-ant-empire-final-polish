@@ -37,7 +37,7 @@ test('the first three queen deaths do not win; only the fourth ends the campaign
 });
 
 test('all four nest entrances use the same selected-soldier expedition command and preserve identity',()=>{
-  for(const role of ['near','hunter','armored','deep_forest']){const s=E.create(64010+role.length),n=s.colonies.find(n=>n.role===role),soldier=E.workers(s)[0],entry=E.surfaceKey(E.xy(n.home).x,4);s.ants=s.ants.filter(a=>a.faction==='player');soldier.caste='soldier';soldier.soldierType='normal';soldier.maxHp=soldier.hp=200;E.cell(s,entry).seen=true;const result=C.direct(s,[soldier.id],{kind:'enemyNest',k:entry,colony:n.id},entry);assert.equal(result.count,1);const g=s.groups.find(g=>g.command==='ENTER_ENEMY_NEST'&&g.queenId===n.id);assert.ok(g);advance(s,45);const same=E.workers(s).find(a=>a.id===soldier.id);assert.ok(same);assert.equal(same.group,g.id);assert.ok(!E.isSurface(s,same.k));}
+  for(const role of ['near','hunter','armored','deep_forest']){const s=E.create(64010+role.length),n=s.colonies.find(n=>n.role===role),soldier=E.workers(s)[0],entry=E.surfaceKey(E.xy(n.home).x,4);s.ants=s.ants.filter(a=>a.faction==='player');soldier.caste='soldier';soldier.soldierType='normal';soldier.maxHp=soldier.hp=200;E.cell(s,entry).seen=true;const result=C.direct(s,[soldier.id],{kind:'enemyNest',k:entry,colony:n.id},entry);assert.equal(result.count,1);const g=s.groups.find(g=>g.command==='ENTER_ENEMY_NEST'&&g.enemyNestId===n.id);assert.ok(g);advance(s,45);const same=E.workers(s).find(a=>a.id===soldier.id);assert.ok(same);assert.equal(same.group,g.id);assert.ok(!E.isSurface(s,same.k));}
 });
 
 test('all four surface entrances connect to their underground nests, including expanded-map colonies',()=>{

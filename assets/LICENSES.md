@@ -37,3 +37,7 @@ The owner-supplied AlienAntEmpire_Assets_v8.zip was retrieved from the connected
 ## V9 original scene artwork
 
 The three PNG atlases in `assets/v9/` were generated specifically for this project with the built-in image generation tool. They contain no copied pixels from the user’s gameplay references. Original Canvas terrain and articulated movement are project code. No additional third-party images, fonts, music, or recordings were downloaded. See `assets/v9/MANIFEST.json` and `assets/v9/docs/ART_DIRECTION.md` for inventory and provenance.
+
+## V9.1 original creatures and enemy facilities
+
+The three PNG atlases under `assets/v9.1/` were created for this project with built-in image generation: enemy soldiers, living/dead wildlife, and four cultures of nest equipment. No external artwork, fonts, audio, or reference-image pixels were incorporated. See `assets/v9.1/MANIFEST.json` for dimensions and SHA-256 checksums. V9 contains four original atlases (including player-castes.png).

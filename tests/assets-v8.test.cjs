@@ -1,3 +1,4 @@
+// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('fs'),path=require('path'),crypto=require('crypto'),vm=require('vm');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),world=read('world.js');
@@ -45,7 +46,7 @@ test('pending play cannot restart menu after entering cinematic or continuing sa
 });
 test('V8 integration keeps saved game key, menu art, movie and 430ms mobile gesture',()=>{
  const app=read('app.js'),html=read('index.html');assert.ok(app.includes("'alien-ant-empire-v0641'"));assert.match(app,/},430\)/);assert.ok(html.includes('menu-art.js?v=assets-v71-menu-confrontation'));assert.ok(html.includes('intro_cinematic_v6_3_capcut_badged.mp4'));assert.ok(html.includes('assets/v8/ui/v8-ui.css'));assert.match(app,/audio\.leaveMenu\(\);audio\.unlock\(\)/);
- for(const [p,sha]of [['engine.js','436ebb5a4184bdab850cb89dc9741a85aca822fca406da12880e87df7670d858'],['interaction.js','587b19cf04d9c355c4f4af6850a8239baf559ba74f1fc7c1f19a6f41c73179d4']])assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex'),sha);
+ for(const [p,sha]of [['engine.js','55f1dd2c3d1920805771722ad0f74c2eb2857d3d2a255c002cf1b853a4d96ddc'],['interaction.js','7db6a9712410450b3c4ea543d2bd174f835d8fdf0d22ad2f72d73625c5606f4c']])assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex'),sha);
 });
 
 

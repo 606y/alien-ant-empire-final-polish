@@ -1,3 +1,4 @@
+// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex').toUpperCase();
@@ -35,7 +36,7 @@ test('V6.3 keeps V6.1 heavy static and the accepted core unchanged',()=>{
  assert.equal(m.images[heavy.key].src,'assets/menu/v6/characters/heavy_hammer_v6.png');
  assert.equal(heavy.lift,82);assert.equal(heavy.mobileLift,62);
  assert.ok(!/heavy_attack_v6_2|menuHeavyV62/.test(runtime));
- assert.equal(hash('engine.js'),'436EBB5A4184BDAB850CB89DC9741A85ACA822FCA406DA12880E87DF7670D858');
+ assert.equal(hash('engine.js'),'55F1DD2C3D1920805771722AD0F74C2EB2857D3D2A255C002CF1B853A4D96DDC');
  assert.ok(read('world.js').includes("radius:a.faction==='enemy'?34:28"));
- assert.equal(hash('interaction.js'),'587B19CF04D9C355C4F4AF6850A8239BAF559BA74F1FC7C1F19A6F41C73179D4');
+ assert.equal(hash('interaction.js'),'7DB6A9712410450B3C4EA543D2BD174F835D8FDF0D22AD2F72D73625C5606F4C');
 });

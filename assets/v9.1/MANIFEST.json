@@ -1,0 +1,30 @@
+{
+  "version": "V9.1",
+  "source": "Original artwork generated specifically for this project with built-in image generation. No copied reference pixels.",
+  "atlases": [
+    {
+      "path": "enemy-castes.png",
+      "columns": 4,
+      "rows": 2,
+      "width": 1774,
+      "height": 887,
+      "sha256": "2e411a25ac6afe3b8e079266f6fa39d9f8b1d79b8adcb69b07f37f1ca221afc2"
+    },
+    {
+      "path": "wildlife.png",
+      "columns": 3,
+      "rows": 2,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "5197b5223aa2e13f2d2f9dc2fdb4149c6b5bc9ecac113b09b12faa482bb9b848"
+    },
+    {
+      "path": "enemy-facilities.png",
+      "columns": 4,
+      "rows": 5,
+      "width": 1122,
+      "height": 1402,
+      "sha256": "555103ceb761439799e4ee98c926991593fcd12767cecbee883dab1596b8614b"
+    }
+  ]
+}

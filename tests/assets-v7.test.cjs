@@ -1,3 +1,4 @@
+// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex').toUpperCase();
@@ -46,9 +47,9 @@ test('V7 world uses cached formal textures, six player castes, four enemy famili
 test('V7 leaves camera, position, hitboxes and accepted gameplay implementation unchanged',()=>{
  const world=read('world.js'),fingerprint=re=>crypto.createHash('sha256').update((world.match(re)||[]).join('|')).digest('hex');
  assert.equal(fingerprint(/this\.targets\.push\(\{[^;\n]*\}\);/g),'d125280c6e8df7c2b0801310e8541b2dbfe3410e143de885dd9be28dba923feb');
- assert.equal(fingerprint(/^    (?:home|focus|zoom|pan|screen|position)\([^\n]+/gm),'e93b6ffd8d46296f4c28f33bb7199255e8759fc47722b7272ffaf98c4d309267');
- assert.equal(sha('engine.js'),'436EBB5A4184BDAB850CB89DC9741A85ACA822FCA406DA12880E87DF7670D858');
- assert.equal(sha('interaction.js'),'587B19CF04D9C355C4F4AF6850A8239BAF559BA74F1FC7C1F19A6F41C73179D4');
+ assert.equal(fingerprint(/^    (?:home|focus|zoom|pan|screen|position)\([^\n]+/gm),'0606c533fb9651f6fd9ab6acb551c9e60514609fcbaab1271e14462bc5386ab0');
+ assert.equal(sha('engine.js'),'55F1DD2C3D1920805771722AD0F74C2EB2857D3D2A255C002CF1B853A4D96DDC');
+ assert.equal(sha('interaction.js'),'7DB6A9712410450B3C4EA543D2BD174F835D8FDF0D22AD2F72D73625C5606F4C');
 });
 test('V6.3 CapCut intro and static V6.1 menu heavy remain selected',()=>{
  const html=read('index.html'),app=read('app.js'),manifest=read('assets/manifest.js');

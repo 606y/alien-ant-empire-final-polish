@@ -8,8 +8,8 @@ test('selected soldiers enter the enemy nest, preserve the expedition command an
   for(const other of s.colonies.filter(other=>other.id!==n.id))Object.assign(other,{queen:0,fallen:true,destroyed:true,alive:false});
   for(const a of E.workers(s).filter(a=>ids.includes(a.id))){a.caste='soldier';a.soldierType='normal';a.maxHp=40;a.hp=40;}
   E.cell(s,entry).seen=true;n.queen=12;const result=C.direct(s,ids,{kind:'enemyNest',k:entry,colony:n.id},entry);assert.equal(result.count,8);assert.match(result.text,/兵蟻 8 隻正在進入敵巢/);
-  const group=s.groups.find(g=>g.command==='ENTER_ENEMY_NEST');assert.ok(group);assert.equal(group.queenId,n.id);advance(s,70);
-  const alive=E.workers(s).filter(a=>ids.includes(a.id));assert.ok(alive.some(a=>!E.isSurface(s,a.k)));assert.ok(alive.every(a=>a.group===group.id||s.won));assert.ok(s.won);assert.ok(s.events.some(e=>/四個敵對蟻國/.test(e.text)));
+  const group=s.groups.find(g=>g.command==='ENTER_ENEMY_NEST');assert.ok(group);assert.equal(group.enemyNestId,n.id);assert.equal(group.queenId,undefined);advance(s,45);assert.equal(s.won,false);const entered=E.workers(s).filter(a=>ids.includes(a.id));assert.ok(entered.some(a=>E.nestId(a.k)===n.id));E.cell(s,n.queenK).seen=true;const attack=C.direct(s,ids,{kind:'enemyQueen',k:n.queenK,colony:n.id},n.queenK);assert.equal(attack.count,8);advance(s,70);
+  const alive=E.workers(s).filter(a=>ids.includes(a.id));assert.ok(alive.some(a=>!E.isSurface(s,a.k)));assert.ok(alive.every(a=>s.groups.some(g=>g.id===a.group)||s.won));assert.ok(s.won);assert.ok(s.events.some(e=>/四個敵對蟻國/.test(e.text)));
 });
 
 test('an enemy nest expedition never substitutes workers for a selected non-soldier force',()=>{

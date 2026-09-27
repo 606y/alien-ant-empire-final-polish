@@ -21,7 +21,7 @@ function leaf(c,x,y,len,angle,color,light='#8c9a5b'){
  c.save();c.translate(x,y);c.rotate(angle);const g=c.createLinearGradient(0,-len*.3,0,len*.3);g.addColorStop(0,light);g.addColorStop(.4,color);g.addColorStop(1,'#182c20');c.fillStyle=g;c.beginPath();c.moveTo(0,0);c.bezierCurveTo(len*.35,-len*.42,len*.8,-len*.22,len,0);c.bezierCurveTo(len*.6,len*.32,len*.2,len*.3,0,0);c.fill();line(c,[[0,0],[len*.84,0]],'#b1ab6a55',Math.max(.006,len*.018));c.restore();
 }
 const atlases={};
-const ready=Promise.all(['facilities','objects','ant-bodies','player-castes'].map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{atlases[name]=im;resolve()};im.onerror=()=>resolve();im.src='assets/v9/'+name+'.png'})));
+const ready=Promise.all(['facilities','objects','ant-bodies','player-castes','enemy-castes','wildlife','enemy-facilities'].map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{atlases[name]=im;resolve()};im.onerror=()=>resolve();im.src='assets/'+(['enemy-castes','wildlife','enemy-facilities'].includes(name)?'v9.1/':'v9/')+name+'.png'})));
 const crops=new Map();
 function atlasCell(name,index,cols,rows){const im=atlases[name];if(!im)return null;const key=name+index;if(crops.has(key))return crops.get(key);const w=im.width/cols,h=im.height/rows,x=Math.round(index%cols*w),y=Math.round(Math.floor(index/cols)*h),sw=Math.floor(w),sh=Math.floor(h);const a=document.createElement('canvas');a.width=sw;a.height=sh;const g=a.getContext('2d');g.drawImage(im,x,y,sw,sh,0,0,sw,sh);const d=g.getImageData(0,0,sw,sh).data;let left=sw,top=sh,right=0,bottom=0;for(let yy=0;yy<sh;yy++)for(let xx=0;xx<sw;xx++)if(d[(yy*sw+xx)*4+3]>18){left=Math.min(left,xx);right=Math.max(right,xx);top=Math.min(top,yy);bottom=Math.max(bottom,yy)}const cell={im,x:x+left,y:y+top,w:right-left+1,h:bottom-top+1};crops.set(key,cell);return cell;}
 function stamp(c,cell,x,y,w,h){c.drawImage(cell.im,cell.x,cell.y,cell.w,cell.h,x-w/2,y-h/2,w,h)}
@@ -33,8 +33,8 @@ class SceneArt{
   const smooth=(x,y,n)=>{const gx=x/n,gy=y/n,ix=Math.floor(gx),iy=Math.floor(gy),fx=gx-ix,fy=gy-iy,u=fx*fx*(3-2*fx),v=fy*fy*(3-2*fy),h=(xx,yy)=>hash(((xx% (256/n))+(256/n))%(256/n)+19,((yy%(256/n))+(256/n))%(256/n)+71);return h(ix,iy)*(1-u)*(1-v)+h(ix+1,iy)*u*(1-v)+h(ix,iy+1)*(1-u)*v+h(ix+1,iy+1)*u*v};
   for(let y=0;y<256;y++)for(let x=0;x<256;x++){
    const grain=hash(x,y),n=smooth(x,y,32)*.38+smooth(x,y,8)*.27+grain*.35,moss=smooth(x,y,64);
-   let rgb;if(kind==='surface'){const m=Math.max(0,(moss-.39)*2.2);rgb=[100+n*39-m*41,84+n*34-m*9,56+n*27-m*16]}else if(kind==='floor')rgb=[91+n*47,66+n*36,42+n*23];else rgb=[40+n*36,32+n*27,24+n*18];
-   const i=(y*256+x)*4;for(let z=0;z<3;z++)a[i+z]=rgb[z];a[i+3]=255;
+   let rgb;if(kind==='surface'){const m=Math.max(0,(moss-.39)*2.2);rgb=[100+n*39-m*41,84+n*34-m*9,56+n*27-m*16]}else if(kind.startsWith('floor'))rgb=[91+n*47,66+n*36,42+n*23];else rgb=[40+n*36,32+n*27,24+n*18];
+   if(kind.includes('near'))rgb=[rgb[0]*.72,rgb[1]*.65,rgb[2]*1.3];if(kind.includes('hunter'))rgb=[rgb[0]*.58,rgb[1]*1.05,rgb[2]*1.15];if(kind.includes('armored'))rgb=[rgb[0]*1.4,rgb[1]*1.38,rgb[2]*1.3];if(kind.includes('deep_forest'))rgb=[rgb[0]*.78,rgb[1]*1.1,rgb[2]*.78];const i=(y*256+x)*4;for(let z=0;z<3;z++)a[i+z]=rgb[z];a[i+3]=255;
   }c.putImageData(img,0,0);
   // Small mineral flecks and organic litter are embedded material, never resources.
   for(let i=0;i<600;i++){const x=hash(i,12)*256,y=hash(i,52)*256,r=.3+hash(i,80)*1.1;oval(c,x,y,r,r*.5,i%3?'#e0bc7c0b':'#0c160f18')}
@@ -45,7 +45,7 @@ class SceneArt{
   p.setTransform(new DOMMatrix().translate(ox,oy).scale(span/256));return p;
  }
  ground(w,h,ox,oy,scale,view){
-  const c=this.world.ctx;c.fillStyle=this.pattern(c,view==='surface'?'surface':'soil',scale*5,ox,oy);c.fillRect(0,0,w,h);
+  const c=this.world.ctx,nation=this.state?.colonies.find(n=>n.id===this.world.nestId)?.role;c.fillStyle=this.pattern(c,view==='surface'?'surface':nation?'soil-'+nation:'soil',scale*5,ox,oy);c.fillRect(0,0,w,h);
   const minX=Math.floor(-ox/scale)-1,maxX=Math.ceil((w-ox)/scale)+1,minY=Math.floor(-oy/scale)-1,maxY=Math.ceil((h-oy)/scale)+1;
   c.save();c.translate(ox,oy);c.scale(scale,scale);
   for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++){const n=hash(x,y),xx=x+hash(x+11,y)*.8,yy=y+hash(x,y+13)*.8;
@@ -61,7 +61,7 @@ class SceneArt{
   this.world.ctx.drawImage(this.fogLayer,0,0);
  }
  cave(world,s){
-  const c=world.ctx,{nodes,edges}=world.corridors(s),signature=nodes.map(n=>n.x+','+n.y+','+(n.narrow?1:0)).join(';')+'|'+s.rooms.map(r=>r.k+':'+r.size+':'+r.status).join(';');
+  const c=world.ctx,nation=s.colonies.find(n=>n.id===world.nestId)?.role,{nodes,edges}=world.corridors(s),signature=nodes.map(n=>n.x+','+n.y+','+(n.narrow?1:0)).join(';')+'|'+s.rooms.map(r=>r.k+':'+r.size+':'+r.status).join(';');
   let cache=this.caveCache;
   if(!cache||cache.signature!==signature){
    const set=new Set(nodes.map(n=>E.key(n.x,n.y)));
@@ -75,15 +75,15 @@ class SceneArt{
    cache=this.caveCache={signature,set,nodes,outer:make(1.28),rim:make(1.15),lip:make(1.04),floor:make(.91)};this.metrics.caveBuilds++;
   }
   c.save();c.translate(0,.08);c.fillStyle='#0e0c09';c.fill(cache.outer);c.restore();
-  c.fillStyle='#30251a';c.fill(cache.outer);c.fillStyle=this.pattern(c,'floor',4);c.fill(cache.rim);c.fillStyle='#856c46';c.fill(cache.lip);
-  c.save();c.translate(0,.07);c.fillStyle='#302219';c.fill(cache.lip);c.restore();c.fillStyle=this.pattern(c,'floor',4);c.fill(cache.floor);
+  c.fillStyle='#30251a';c.fill(cache.outer);c.fillStyle=this.pattern(c,nation?'floor-'+nation:'floor',4);c.fill(cache.rim);c.fillStyle='#856c46';c.fill(cache.lip);
+  c.save();c.translate(0,.07);c.fillStyle='#302219';c.fill(cache.lip);c.restore();c.fillStyle=this.pattern(c,nation?'floor-'+nation:'floor',4);c.fill(cache.floor);
   // Paint only boundary strata; intersections remain continuous open ground.
   const m=world.metrics;
   for(const n of cache.nodes){
    const sp=world.screen(n.x,n.y);if(sp.x<-m.scale||sp.x>m.w+m.scale||sp.y<-m.scale||sp.y>m.h+m.scale)continue;
    for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){if(cache.set.has(E.key(n.x+dx,n.y+dy)))continue;
     const angle=Math.atan2(dy,dx),rad=n.narrow?.32:.52;
-    for(let j=0;j<4;j++){const t=(j-1.5)*.22,x=n.x+dx*rad-dy*t,y=n.y+dy*rad+dx*t,seed=n.x*101+n.y*29+j;pebble(c,x,y,.055+hash(seed,3)*.035,seed,'#66503a');if(j===1)line(c,[[x,y],[x+dx*.13-dy*.07,y+dy*.13+dx*.07]],'#302117',.017)}
+    for(let j=0;j<4;j++){const t=(j-1.5)*.22,x=n.x+dx*rad-dy*t,y=n.y+dy*rad+dx*t,seed=n.x*101+n.y*29+j;pebble(c,x,y,.055+hash(seed,3)*.035,seed,'#66503a');if(j===2&&nation){if(nation==='near'){c.fillStyle='#9072b0';c.beginPath();c.moveTo(x-.07,y);c.lineTo(x+.015,y-.22);c.lineTo(x+.09,y-.03);c.fill()}else if(nation==='hunter'){oval(c,x,y,.15,.07,'#40696677');leaf(c,x,y,.16,angle,'#3b7874')}else if(nation==='armored'){line(c,[[x-.08,y+.05],[x,y-.08],[x+.06,y+.01]],'#c4b694',.055)}else{line(c,[[x-.12,y],[x+.1,y-.13]],'#92a36a',.025);oval(c,x+.1,y-.16,.12,.045,'#8d9560')}}if(j===1)line(c,[[x,y],[x+dx*.13-dy*.07,y+dy*.13+dx*.07]],'#302117',.017)}
     if(hash(n.x+dx,n.y+dy)>.78){const x=n.x+dx*.62,y=n.y+dy*.62;line(c,[[x+dx*.15,y+dy*.15],[x,y],[x-dx*.23-dy*.08,y-dy*.23+dx*.08]],'#322116',.04);line(c,[[x,y],[x-dx*.15+dy*.07,y-dy*.15-dx*.07]],'#8d6c41',.015)}
    }
   }
@@ -107,8 +107,8 @@ class SceneArt{
    c.restore();return;
   }
   // Equipment sits directly on the excavated floor; no detached room disc.
-  const facility=atlasCell('facilities',{nursery:0,rest:1,military:2,mutation:3,store:4,prey:5,royal:6}[room.type],4,2);
-  if(facility){const n=level===1?1:level===2?2:3;for(let i=0;i<n;i++){const xx=n===1?0:(i-(n-1)/2)*.66,yy=n===3&&i===1?-.24:.02,w=n===1?1.25:1.0;stamp(c,facility,xx,yy-.15,w,w*facility.h/facility.w*.78)}if(room.type==='store'&&s.food>0){const food=atlasCell('objects',0,4,3);if(food){const fill=Math.min(1,s.food/Math.max(1,E.foodCapacity(s)));for(let i=0;i<Math.ceil(fill*level*2);i++)stamp(c,food,-.4+(i%3)*.4,.34+Math.floor(i/3)*.12,.3,.22)}}c.restore();return;}
+  const nation=this.state?.colonies.find(n=>n.id===room.nestId)?.role,nationColumn=['near','hunter','armored','deep_forest'].indexOf(nation),facility=nationColumn>=0?atlasCell('enemy-facilities',nationColumn+({nursery:0,military:1,store:2,mutation:3,royal:4}[room.type]||0)*4,4,5):atlasCell('facilities',{nursery:0,rest:1,military:2,mutation:3,store:4,prey:5,royal:6}[room.type],4,2);
+  if(facility){const n=room.type==='royal'?1:level===1?1:level===2?2:3;for(let i=0;i<n;i++){const xx=n===1?0:(i-(n-1)/2)*.66,yy=n===3&&i===1?-.24:.02,w=room.type==='royal'?1.55:n===1?1.25:1.0;stamp(c,facility,xx,yy-.15,w,w*facility.h/facility.w*.78)}if(room.type==='store'&&s.food>0){const food=atlasCell('objects',0,4,3);if(food){const fill=Math.min(1,s.food/Math.max(1,E.foodCapacity(s)));for(let i=0;i<Math.ceil(fill*level*2);i++)stamp(c,food,-.4+(i%3)*.4,.34+Math.floor(i/3)*.12,.3,.22)}}c.restore();return;}
   const beds=level===1?2:level===2?4:6;
   const pod=(px,py,rx,ry,color)=>{
    oval(c,px,py+.055,rx*1.15,ry*1.25,'#160e0980');oval(c,px,py,rx,ry,shade(c,px,py,rx,'#b7a178','#6d6145','#332c22'));
@@ -173,10 +173,10 @@ class SceneArt{
  }
  body(key){
   if(this.bodies.has(key))return this.bodies.get(key);
-  const queen=key.includes('queen'),role=key.startsWith('units/player')?'player':key.split('/').pop().replace('_queen',''),p=palettes[role]||palettes.player,type=key.split('/').pop(),armored=type.includes('armor')||role==='armored',jaw=type.includes('jaw'),acid=type.includes('acid');
+  const queen=key.includes('queen'),role=key.startsWith('units/player')?'player':key.split('/').pop().replace(/_(?:queen|soldier|special)$/,''),p=palettes[role]||palettes.player,type=key.split('/').pop(),armored=type.includes('armor')||role==='armored',jaw=type.includes('jaw'),acid=type.includes('acid');
   const canvas=document.createElement('canvas');canvas.width=320;canvas.height=220;const c=canvas.getContext('2d');c.translate(160,110);c.scale(80,80);
-  const nation=['player','near','hunter','armored','deep_forest'].indexOf(role),caste={worker:0,soldier_normal:1,soldier_armor:2,soldier_jaw:3,soldier_acid:4,flyer:5}[type],dedicated=role==='player'&&!queen&&caste!==undefined,cell=dedicated?atlasCell('player-castes',caste,3,2):atlasCell('ant-bodies',Math.max(0,nation)+(queen?5:0),5,2);
-  if(cell){const width=queen?2.65:1.95;stamp(c,cell,queen?-.2:0,0,width,width*cell.h/cell.w);if(!queen&&armored&&!dedicated){for(const side of [-1,1]){c.fillStyle=p.light;c.beginPath();c.moveTo(-.25,side*.12);c.lineTo(.3,side*.38);c.lineTo(.5,side*.15);c.closePath();c.fill()}}if(jaw&&!dedicated)for(const side of [-1,1]){c.strokeStyle=p.light;c.lineWidth=.11;c.beginPath();c.moveTo(.63,side*.12);c.quadraticCurveTo(1.45,side*.45,1.32,side*.015);c.stroke()}if(acid&&!dedicated)for(const side of [-1,1])oval(c,-.5,side*.15,.28,.14,shade(c,-.5,side*.15,.3,'#d6dc9b','#89994f','#354626'));this.bodies.set(key,canvas);this.metrics.bodyBuilds++;return canvas;}
+  const nation=['player','near','hunter','armored','deep_forest'].indexOf(role),caste={worker:0,soldier_normal:1,soldier_armor:2,soldier_jaw:3,soldier_acid:4,flyer:5}[type],dedicated=role==='player'&&!queen&&caste!==undefined,cell=dedicated?atlasCell('player-castes',caste,3,2):role!=='player'&&!queen&&/_(soldier|special)$/.test(type)?atlasCell('enemy-castes',Math.max(0,nation-1)+(type.endsWith('_special')?4:0),4,2):atlasCell('ant-bodies',Math.max(0,nation)+(queen?5:0),5,2);
+  if(cell){const width=queen?2.65:1.95;stamp(c,cell,queen?-.2:0,0,width,width*cell.h/cell.w);if(jaw&&!dedicated)for(const side of [-1,1]){c.strokeStyle=p.light;c.lineWidth=.11;c.beginPath();c.moveTo(.63,side*.12);c.quadraticCurveTo(1.45,side*.45,1.32,side*.015);c.stroke()}if(acid&&!dedicated)for(const side of [-1,1])oval(c,-.5,side*.15,.28,.14,shade(c,-.5,side*.15,.3,'#d6dc9b','#89994f','#354626'));this.bodies.set(key,canvas);this.metrics.bodyBuilds++;return canvas;}
   const shell=(x,y,rx,ry)=>{oval(c,x,y,rx,ry,shade(c,x,y,Math.max(rx,ry),p.light,p.mid,p.dark));c.strokeStyle=p.edge+'55';c.lineWidth=.013;c.beginPath();c.ellipse(x-.025,y-.025,rx*.82,ry*.8,0,Math.PI,TAU);c.stroke()};
   shell(queen?-.65:-.52,0,queen?.8:.39,queen?.48:.25);shell(-.06,0,.09,.095);shell(.18,0,.25,.16);shell(.6,0,jaw?.37:armored?.34:.27,armored?.29:.23);
   if(queen){for(let i=0;i<6;i++){const x=-1.14+i*.19;c.strokeStyle=p.edge+'88';c.lineWidth=.02;c.beginPath();c.ellipse(x,0,.04,.20+Math.sin((i+1)/7*Math.PI)*.24,0,-Math.PI/2,Math.PI/2);c.stroke()}shell(.25,-.14,.18,.1);shell(.25,.14,.18,.1)}
@@ -191,11 +191,12 @@ class SceneArt{
   this.bodies.set(key,canvas);this.metrics.bodyBuilds++;return canvas;
  }
  unit(x,y,size,angle,a,queen,key){
-  const c=this.world.ctx,p=palettes[key?.startsWith('units/player')?'player':key?.split('/').pop().replace('_queen','')]||palettes.player;
+  const c=this.world.ctx,p=palettes[key?.startsWith('units/player')?'player':key?.split('/').pop().replace(/_(?:queen|soldier|special)$/,'')]||palettes.player;
   let phase=0,moving=false;if(a){let m=this.motion.get(a);if(!m){m={x:a.x,y:a.y,phase:hash(a.id,9)*TAU,stamp:this.clock,moving:false};this.motion.set(a,m)}
    if(m.stamp!==this.clock){const d=Math.hypot(a.x-m.x,a.y-m.y);moving=d>.0001&&d<2;m.phase+=moving?d*20:0;m.moving=moving;m.x=a.x;m.y=a.y;m.stamp=this.clock;this.motion.set(a,m)}phase=m.phase;moving=m.moving;}
   c.save();c.translate(x,y);c.rotate(angle);c.scale(size,size);
   oval(c,queen?-.2:0,.10,queen?1.35:.98,queen?.48:.39,'#07100c24');oval(c,queen?-.2:0,.055,queen?1.1:.79,queen?.35:.24,'#07100c38');
+  if(key?.endsWith('/flyer')){const flap=.18+Math.abs(Math.sin(this.clock*38+(a?.id||0)))*.82;for(const side of [-1,1]){c.save();c.scale(1,flap);oval(c,-.13,side*.68,.72,.24,'#d5dcc94f',side*-.48);oval(c,-.45,side*.43,.5,.18,'#c0cda143',side*-.3);line(c,[[.12,side*.08],[-.64,side*.92]],'#c3cc9c66',.012);c.restore();}}
   for(const side of [-1,1])for(let i=0;i<3;i++){
    const walk=moving?Math.sin(phase+i*2.1+(side>0?Math.PI:0))*.18:0,hip=.27-i*.22,kneeX=.47-i*.46+walk,kneeY=side*(queen?.53:.43),toeX=.65-i*.62-walk*.6,toeY=side*(queen?.75:.67);
    line(c,[[hip,side*.095],[kneeX,kneeY],[toeX,toeY]],p.dark,.068);line(c,[[hip-.018,side*.08],[kneeX-.018,kneeY-.015],[toeX-.012,toeY-.015]],p.light,.018);
@@ -204,6 +205,13 @@ class SceneArt{
   const twitch=Math.sin(this.clock*2+(a?.id||0))*.035;
   for(const side of [-1,1])line(c,[[.67,side*.13],[1.03,side*(.33+twitch)],[1.25,side*.25]],p.edge,.024);
   c.drawImage(this.body(key),-2,-1.375,4,2.75);c.restore();
+ }
+ wildlife(w,x,y,size,dead=false){
+  const c=this.world.ctx,index=w.sizeClass==='small'?0:w.sizeClass==='large'?2:1,cell=atlasCell('wildlife',index+(dead?3:0),3,2);if(!cell)return;
+  const angle=w.moveFrom?Math.atan2(w.y-w.moveFrom.y,w.x-w.moveFrom.x):w.heading||0,phase=this.clock*9+w.id;
+  c.save();c.translate(x,y);c.rotate(angle);oval(c,0,size*.10,size*.52,size*.30,'#08110944');
+  if(!dead&&index>0)for(const side of [-1,1])for(let i=0;i<3;i++){const stride=w.moveFrom?Math.sin(phase+i*2.1+side)*size*.08:Math.sin(phase*.35+i)*size*.018;line(c,[[size*(.2-i*.18),side*size*.17],[size*(.3-i*.28)+stride,side*size*.35],[size*(.4-i*.4)-stride,side*size*.51]],'#35291b',size*.035);line(c,[[size*(.2-i*.18),side*size*.17],[size*(.3-i*.28)+stride,side*size*.35]],'#a08c64',size*.013)}
+  const pulse=!dead&&index===0?1+Math.sin(phase*.4)*.025:1;stamp(c,cell,0,0,size*pulse,size*cell.h/cell.w);c.restore();
  }
  entrance(x,y,size,role){
   const c=this.world.ctx,p=palettes[role]||palettes.player;c.save();c.translate(x,y);c.scale(size,size);oval(c,.08,.14,.53,.30,'#09110c44');oval(c,0,0,.43,.30,shade(c,0,-.07,.45,'#b49a6d','#7b6445','#433622'));oval(c,0,-.035,.30,.20,'#282218');oval(c,0,-.04,.235,.15,'#101610');for(let i=0;i<9;i++){const a=i/9*TAU;pebble(c,Math.cos(a)*.37,Math.sin(a)*.24,.05,i,'#8b7857')}

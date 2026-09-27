@@ -6,7 +6,7 @@
   const V8_ART=[];
   const V8_RESOURCE_PROPS={seed:'seeds',fruit:'fruit',insect:'insect_carcass',prey:'prey',fungi:'fungi',sap:'resin',resin:'resin',mineral:'ore'};
   class World {
-    constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.camera={x:8,y:8.7,zoom:1};this.view='nest';this.targets=[];this.time=0;this.metrics={scale:50,x:0,y:0,w:0,h:0};this.fx=[];this.lastHitSeen=new Map();this.v7Images=Object.create(null);this.v8ImageCache=Object.create(null);this.v8Patterns=Object.create(null);this.facingCache=new WeakMap();this.v8Started=false;this.labels=[];this.selectionPaint=[];this.propPaint=[];this.v8Failures=[];this.art=root.AntSceneArt?new root.AntSceneArt(this):null;root.addEventListener?.('ant:app-ready',()=>this.loadV8(),{once:true});}
+    constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.camera={x:8,y:8.7,zoom:1};this.view='nest';this.nestId=null;this.targets=[];this.time=0;this.metrics={scale:50,x:0,y:0,w:0,h:0};this.fx=[];this.lastHitSeen=new Map();this.v7Images=Object.create(null);this.v8ImageCache=Object.create(null);this.v8Patterns=Object.create(null);this.facingCache=new WeakMap();this.v8Started=false;this.labels=[];this.selectionPaint=[];this.propPaint=[];this.v8Failures=[];this.art=root.AntSceneArt?new root.AntSceneArt(this):null;root.addEventListener?.('ant:app-ready',()=>this.loadV8(),{once:true});}
     loadV8(){
       if(this.v8Started)return this.v8Ready;this.v8Started=true;
       const jobs=V8_ART.map(([key,path])=>new Promise(resolve=>{const image=new Image();image.decoding='async';image.onload=()=>{this.v8ImageCache[key]=image;if(/ground|unexplored|matte/.test(key))this.v8Patterns[key]=this.environmentPattern(key,image);resolve(true);};image.onerror=()=>{this.v8Failures.push(path);resolve(false);};image.src=path;}));
@@ -22,14 +22,15 @@
     roomRadius(room){return .38+(room.size===1?1:room.size===2?3:4)*.13;}
     corridors(s){
       const nodes=[],edges=[],seen=new Set();
-      for(const tile of s.cells){if(!tile.open||!tile.seen||tile.sealed||E.isSurface(s,tile))continue;const k=tile.k??E.key(tile.x,tile.y);nodes.push(tile);
+      for(const tile of s.cells){if(!tile.open||!tile.seen||tile.sealed||E.isSurface(s,tile)||E.nestId(tile.k??E.key(tile.x,tile.y))!==this.nestId)continue;const k=tile.k??E.key(tile.x,tile.y);nodes.push(tile);
         for(const n of E.neighbors(s,k)){const b=E.cell(s,n);if(!b?.seen||E.isSurface(s,b))continue;const id=[String(k),String(n)].sort().join('|');if(seen.has(id))continue;seen.add(id);edges.push({a:tile,b,narrow:tile.narrow||b.narrow});}}
       return {nodes,edges};
     }
     nestGeometry(s){this.art?.cave(this,s);}
     roomScene(room,x,y,r,s=this.art?.state){if(s)this.art?.room(room,x,y,r,s);}
     attackTarget(s,a){
-      if(a.action==='攻擊蟻后'){const n=s.colonies.filter(n=>!n.fallen).sort((b,c)=>E.distance(a,E.xy(b.queenK))-E.distance(a,E.xy(c.queenK)))[0];return n?E.xy(n.queenK):null;}
+      if(a.action==='攻擊巢室'){const g=s.groups.find(g=>g.id===a.group),room=s.enemyNests?.flatMap(n=>n.rooms).find(r=>r.id===g?.enemyRoomId);return room?E.xy(room.k):null;}
+      if(a.action==='攻擊蟻后'){const n=s.colonies.filter(n=>!n.fallen&&E.sameMap(s,a.k,n.queenK)).sort((b,c)=>E.distance(a,E.xy(b.queenK))-E.distance(a,E.xy(c.queenK)))[0];return n?E.xy(n.queenK):null;}
       if(a.action==='狩獵'){const g=s.groups.find(g=>g.id===a.group);return s.wildlife.find(w=>!w.dead&&w.id===g?.wildlifeId)||null;}
       if(a.action!=='戰鬥')return null;
       const acid=a.traits.acid>.4,range=acid?2.45:1.05;
@@ -47,12 +48,12 @@
       this.facingCache.set(a,{x:a.x,y:a.y,surface:E.isSurface(s,a.k),angle});return angle;
     }
     paintLabels(){const c=this.ctx;for(const {x,y,text,kind,width,height} of this.labels){c.save();c.font='13px system-ui';c.fillStyle='#17120ee8';c.strokeStyle='#a0825155';c.lineWidth=1;c.beginPath();c.roundRect(x-width/2,y-height/2,width,height,10);c.fill();c.stroke();c.textAlign='center';c.textBaseline='middle';c.fillStyle=kind==='enemy'?'#ecad8a':'#e4d7b6';c.fillText(text,x,y);c.restore();}}
-    home(view){this.view=view;this.camera={x:view==='nest'?8:10,y:view==='nest'?8.7:2,zoom:view==='surface'?1.25:1};}
+    home(view){this.view=view;this.nestId=null;this.camera={x:view==='nest'?8:10,y:view==='nest'?8.7:2,zoom:view==='surface'?1.25:1};}
     focus(k,view=this.view,withPanel=false){this.view=view;const p=E.xy(k);this.camera.x=p.x;this.camera.y=p.y+(withPanel?2:0);}
     zoom(factor){this.camera.zoom=Math.max(.35,Math.min(2.6,this.camera.zoom*factor));}
     pan(dx,dy){this.camera.x-=dx/this.metrics.scale;this.camera.y-=dy/this.metrics.scale;const b=this.bounds||{minX:0,maxX:31,maxY:22};this.camera.x=Math.max(b.minX-8,Math.min(b.maxX+8,this.camera.x));this.camera.y=Math.max(-3,Math.min(b.maxY+8,this.camera.y));}
     screen(x,y,z=0){const m=this.metrics;if(this.view==='surface')return {x:m.x+x*m.scale,y:m.y+(y-z*.08)*m.scale};return {x:m.x+x*m.scale,y:m.y+y*m.scale};}
-    position(x,y){const m=this.metrics,u=(x-m.x)/m.scale,v=(y-m.y)/m.scale;if(this.view==='surface')return E.surfaceKey(Math.round(u),Math.round(v));const px=Math.round(u),py=Math.round(v);return py>=0?E.key(px,py):null;}
+    position(x,y){const m=this.metrics,u=(x-m.x)/m.scale,v=(y-m.y)/m.scale;if(this.view==='surface')return E.surfaceKey(Math.round(u),Math.round(v));const px=Math.round(u),py=Math.round(v);return py>=0?(this.nestId!==null?E.nestKey(this.nestId,px,py):E.key(px,py)):null;}
     line(x,y,x2,y2,color,width){const c=this.ctx;c.strokeStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.stroke();}
     ellipse(x,y,rx,ry,color,rotation=0){const c=this.ctx;c.fillStyle=color;c.beginPath();c.ellipse(x,y,rx,ry,rotation,0,Math.PI*2);c.fill();}
     ant(x,y,size,color,angle,a,queen=false,visualKey=null){this.art?.unit(x,y,size,angle,a,queen,visualKey);}
@@ -62,17 +63,17 @@
       this.targets.push({kind,k,x,y,radius:24,box:{x:x-width/2-4,y:y-22,w:width+8,h:44},...extra});
     }
     draw(s,{selected=[],target=null,digging=false,commandMarker=null}={},elapsed=.016){
-      this.bounds=E.bounds(s,this.view==='surface');this.time+=elapsed;this.targets=[];this.labels=[];this.selectionPaint=[];this.propPaint=[];const c=this.ctx,canvas=this.canvas,r=canvas.getBoundingClientRect(),w=r.width,h=r.height,dpr=Math.min(2,devicePixelRatio||1);
+      this.bounds=E.bounds(s,this.view==='surface');if(this.view==='nest'&&this.nestId!==null){const cells=s.cells.filter(c=>c.nestId===this.nestId);if(cells.length)this.bounds={minX:Math.min(...cells.map(c=>c.x)),maxX:Math.max(...cells.map(c=>c.x)),minY:Math.min(...cells.map(c=>c.y)),maxY:Math.max(...cells.map(c=>c.y))};}this.time+=elapsed;this.targets=[];this.labels=[];this.selectionPaint=[];this.propPaint=[];const c=this.ctx,canvas=this.canvas,r=canvas.getBoundingClientRect(),w=r.width,h=r.height,dpr=Math.min(2,devicePixelRatio||1);
       if(!w||!h)return;if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
       c.setTransform(dpr,0,0,dpr,0,0);
       const scale=Math.min(this.view==='nest'?70:66,w/(this.view==='nest'?9:10),h/9.5)*this.camera.zoom;
       const ox=w/2-this.camera.x*scale,oy=h*.48-this.camera.y*scale;this.metrics={scale,x:ox,y:oy,w,h};
       if(this.art){this.art.state=s;this.art.clock=s.time;}this.worldEnvironment(w,h,ox,oy,scale);if(this.view==='surface')this.art?.fog(s,w,h,ox,oy,scale);
       const noise=(x,y)=>((Math.imul(x+17,374761393)^Math.imul(y+23,668265263))>>>0)%1000/1000;
-      const visibleCell=k=>this.view==='surface'?E.isSurface(s,k):!E.isSurface(s,k)||k===s.mainExit;
+      const activeNest=s.enemyNests?.find(n=>n.id===this.nestId),visibleCell=k=>this.view==='surface'?E.isSurface(s,k):(!E.isSurface(s,k)&&E.nestId(k)===this.nestId)||k===(activeNest?.entry??s.mainExit);
       c.save();c.translate(ox,oy);c.scale(scale,scale);
       for(const tile of s.cells){
-        if(this.view==='surface'&&!E.isSurface(s,tile)||this.view==='nest'&&E.isSurface(s,tile))continue;
+        if(!visibleCell(tile.k??E.key(tile.x,tile.y))||this.view==='nest'&&E.isSurface(s,tile))continue;
         const x=tile.x,y=tile.y,k=tile.k??E.key(x,y),sp=this.screen(x,y),onScreen=sp.x>-scale&&sp.x<w+scale&&sp.y>-scale&&sp.y<h+scale;if(!onScreen)continue;
         
         if(tile.seen&&E.isSurface(s,tile)){
@@ -85,7 +86,7 @@
         if(tile.seen&&tile.hard){c.fillStyle='#0a1012';c.fillRect(x-.5,y-.26,1,.6);this.line(x-.5,y-.26,x+.5,y-.26,'#88928b',.03);}
       }
       if(this.view==='nest')this.nestGeometry(s);
-      if(this.view==='nest')for(const tile of s.cells){if(!tile.seen||!tile.strategicClue||E.isSurface(s,tile))continue;const p=this.screen(tile.x,tile.y);this.label(p.x,p.y-scale*.48,tile.strategicClue,'clue',tile.k??E.key(tile.x,tile.y),{source:0});this.targets.push({kind:'clue',k:tile.k??E.key(tile.x,tile.y),source:0,x:p.x,y:p.y,radius:38});}
+      if(this.view==='nest')for(const tile of s.cells){if(!tile.seen||!tile.strategicClue||E.isSurface(s,tile)||!visibleCell(tile.k??E.key(tile.x,tile.y)))continue;const p=this.screen(tile.x,tile.y);this.label(p.x,p.y-scale*.48,tile.strategicClue,'clue',tile.k??E.key(tile.x,tile.y),{source:0});this.targets.push({kind:'clue',k:tile.k??E.key(tile.x,tile.y),source:0,x:p.x,y:p.y,radius:38});}
       // Territory is a tint on the actual ground, not a separate management view.
       for(const tile of s.cells){const k=tile.k??E.key(tile.x,tile.y);if(!tile.seen||!visibleCell(k))continue;
         if(tile.open){const contested=tile.ours>5&&tile.theirs>5;colorTint: {const n=Math.max(tile.ours,tile.theirs);if(n<1)break colorTint;this.ellipse(tile.x,tile.y,.28,.28,contested?'#d1a17212':tile.ours>tile.theirs?'#b7d17b06':'#a9684d0c');}}
@@ -95,10 +96,11 @@
         const p=this.screen(tile.x,tile.y,tile.elevation||0),diggable=!tile.open&&!tile.hard&&E.adjacent(k).some(n=>E.passable(s,n)&&E.cell(s,n).seen||s.digQueue.includes(n));this.targets.push({kind:E.isSurface(s,tile)?'ground':tile.open?'ground':'soil',k,x:p.x,y:p.y,radius:Math.max(diggable?30:24,scale*.52),diggable});
       }
       // Unit paths are cached by the simulation; ordinary supply routes need no per-frame BFS.
-      for(const a of E.workers(s)){if(!selected.includes(a.id)||!a.path.length)continue;c.strokeStyle='#ecf5b56b';c.lineWidth=.04;c.beginPath();c.moveTo(a.x,a.y);for(const k of a.path){const p=E.xy(k);c.lineTo(p.x,p.y);}c.stroke();}
+      for(const a of E.workers(s)){if(!selected.includes(a.id)||!a.path.length||!visibleCell(a.k))continue;c.strokeStyle='#ecf5b56b';c.lineWidth=.04;c.beginPath();c.moveTo(a.x,a.y);for(const k of a.path){if(!E.sameMap(s,a.k,k))break;const p=E.xy(k);c.lineTo(p.x,p.y);}c.stroke();}
       if(target!==null&&E.cell(s,target)?.seen){const p=E.xy(target);c.strokeStyle='#e2edb0';c.lineWidth=.04;c.setLineDash([.1,.12]);c.beginPath();c.arc(p.x,p.y,.5,0,7);c.stroke();c.setLineDash([]);}
       c.restore();
-      if(this.view==='nest')for(const room of s.rooms){const p=E.xy(room.k),v=this.screen(p.x,p.y),color=E.ROOM_TYPES[room.type].color,stage=room.size===1?(room.maturity>=50?2:1):room.size===2?3:4,r=scale*(.38+stage*.13);this.roomScene(room,v.x,v.y,(this.art?.extent(room,s)||this.roomRadius(room))*scale,s);const progress=room.status==='active'?'':room.status==='excavating'?`開挖中 ${Math.floor((room.planCells?.filter(k=>E.cell(s,k)?.open).length||0)/Math.max(1,room.planCells?.length||1)*100)}% · `:`施工 ${Math.min(99,Math.floor((room.progress||0)/14/(room.targetSize||room.size||1)*100))}% · `;this.label(v.x,v.y-r*.92,`${progress}${E.ROOM_TYPES[room.type].name}`,'room',room.k,{id:room.id});this.targets.push({kind:'room',k:room.k,id:room.id,x:v.x,y:v.y,radius:Math.max(30,r)});}
+      if(this.view==='nest'&&this.nestId===null)for(const room of s.rooms){const p=E.xy(room.k),v=this.screen(p.x,p.y),color=E.ROOM_TYPES[room.type].color,stage=room.size===1?(room.maturity>=50?2:1):room.size===2?3:4,r=scale*(.38+stage*.13);this.roomScene(room,v.x,v.y,(this.art?.extent(room,s)||this.roomRadius(room))*scale,s);const progress=room.status==='active'?'':room.status==='excavating'?`開挖中 ${Math.floor((room.planCells?.filter(k=>E.cell(s,k)?.open).length||0)/Math.max(1,room.planCells?.length||1)*100)}% · `:`施工 ${Math.min(99,Math.floor((room.progress||0)/14/(room.targetSize||room.size||1)*100))}% · `;this.label(v.x,v.y-r*.92,`${progress}${E.ROOM_TYPES[room.type].name}`,'room',room.k,{id:room.id});this.targets.push({kind:'room',k:room.k,id:room.id,x:v.x,y:v.y,radius:Math.max(30,r)});}
+      if(this.view==='nest'&&activeNest)for(const room of activeNest.rooms){if(!E.cell(s,room.k)?.seen)continue;const q=E.xy(room.k),v=this.screen(q.x,q.y);this.roomScene(room,v.x,v.y,scale*1.2,s);if(room.type==='royal')continue;this.label(v.x,v.y-scale*.8,(room.destroyed?'已摧毀 · ':'')+E.ROOM_TYPES[room.type].name,'enemyRoom',room.k,{id:room.id,colony:activeNest.id});}
       for(const prop of this.propPaint){const p=this.screen(prop.x,prop.y);if(p.x>-scale&&p.x<w+scale&&p.y>-scale&&p.y<h+scale)this.prop(prop.name,p.x,p.y,prop.size*scale,prop.angle);}
       if(this.view==='surface'){
         for(const reg of s.regions){const p=this.screen(reg.x,reg.y??2);c.textAlign='center';c.font='12px system-ui';c.fillStyle=reg.seen?'#c8d1a9':'#839575';c.fillText(reg.seen?reg.name:'未知森林',p.x,p.y-scale*.7);if(reg.seen){c.font='11px system-ui';c.fillStyle=E.territory(reg)==='爭奪中'?'#ddb184':'#8ba27c';c.fillText(E.territory(reg),p.x,p.y-scale*.7+20);}}
@@ -106,22 +108,22 @@
       }
       for(const food of s.resources){if(food.amount<=0||!E.cell(s,food.k)?.seen||!visibleCell(food.k))continue;
         const p=E.xy(food.k),v=this.screen(p.x,p.y,food.height??E.cell(s,food.k)?.elevation??0),size=scale*.28;
-        this.prop(food.queenCorpse?'insect_carcass':V8_RESOURCE_PROPS[food.type]||'seeds',v.x,v.y,size*(food.queenCorpse?3.1:2.6),.12);
+        if(food.corpse)this.art?.wildlife({sizeClass:food.wildlifeSize},v.x,v.y,scale*(food.wildlifeSize==='small'?.46:food.wildlifeSize==='large'?1.6:1),true);else this.prop(food.queenCorpse?'insect_carcass':V8_RESOURCE_PROPS[food.type]||'seeds',v.x,v.y,size*(food.queenCorpse?3.1:2.6),.12);
         const kind=food.queenCorpse?'deadQueen':'food',radius=food.queenCorpse?38:27,label=food.queenCorpse?'蟻后遺骸':({insect:'昆蟲',fruit:'果實',sap:'植物汁液',seed:'種子'}[food.type]||'食物');this.targets.push({kind,k:food.k,x:v.x,y:v.y,radius});if(food.large||food.queenCorpse||s.routes.some(r=>r.k===food.k&&r.active!==false)||this.camera.zoom<.72)this.label(v.x,v.y-scale*.65,label+' · '+Math.ceil(food.amount),kind,food.k);
       }
       // Queen and nursery are spatially distinct from the nearby workers.
       if(this.view==='nest'){
-        const queenK=s.queenK??E.HOME,qp=E.xy(queenK),q=this.screen(qp.x,qp.y);if(!s.rooms.some(r=>r.k===queenK&&r.type==='royal'&&r.status==='active'))this.roomScene({type:'royal',size:1,maturity:0,status:'active'},q.x,q.y,scale*.73,s);this.ant(q.x,q.y,scale*.47,'#d9cba0',this.queenFacing(s,qp.x,qp.y),null,true,'units/player/queen');this.targets.push({kind:'queen',k:queenK,x:q.x,y:q.y,radius:25});this.label(q.x-scale*.12,q.y-scale*.58,'蟻后','queen',queenK);
+        if(this.nestId===null){const queenK=s.queenK??E.HOME,qp=E.xy(queenK),q=this.screen(qp.x,qp.y);if(!s.rooms.some(r=>r.k===queenK&&r.type==='royal'&&r.status==='active'))this.roomScene({type:'royal',size:1,maturity:0,status:'active'},q.x,q.y,scale*.73,s);this.ant(q.x,q.y,scale*.47,'#d9cba0',this.queenFacing(s,qp.x,qp.y),null,true,'units/player/queen');this.targets.push({kind:'queen',k:queenK,x:q.x,y:q.y,radius:25});this.label(q.x-scale*.12,q.y-scale*.58,'蟻后','queen',queenK);
         for(const k of [...new Set(s.broods.map(b=>b.k??E.HOME))]){const bp=E.xy(k),formal=E.roomAt(s,k)?.type==='nursery',brood=this.screen(bp.x,bp.y);s.broods.filter(b=>(b.k??E.HOME)===k).slice(0,3).forEach((b,i)=>{for(let n=0;n<Math.min(b.count,4);n++)this.art?.brood(brood.x+scale*.36+(n-1.5)*scale*.13,brood.y+scale*.22+(i-1)*scale*.18,scale*(b.stage===2?.09:.07),b.stage,n+i*4);});if(!formal)this.label(brood.x,brood.y+scale*.53,'臨時育幼區','brood',k);this.targets.push({kind:'brood',k,x:brood.x,y:brood.y,radius:30});}
-        for(const n of s.colonies){if(n.fallen||!E.cell(s,n.queenK)?.seen)continue;const p=E.xy(n.queenK),q=this.screen(p.x,p.y);this.ant(q.x,q.y,scale*.45,n.color||'#d89170',this.queenFacing(n,p.x,p.y),null,true,'units/enemies/'+n.role+'_queen');this.label(q.x,q.y-scale*.6,`${n.name||'敵國'}蟻后`,'enemyQueen',n.queenK,{colony:n.id});this.targets.push({kind:'enemyQueen',k:n.queenK,colony:n.id,x:q.x,y:q.y,radius:32});}
+        }for(const n of s.colonies){if(n.id!==this.nestId||n.fallen||!E.cell(s,n.queenK)?.seen)continue;const p=E.xy(n.queenK),q=this.screen(p.x,p.y);this.ant(q.x,q.y,scale*.45,n.color||'#d89170',this.queenFacing(n,p.x,p.y),null,true,'units/enemies/'+n.role+'_queen');this.label(q.x,q.y-scale*.6,`${n.name||'敵國'}蟻后`,'enemyQueen',n.queenK,{colony:n.id});this.targets.push({kind:'enemyQueen',k:n.queenK,colony:n.id,x:q.x,y:q.y,radius:32});}
 
       }
-      const exits=[...(s.exits??[s.mainExit]),...s.colonies.filter(n=>!n.fallen).map(n=>E.key(E.xy(n.home).x,4))];
-      for(const k of exits){const e=E.cell(s,k);if(!e?.seen||e.sealed)continue;const p=this.screen(e.x,e.y),colony=s.colonies.find(n=>!n.fallen&&E.xy(n.home).x===e.x),kind=colony?'enemyNest':'exit',extra=colony?{colony:colony.id}:{};this.art?.entrance(p.x,p.y,scale,colony?.role||'player');this.label(p.x,p.y+scale*.47,colony?`${colony.name||'敵巢'} · ${colony.strategy||'活動中'}`:'巢口',kind,k,extra);this.targets.push({kind,k,x:p.x,y:p.y,radius:Math.max(30,scale*.42),box:{x:p.x-scale*.42,y:p.y-scale*.24,w:scale*.84,h:scale*.95},...extra});}
-      const player=E.workers(s),enemies=s.ants.filter(a=>a.faction==='enemy'&&player.some(b=>E.isSurface(s,a.k)===E.isSurface(s,b.k)&&E.distance(a,b)<5)),ants=[...player,...enemies],clusters=new Map();
-      for(const a of ants){if(!visibleCell(a.k))continue;const elevation=E.cell(s,a.k)?.elevation||0,p=this.screen(a.x,a.y,elevation);const angle=this.facing(s,a);
+      const exits=this.view==='surface'?[...(s.exits??[s.mainExit]),...s.colonies.map(n=>n.zones.entry)]:[activeNest?.entry??s.mainExit];
+      for(const k of exits){const e=E.cell(s,k);if(!e?.seen||e.sealed)continue;const p=this.screen(e.x,e.y),colony=this.view==='surface'?s.colonies.find(n=>n.zones.entry===k):null,kind=colony?'enemyNest':'exit',extra=colony?{colony:colony.id}:{};this.art?.entrance(p.x,p.y,scale,colony?.role||'player');this.label(p.x,p.y+scale*.47,colony?`${colony.name||'敵巢'} · ${colony.strategy||'活動中'}`:'巢口',kind,k,extra);this.targets.push({kind,k,x:p.x,y:p.y,radius:Math.max(30,scale*.42),box:{x:p.x-scale*.42,y:p.y-scale*.24,w:scale*.84,h:scale*.95},...extra});}
+      const player=E.workers(s),enemies=s.ants.filter(a=>a.faction==='enemy'&&player.some(b=>E.sameMap(s,a.k,b.k)&&E.distance(a,b)<5)),ants=[...player,...enemies],clusters=new Map();
+      for(const a of ants){if(!visibleCell(a.k))continue;const elevation=E.cell(s,a.k)?.elevation||0,p=this.screen(a.x,a.y,elevation);const angle=this.facing(s,a);const lane=((a.id*17%7)-3)*scale*.035;p.x-=Math.sin(angle)*lane;p.y+=Math.cos(angle)*lane;
         if(selected.includes(a.id))this.selectionPaint.push({x:p.x,y:p.y});
-        const enemyColony=a.faction==='enemy'?s.colonies.find(n=>n.id===a.colony):null,antColor=a.faction==='enemy'?(enemyColony?.color||'#df9674'):a.soldierType==='armor'?'#9da8a2':a.soldierType==='jaw'?'#d3a76e':a.soldierType==='acid'?'#9fc47b':a.caste==='soldier'?'#c5b57a':a.traits.min>.25?'#a8b9b2':'#c3d986';this.ant(p.x,p.y,Math.max(8,scale*.25)*(1+a.traits.pred*.08+(a.caste==='soldier'?.08:0)),antColor,angle,a,false,a.faction==='enemy'?'units/enemies/'+(enemyColony?.role||'near'):a.caste==='soldier'?'units/player/soldier_'+(a.soldierType||'normal'):'units/player/worker');
+        const enemyColony=a.faction==='enemy'?s.colonies.find(n=>n.id===a.colony):null,antColor=a.faction==='enemy'?(enemyColony?.color||'#df9674'):a.soldierType==='armor'?'#9da8a2':a.soldierType==='jaw'?'#d3a76e':a.soldierType==='acid'?'#9fc47b':a.caste==='soldier'?'#c5b57a':a.traits.min>.25?'#a8b9b2':'#c3d986';this.ant(p.x,p.y,Math.max(8,scale*.25)*(1+a.traits.pred*.08+(a.caste==='soldier'?.08:0)),antColor,angle,a,false,a.faction==='enemy'?'units/enemies/'+(enemyColony?.role||'near')+(a.caste==='soldier'?(a.visualSpecial?'_special':'_soldier'):''):a.caste==='soldier'?'units/player/soldier_'+(a.soldierType||'normal'):'units/player/worker');
         if(a.carry)this.ellipse(p.x+Math.cos(angle)*scale*.2,p.y+Math.sin(angle)*scale*.2,3,2,'#d3b680');
         if(a.action==='戰鬥'){this.line(p.x-4,p.y-5,p.x+4,p.y+5,'#f2b981',1.5);this.line(p.x+4,p.y-5,p.x-4,p.y+5,'#f2b981',1.5);const seen=this.lastHitSeen.get(a.id)||-1;if(a.lastHit>seen){this.lastHitSeen.set(a.id,a.lastHit);for(let i=0;i<5;i++)this.fx.push({x:p.x,y:p.y,vx:(noise(a.id,i)-.5)*55,vy:(noise(i,a.id)-.65)*55,life:.32,color:a.faction==='enemy'?'#e59672':'#d7d39a'});}}
         this.targets.push({kind:a.faction==='enemy'?'enemy':'ants',k:a.k,id:a.id,x:p.x,y:p.y,radius:a.faction==='enemy'?34:28});
@@ -129,8 +131,8 @@
         const clusterKey=a.faction+':'+a.k;if(!clusters.has(clusterKey))clusters.set(clusterKey,[]);clusters.get(clusterKey).push(a);
       }
       for(const list of clusters.values()){const selectedHere=list.some(a=>selected.includes(a.id)),fighting=list.some(a=>a.action==='戰鬥'),minimum=this.camera.zoom<.75?2:5;if(list.length<minimum&&!selectedHere&&!fighting)continue;const a=list[0],p=this.screen(a.x,a.y),soldiers=list.filter(x=>x.caste==='soldier').length,type=soldiers===list.length?'兵蟻':soldiers?'蟻群':'工蟻';if(a.faction==='player')this.label(p.x,p.y-scale*.48,`${selectedHere?'已選 ':''}${type} ×${list.length}`,'ants',a.k,{id:a.id});else this.label(p.x,p.y-scale*.46,`敵蟻 ×${list.length}`,'enemy',a.k,{id:a.id});}
-      if(this.view==='nest')for(const wld of s.wildlife){if(wld.dead||E.isSurface(s,wld.k)||!E.cell(s,wld.k)?.seen)continue;const v=this.screen(wld.x,wld.y),pulse=Math.sin(this.time*4+wld.id)*2;this.prop('insect_carcass',v.x,v.y,scale*.85,.15);this.label(v.x,v.y-scale*.55,wld.kind+' · 活體','wildlife',wld.k,{id:wld.id});this.targets.push({kind:'wildlife',k:wld.k,id:wld.id,x:v.x,y:v.y,radius:32});}
-      if(this.view==='surface'){for(const wld of s.wildlife){if(wld.dead||!E.isSurface(s,wld.k)||!E.cell(s,wld.k)?.seen)continue;const v=this.screen(wld.x,wld.y,wld.height||0),pulse=Math.sin(this.time*4+wld.id)*3;this.prop('insect_carcass',v.x,v.y,scale*.9,.15);if(wld.hp<wld.maxHp||wld.action==='防衛'){c.fillStyle='#241612';c.fillRect(v.x-20,v.y-24,40,5);c.fillStyle='#d88463';c.fillRect(v.x-20,v.y-24,40*wld.hp/wld.maxHp,5);}this.label(v.x,v.y-scale*.55,wld.kind+' · 活體','wildlife',wld.k,{id:wld.id});this.targets.push({kind:'wildlife',k:wld.k,id:wld.id,x:v.x,y:v.y,radius:30});}}
+      if(this.view==='nest')for(const wld of s.wildlife){if(wld.dead||!visibleCell(wld.k)||E.isSurface(s,wld.k)||!E.cell(s,wld.k)?.seen)continue;const v=this.screen(wld.x,wld.y),pulse=Math.sin(this.time*4+wld.id)*2;this.art?.wildlife(wld,v.x,v.y,scale); this.label(v.x,v.y-scale*.55,wld.kind+' · 活體','wildlife',wld.k,{id:wld.id});this.targets.push({kind:'wildlife',k:wld.k,id:wld.id,x:v.x,y:v.y,radius:32});}
+      if(this.view==='surface'){for(const wld of s.wildlife){if(wld.dead||!E.isSurface(s,wld.k)||!E.cell(s,wld.k)?.seen)continue;const v=this.screen(wld.x,wld.y,wld.height||0),pulse=Math.sin(this.time*4+wld.id)*3;this.art?.wildlife(wld,v.x,v.y,scale*(wld.sizeClass==='small'?.46:wld.sizeClass==='large'?1.6:1.0));if(wld.hp<wld.maxHp||wld.action==='防衛'){c.fillStyle='#241612';c.fillRect(v.x-20,v.y-24,40,5);c.fillStyle='#d88463';c.fillRect(v.x-20,v.y-24,40*wld.hp/wld.maxHp,5);}this.label(v.x,v.y-scale*.55,wld.kind+' · 活體','wildlife',wld.k,{id:wld.id});this.targets.push({kind:'wildlife',k:wld.k,id:wld.id,x:v.x,y:v.y,radius:30});}}
       for(const particle of this.fx){particle.life-=elapsed;particle.x+=particle.vx*elapsed;particle.y+=particle.vy*elapsed;particle.vy+=70*elapsed;if(particle.life<=0)continue;c.globalAlpha=Math.min(1,particle.life*4);c.fillStyle=particle.color;c.beginPath();c.arc(particle.x,particle.y,1.5+particle.life*3,0,Math.PI*2);c.fill();}c.globalAlpha=1;this.fx=this.fx.filter(p=>p.life>0).slice(-180);
       // Soft edge shading, not a second interface around the world.
       const shade=c.createRadialGradient(w/2,h/2,Math.min(w,h)*.25,w/2,h/2,Math.max(w,h)*.7);shade.addColorStop(0,'#07150b00');shade.addColorStop(1,'#07110b66');c.fillStyle=shade;c.fillRect(0,0,w,h);c.textBaseline='alphabetic';

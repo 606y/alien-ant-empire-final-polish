@@ -8,7 +8,10 @@
   // Keep the original numeric keys readable in 0.1 saves; new chunks use coordinates.
   const key = (x,y) => x>=0&&x<W&&y>=0&&y<H?y*W+x:y<5?`s:${x},${y}`:`${x},${y}`;
   const surfaceKey = (x,y) => x>=0&&x<W&&y>=0&&y<5?key(x,y):`s:${x},${y}`;
-  const xy = k => typeof k==='string'?{x:Number(k.replace(/^s:/,'').split(',')[0]),y:Number(k.replace(/^s:/,'').split(',')[1])}:{x:k%W,y:Math.floor(k/W)};
+  const nestId=k=>typeof k==='string'&&k.startsWith('n:')?Number(k.split(':')[1]):null;
+  const nestKey=(id,x,y)=>`n:${id}:${x},${y}`;
+  const sameMap=(s,a,b)=>isSurface(s,a)===isSurface(s,b)&&nestId(typeof a==='object'?a.k:a)===nestId(typeof b==='object'?b.k:b);
+  const xy = k => typeof k==='string'?{x:Number(k.replace(/^(?:s:|n:\d+:)/,'').split(',')[0]),y:Number(k.replace(/^(?:s:|n:\d+:)/,'').split(',')[1])}:{x:k%W,y:Math.floor(k/W)};
   const distance = (a,b) => Math.hypot(a.x-b.x,a.y-b.y);
   const HOME = key(8,9), ENEMY_HOME = key(28,8);
   const CAMPAIGN={surface:{minX:-16,maxX:47,minY:-8,maxY:11},underground:{minX:-8,maxX:39,minY:5,maxY:44}};
@@ -32,10 +35,10 @@
   function newWorldSeed(){try{const a=new Uint32Array(1);globalThis.crypto?.getRandomValues?.(a);if(a[0])return a[0];}catch{}return (Date.now()^Math.floor(Math.random()*0xffffffff))>>>0;}
   const indices=new WeakMap(),pathCaches=new WeakMap(),activePathCache=new WeakSet();
   function isSurface(s,value){if(typeof value==='string'&&value.startsWith('s:'))return true;const c=typeof value==='object'?value:cell(s,value);return !!c&&(c.surface===true||c.surface===undefined&&c.y<5);}
-  function adjacent(k) { const {x,y}=xy(k),surface=typeof k==='string'&&k.startsWith('s:')||typeof k==='number'&&y<5,out=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([,b])=>surface||b>=0).map(([a,b])=>surface?surfaceKey(a,b):key(a,b));if(surface&&y===4)out.push(key(x,5));return [...new Set(out)]; }
+  function adjacent(k) { if(nestId(k)!==null){const {x,y}=xy(k),id=nestId(k);return [[x-1,y],[x+1,y],[x,y-1],[x,y+1]].map(([x,y])=>nestKey(id,x,y))}const {x,y}=xy(k),surface=typeof k==='string'&&k.startsWith('s:')||typeof k==='number'&&y<5,out=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]].filter(([,b])=>surface||b>=0).map(([a,b])=>surface?surfaceKey(a,b):key(a,b));if(surface&&y===4)out.push(key(x,5));return [...new Set(out)]; }
   function cell(s,k) {if(typeof k==='number'&&k<W*H)return s.cells[k];let i=indices.get(s);if(!i||i.length!==s.cells.length){i={length:s.cells.length,map:new Map(s.cells.map(c=>[c.k??key(c.x,c.y),c]))};indices.set(s,i);}return i.map.get(k);}
   function passable(s,k) { return !!cell(s,k)?.open && !cell(s,k).sealed; }
-  function neighbors(s,k) {const here=cell(s,k);return adjacent(k).filter(n=>{const there=cell(s,n);return passable(s,n)&&(!isSurface(s,here)||Math.abs((here.elevation||0)-(there.elevation||0))<=1||here.climb||there.climb);});}
+  function neighbors(s,k) {const here=cell(s,k);let links=adjacent(k);const portal=s.enemyNests?.find(n=>n.entry===k||n.entryK===k);if(portal){if(k===portal.entry)links=links.filter(q=>isSurface(s,q));links.push(k===portal.entry?portal.entryK:portal.entry)}return links.filter(n=>{const there=cell(s,n);return passable(s,n)&&(!isSurface(s,here)||Math.abs((here.elevation||0)-(there.elevation||0))<=1||here.climb||there.climb);});}
   function path(s,from,to,blocked) {
     if (from===to) return [];
     if (!passable(s,to)||!passable(s,from)) return null;
@@ -70,7 +73,7 @@
     if(!permanent)return;
     const event={time:s.time,text,urgent,k,category,repeat:1};if(category==='battle')event.battleZone=battleZone;s.events.unshift(event);if(s.events.length>35)s.events.length=35;
   }
-  function reveal(s,k,r=1) {const p=xy(k),surface=isSurface(s,k);for(let y=p.y-r;y<=p.y+r;y++)for(let x=p.x-r;x<=p.x+r;x++){if(!surface&&y<0)continue;const c=cell(s,surface?surfaceKey(x,y):key(x,y));if(c&&(surface||c.open&&Math.abs(x-p.x)+Math.abs(y-p.y)<=r||Math.abs(x-p.x)+Math.abs(y-p.y)<=1)){if(!c.seen)c.revealedAt=s.time;c.seen=true;}}}
+  function reveal(s,k,r=1) {const p=xy(k),surface=isSurface(s,k);for(let y=p.y-r;y<=p.y+r;y++)for(let x=p.x-r;x<=p.x+r;x++){if(!surface&&y<0)continue;const c=cell(s,surface?surfaceKey(x,y):nestId(k)!==null?nestKey(nestId(k),x,y):key(x,y));if(c&&(surface||c.open&&Math.abs(x-p.x)+Math.abs(y-p.y)<=r||Math.abs(x-p.x)+Math.abs(y-p.y)<=1)){if(!c.seen)c.revealedAt=s.time;c.seen=true;}}}
   function ant(s,faction,k,job='idle',traits={pred:0,min:0}) {
     traits={jaw:0,shell:0,weight:traits.min*.5,acid:0,...traits};const p=xy(k),id=s.nextId++;return {id,faction,k,x:p.x,y:p.y,hp:10+traits.min*4,maxHp:10+traits.min*4,job,group:null,route:null,care:null,traits,goal:null,path:[],carry:0,mineralCargo:0,prey:false,action:'停留',cooldown:0,seen:[],retreat:0,age:0,exposure:0,colony:0,lifespan:900+(id*137%500),project:null,caste:'worker',soldierType:null,special:false,playerLocked:false};
   }
@@ -142,18 +145,18 @@
         if(!inside(x,y,false)||!ensureChunk(s,x,y))continue;
         const k=key(x,y),pattern=roomPattern(k,1);
         if(pattern.some(q=>{const c=cell(s,q);return !c||c.hard||isSurface(s,c);})){continue;}
-        if(s.colonies.some(n=>!n.fallen&&distance(xy(n.queenK??n.home),xy(k))<MAP_RULES.enemyCoreBuffer+2))continue;
+        if(s.colonies.some(n=>!n.fallen&&sameMap(s,k,n.queenK??n.home)&&distance(xy(n.queenK??n.home),xy(k))<MAP_RULES.enemyCoreBuffer+2))continue;
         if(s.rooms.some(r=>distance(xy(r.k),xy(k))<7))continue;
         return k;
       }
     }
     return null;
   }
-  function connectPlan(s,target){const open=s.cells.filter(c=>c.open&&c.seen&&!c.sealed&&!isSurface(s,c)&&!s.colonies.some(n=>distance(c,xy(n.home))<4)).sort((a,b)=>distance(a,xy(target))-distance(b,xy(target)))[0];if(!open)return [];const from={x:open.x,y:open.y},to=xy(target),cells=[];let x=from.x,y=from.y,flip=0;while(x!==to.x||y!==to.y){if((flip++%2===0&&x!==to.x)||y===to.y)x+=Math.sign(to.x-x);else y+=Math.sign(to.y-y);const k=key(x,y);ensureChunk(s,x,y);cells.push(k);}return cells;}
+  function connectPlan(s,target){const open=s.cells.filter(c=>c.nestId===undefined&&c.open&&c.seen&&!c.sealed&&!isSurface(s,c)&&!s.colonies.some(n=>sameMap(s,tileKey(c),n.home)&&distance(c,xy(n.home))<4)).sort((a,b)=>distance(a,xy(target))-distance(b,xy(target)))[0];if(!open)return [];const from={x:open.x,y:open.y},to=xy(target),cells=[];let x=from.x,y=from.y,flip=0;while(x!==to.x||y!==to.y){if((flip++%2===0&&x!==to.x)||y===to.y)x+=Math.sign(to.x-x);else y+=Math.sign(to.y-y);const k=key(x,y);ensureChunk(s,x,y);cells.push(k);}return cells;}
   function prepareRoomPlan(s,room){const planned=[...connectPlan(s,room.k),...roomPattern(room.k,room.targetSize||1)];room.planCells=[...new Set(planned)];for(const k of room.planCells){const c=cell(s,k);if(!c)continue;c.seen=true;c.hard=false;}room.cells=room.planCells.filter(k=>cell(s,k)?.open);room.status=room.planCells.every(k=>cell(s,k)?.open)?'shaping':'excavating';}
   function assignRoomWorkers(s,room,count=1){if(!room||!['planned','excavating','shaping'].includes(room.status))return 0;const pending=room.planCells?.find(k=>!cell(s,k)?.open&&adjacent(k).some(n=>passable(s,n))),target=room.status==='shaping'?room.k:pending!==undefined?adjacent(pending).find(n=>passable(s,n)):room.planCells?.find(k=>cell(s,k)?.open)??HOME,limit=Math.max(1,Math.floor(laborers(s).length*.35)),active=laborers(s).filter(a=>a.roomProject).length,pool=dispatchable(s,target).slice(0,Math.min(count,Math.max(0,limit-active)));for(const a of pool){clearWork(a,'dig');a.roomProject=room.id;a.primary={kind:'room',room:room.id};}return pool.length;}
-  function requestRoom(s,type,direction='auto',anchor=HOME){if(!ROOM_TYPES[type])return {error:'未知的功能巢室。'};const safety=foodSafety(s),reserve=Math.max(5,workers(s).length*.32);if(['crisis','emergency'].includes(safety.level))return {error:'食物危機中，蟻群暫不接受新的非必要建設。'};if(s.food<5||s.food-5<reserve)return {error:`需要保留至少 ${Math.ceil(reserve)} 食物作為王國安全庫存。`};const k=roomSite(s,direction,anchor);if(k===null)return {error:'目前找不到安全的發展區域。'};const room={id:s.nextId++,k,type,cells:[],size:1,targetSize:1,status:'planned',progress:0,maturity:0,use:0,direction,policy:'balanced',lastGrowth:s.time};s.rooms.push(room);s.food-=5;s.economy.consumption+=5;prepareRoomPlan(s,room);const builders=Math.min(3,Math.max(1,Math.floor(laborers(s).length/8)));assignRoomWorkers(s,room,builders);emit(s,`${ROOM_TYPES[type].name}已列入建設，工蟻會自行開路與塑形。`,false,k);return room;}
-  function requestRoyalAt(s,k){
+  function requestRoom(s,type,direction='auto',anchor=HOME){if(nestId(anchor)!==null)return {error:'功能巢只能建於自己的王巢。'};if(!ROOM_TYPES[type])return {error:'未知的功能巢室。'};const safety=foodSafety(s),reserve=Math.max(5,workers(s).length*.32);if(['crisis','emergency'].includes(safety.level))return {error:'食物危機中，蟻群暫不接受新的非必要建設。'};if(s.food<5||s.food-5<reserve)return {error:`需要保留至少 ${Math.ceil(reserve)} 食物作為王國安全庫存。`};const k=roomSite(s,direction,anchor);if(k===null)return {error:'目前找不到安全的發展區域。'};const room={id:s.nextId++,k,type,cells:[],size:1,targetSize:1,status:'planned',progress:0,maturity:0,use:0,direction,policy:'balanced',lastGrowth:s.time};s.rooms.push(room);s.food-=5;s.economy.consumption+=5;prepareRoomPlan(s,room);const builders=Math.min(3,Math.max(1,Math.floor(laborers(s).length/8)));assignRoomWorkers(s,room,builders);emit(s,`${ROOM_TYPES[type].name}已列入建設，工蟻會自行開路與塑形。`,false,k);return room;}
+  function requestRoyalAt(s,k){if(nestId(k)!==null)return {error:'請返回自己的王巢建立王室。'};
     const c=cell(s,k);if(!c||isSurface(s,c)||!c.seen||!c.open||c.sealed)return {error:'請選擇已探索且可通行的地下空腔。'};
     if(path(s,s.queenK??HOME,k)===null)return {error:'蟻后與這裡之間沒有可通行的巢道。'};
     if((s.exits||[s.mainExit]).some(exit=>distance(xy(exit),xy(k))<5))return {error:'這裡太接近巢口，無法保護蟻后。'};
@@ -161,7 +164,7 @@
     if(s.food<12)return {error:'建立新王室需要至少 12 食物。'};
     const room={id:s.nextId++,k,type:'royal',cells:[],size:1,targetSize:1,status:'planned',progress:0,maturity:0,use:0,direction:'chosen',policy:'quality',lastGrowth:s.time};s.rooms.push(room);s.food-=12;s.economy.consumption+=12;prepareRoomPlan(s,room);assignRoomWorkers(s,room,Math.min(4,Math.max(2,Math.floor(laborers(s).length/7))));emit(s,'新王室位置已確定，遷移路線正在形成。',true,k);return room;
   }
-  function buildRoom(s,k,type){const c=cell(s,k);if(!ROOM_TYPES[type]||!c?.open||!c.seen||isSurface(s,c))return requestRoom(s,type,'auto',HOME);if(roomAt(s,k))return {error:'這裡已經屬於功能巢室。'};if(s.rooms.some(r=>distance(xy(r.k),xy(k))<4))return requestRoom(s,type,'auto',HOME);if(s.food<5)return {error:'塑形需要至少 5 食物。'};const cells=roomFootprint(s,k);if(cells.length<4)return requestRoom(s,type,'auto',k);const room={id:s.nextId++,k,type,cells:cells.slice(0,6),planCells:cells.slice(0,6),size:1,targetSize:1,status:'shaping',progress:0,maturity:0,use:0,policy:'balanced',lastGrowth:s.time};s.rooms.push(room);s.food-=5;assignRoomWorkers(s,room);emit(s,`${ROOM_TYPES[type].name}開始塑形。`,false,k);return room;}
+  function buildRoom(s,k,type){if(nestId(k)!==null)return {error:'功能巢只能建於自己的王巢。'};const c=cell(s,k);if(!ROOM_TYPES[type]||!c?.open||!c.seen||isSurface(s,c))return requestRoom(s,type,'auto',HOME);if(roomAt(s,k))return {error:'這裡已經屬於功能巢室。'};if(s.rooms.some(r=>distance(xy(r.k),xy(k))<4))return requestRoom(s,type,'auto',HOME);if(s.food<5)return {error:'塑形需要至少 5 食物。'};const cells=roomFootprint(s,k);if(cells.length<4)return requestRoom(s,type,'auto',k);const room={id:s.nextId++,k,type,cells:cells.slice(0,6),planCells:cells.slice(0,6),size:1,targetSize:1,status:'shaping',progress:0,maturity:0,use:0,policy:'balanced',lastGrowth:s.time};s.rooms.push(room);s.food-=5;assignRoomWorkers(s,room);emit(s,`${ROOM_TYPES[type].name}開始塑形。`,false,k);return room;}
   function expandRoom(s,id){const r=s.rooms.find(r=>r.id===id);if(!r||r.status!=='active')return {error:'巢室尚未完成。'};if(r.size>=3)return requestRoom(s,r.type,'auto',r.k);if(s.food<8*r.size)return {error:`需要 ${8*r.size} 食物提升${ROOM_TYPES[r.type].name}能力。`};const nextSize=r.size+1,planned=roomPattern(r.k,nextSize),blocked=planned.some(k=>{ensureChunk(s,...Object.values(xy(k)));const c=cell(s,k);return !c||c.hard||s.rooms.some(o=>o.id!==r.id&&distance(xy(o.k),xy(k))<2);});if(blocked){const alternative=requestRoom(s,r.type,'auto',r.k);if(!alternative.error){alternative.alternative=true;alternative.replacementFor=r.id;}return alternative;}s.food-=8*r.size;r.targetSize=nextSize;r.planCells=planned;r.progress=0;prepareRoomPlan(s,r);assignRoomWorkers(s,r,3);emit(s,`${ROOM_TYPES[r.type].name}開始自動擴大，工蟻會處理周邊空間。`,false,r.k);return r;}
   function recycleRoom(s,id){const room=s.rooms.find(r=>r.id===id&&r.status==='active');if(!room)return {error:'只能回收已完成的巢室。'};if(room.type==='royal'&&(s.queenK===room.k||s.royalTarget===room.id))return {error:'蟻后正在使用或前往這座王室，無法回收。'};if(room.id===s.formalNursery){const other=s.rooms.find(r=>r.id!==id&&r.type==='nursery'&&r.status==='active');s.formalNursery=other?.id??null;for(const brood of s.broods)brood.k=other?.k??s.queenK??HOME;s.temporaryNurseryRetired=!!other;}s.rooms=s.rooms.filter(r=>r.id!==id);emit(s,`${ROOM_TYPES[room.type].name}已回收，原地成為普通空腔。`,false,room.k);return {room};}
   function cancelRoom(s,id){const room=s.rooms.find(r=>r.id===id&&r.status!=='active');if(!room)return {error:'這項建設已經完成，無法取消施工。'};for(const a of laborers(s).filter(a=>a.roomProject===room.id))clearWork(a);s.rooms=s.rooms.filter(r=>r.id!==room.id);if(s.royalTarget===room.id)s.royalTarget=null;const refund=room.type==='royal'?6:2;s.food+=refund;emit(s,`${ROOM_TYPES[room.type].name}施工已取消，工蟻返回待命。`,false,room.k);return {room,refund};}
@@ -225,6 +228,7 @@
     a.action=a.retreat>0?'撤退':a.carry?'搬運':'行走';
   }
   function visible(s,a,b) {
+    if(!sameMap(s,a.k,b.k))return false;
     if(distance(a,b)> (a.job==='scout'?5:3.1))return false;
     const line=path(s,a.k,b.k);return line!==null&&line.length<=(a.job==='scout'?6:3);
   }
@@ -282,10 +286,10 @@
   function depositCargo(s,a){if(!a.carry&&!a.shellCarry)return;const amount=a.carry||0,processing=a.largePrey&&roomEffect(s,'prey')>0,queen=a.cargoType==='queen',gain=processing?amount*(queen?.9:.65):amount,capacity=foodCapacity(s);if(s.food<=capacity&&s.food+gain>capacity)s.foodOverflow=true;if(processing){s.protein+=amount*(queen?.7:.45);s.tissues+=amount*(queen?.22:.12);s.shells+=(a.shellCarry||0)+amount*(queen?.32:.18);s.preyProcessed=(s.preyProcessed||0)+amount;}else s.shells+=a.shellCarry||0;s.food+=gain;s.economy.income+=gain;s.stock??={};s.stock[a.cargoType||'other']=(s.stock[a.cargoType||'other']||0)+amount;if(a.prey)s.preyMeals+=amount;const route=s.routes.find(r=>r.id===a.route||r.id===a.cargoTask),resource=route&&s.resources.find(r=>r.k===route.k);if(route){route.delivered=(route.delivered||0)+amount;route.phase='DELIVERING';if(a.haulTask)a.haulTask.phase='DELIVERING';taskState(route,TASK.DELIVERING,s,route.delivered);}a.carry=0;a.shellCarry=0;a.prey=false;a.largePrey=false;a.cargoType=null;a.cargoTask=null;if(resource?.amount<=0)finalizeResource(s,resource,route);else if(route?.kind==='queenCorpse'){route.phase='TRAVEL_TO_ENTRANCE';if(a.haulTask){a.haulTask.phase='TRAVEL_TO_ENTRANCE';a.haulTask.returnSurfaceReached=false;}}}
   function cargoTarget(s,a){if(a.largePrey){const prey=(s.rooms||[]).filter(r=>r.type==='prey'&&r.status==='active'&&path(s,a.k,r.k)!==null).sort((r,q)=>distance(a,xy(r.k))-distance(a,xy(q.k)))[0];if(prey)return prey.k;}return HOME;}
   function restTarget(s,a){return (s.rooms||[]).filter(r=>r.type==='rest'&&r.status==='active'&&path(s,a.k,r.k)!==null).sort((r,q)=>distance(a,xy(r.k))-distance(a,xy(q.k)))[0]?.k??s.queenK??HOME;}
-  function emergencyDefense(s,a,dt){if(a.faction!=='player'||a.hp/a.maxHp<=.3||a.carry||a.job==='nurse'&&a.care!==null)return false;const queenK=s.queenK??HOME,intruders=s.ants.filter(b=>b.faction==='enemy'&&isSurface(s,b.k)===isSurface(s,queenK)&&distance(b,xy(queenK))<6),foes=intruders.filter(b=>isSurface(s,a.k)===isSurface(s,b.k)&&distance(a,b)<(distance(b,xy(queenK))<2.5?6:3.5));if(!foes.length)return false;const allies=workers(s).filter(w=>isSurface(s,w.k)===isSurface(s,foes[0].k)&&w.hp/w.maxHp>.3&&!w.carry&&distance(w,foes[0])<4).sort((x,y)=>(y.caste==='soldier')-(x.caste==='soldier')||distance(x,foes[0])-distance(y,foes[0])),limit=Math.min(allies.length,Math.max(2,foes.length*2));if(!allies.slice(0,limit).some(w=>w.id===a.id))return false;const target=foes.sort((x,y)=>distance(a,x)-distance(a,y))[0];a.supporting=target.k;move(s,a,target.k,dt);a.action='巢穴防衛';return true;}
+  function emergencyDefense(s,a,dt){if(a.faction!=='player'||a.hp/a.maxHp<=.3||a.carry||a.job==='nurse'&&a.care!==null)return false;const queenK=s.queenK??HOME,intruders=s.ants.filter(b=>b.faction==='enemy'&&sameMap(s,b.k,queenK)&&distance(b,xy(queenK))<6),foes=intruders.filter(b=>sameMap(s,a.k,b.k)&&distance(a,b)<(distance(b,xy(queenK))<2.5?6:3.5));if(!foes.length)return false;const allies=workers(s).filter(w=>sameMap(s,w.k,foes[0].k)&&w.hp/w.maxHp>.3&&!w.carry&&distance(w,foes[0])<4).sort((x,y)=>(y.caste==='soldier')-(x.caste==='soldier')||distance(x,foes[0])-distance(y,foes[0])),limit=Math.min(allies.length,Math.max(2,foes.length*2));if(!allies.slice(0,limit).some(w=>w.id===a.id))return false;const target=foes.sort((x,y)=>distance(a,x)-distance(a,y))[0];a.supporting=target.k;move(s,a,target.k,dt);a.action='巢穴防衛';return true;}
   function localDefense(s,a,dt){
     if(a.faction!=='player'||a.playerLocked||a.primary||a.carry||a.shellCarry||a.job==='nurse'||a.hp/a.maxHp<=.3)return false;
-    const foes=s.ants.filter(b=>b.faction==='enemy'&&isSurface(s,b.k)===isSurface(s,a.k)&&distance(a,b)<(a.caste==='soldier'?4:2.2));
+    const foes=s.ants.filter(b=>b.faction==='enemy'&&sameMap(s,b.k,a.k)&&distance(a,b)<(a.caste==='soldier'?4:2.2));
     if(!foes.length){a.defenseOrigin=null;return false;}
     const target=foes.sort((x,y)=>distance(a,x)-distance(a,y))[0];
     if(a.defenseOrigin&&distance(xy(a.defenseOrigin),target)>5){a.defenseOrigin=null;return false;}
@@ -335,12 +339,13 @@
     }
     if(a.job==='combat'&&g){
       if(g.queenId!==undefined){const n=s.colonies.find(n=>n.id===g.queenId);if(n&&n.queen>0)g.target=n.queenK;}
-      if(g.wildlifeId!==undefined){const prey=s.wildlife.find(w=>w.id===g.wildlifeId&&!w.dead);if(prey)g.target=prey.k;else delete g.wildlifeId;}
+      if(g.enemyRoomId!==undefined){const r=s.enemyNests?.flatMap(n=>n.rooms).find(r=>r.id===g.enemyRoomId&&!r.destroyed);if(r)g.target=r.k;else{clearWork(a);return;}}
+      if(g.wildlifeId!==undefined){const prey=s.wildlife.find(w=>w.id===g.wildlifeId&&!w.dead);if(prey){const positions=neighbors(s,prey.k).filter(k=>sameMap(s,k,prey.k));g.target=prey.k;a.huntPosition=positions.length?positions[a.id%positions.length]:prey.k;}else{delete g.wildlifeId;a.huntPosition=null;}}
       if(g.stance==='retreat'){move(s,a,g.rally,dt,true);return;}
       if(!a.rallied){move(s,a,g.rally,dt);if(a.k===g.rally)a.rallied=true;return;}
       if(g.via!==null&&!a.viaDone){move(s,a,g.via,dt,g.stance==='avoid');if(a.k===g.via)a.viaDone=true;return;}
-      const enteringEnemyNest=g.command==='ENTER_ENEMY_NEST'&&isSurface(s,a.k);if(g.stance==='attack'&&enemies.length&&!enteringEnemyNest){enemies.sort((b,c)=>distance(a,b)-distance(a,c));move(s,a,enemies[0].k,dt);a.action='追擊';}else{move(s,a,g.target,dt,g.stance==='avoid');if(enteringEnemyNest)a.action='前往敵巢入口';}
-      if(a.k===g.target&&(g.stance==='defend'||g.stance==='attack'&&!enemies.length&&g.queenId===undefined&&g.wildlifeId===undefined)){clearWork(a);a.idleSince=s.time+30;a.manualCooldownUntil=s.time+30;}
+      const enteringEnemyNest=g.command==='ENTER_ENEMY_NEST'&&isSurface(s,a.k);if(g.stance==='attack'&&enemies.length&&!enteringEnemyNest){enemies.sort((b,c)=>distance(a,b)-distance(a,c));move(s,a,enemies[0].k,dt);a.action='追擊';}else{move(s,a,g.wildlifeId!==undefined?a.huntPosition??g.target:g.target,dt,g.stance==='avoid');if(enteringEnemyNest)a.action='前往敵巢入口';}
+      if(a.k===g.target&&g.command!=='ENTER_ENEMY_NEST'&&(g.stance==='defend'||g.stance==='attack'&&!enemies.length&&g.queenId===undefined&&g.wildlifeId===undefined&&g.enemyRoomId===undefined)){clearWork(a);a.idleSince=s.time+30;a.manualCooldownUntil=s.time+30;}
       return;
     }
     if(a.job==='guard'){const gs=workers(s,'guard'),target=a.guardTarget??s.guardPoints[gs.indexOf(a)%s.guardPoints.length]??s.mainExit;move(s,a,target,dt);return;}
@@ -348,7 +353,7 @@
     a.idleSince=null;move(s,a,a.job==='nurse'?(s.broods.find(b=>b.id===a.care)?.k??HOME):s.queenK??HOME,dt);a.action=a.job==='nurse'?'育幼':'回巢';
   }
   function enemyJob(s,a,dt){
-    const n=colony(s,a),home=n.home,entry=n.zones?.entry??surfaceKey(xy(home).x,4),nearPlayer=workers(s).some(b=>isSurface(s,b.k)===isSurface(s,a.k)&&distance(a,b)<8),active=a.expeditionTarget!=null||nearPlayer||n.threatUntil>s.time;
+    const n=colony(s,a),home=n.home,entry=n.zones?.entry??surfaceKey(xy(home).x,4),nearPlayer=workers(s).some(b=>sameMap(s,b.k,a.k)&&distance(a,b)<8),active=a.expeditionTarget!=null||nearPlayer||n.threatUntil>s.time;
     if(!active&&s.time<(a.aiNextAt||0))return;if(!active){dt=Math.min(1.25,Math.max(dt,s.time-(a.lastAiAt??s.time-dt)));a.aiNextAt=s.time+1+(a.id%4)*.08;}a.lastAiAt=s.time;
     const seen=s.ants.filter(b=>b.faction==='player'&&visible(s,a,b)),friends=s.ants.filter(b=>b.faction==='enemy'&&b.colony===n.id&&distance(a,b)<3).length;
     const plannedFood=s.resources.find(r=>r.k===a.enemyFoodTarget&&r.amount>0),safeWindow=n.attackDelay??(n.role==='deep_forest'?480:300),safeRadius=a.job==='forage'?4.5:3.25,localForage=a.job==='forage'&&(Math.abs(a.x-xy(home).x)<=2||distance(a,xy(entry))<9||plannedFood&&distance(xy(entry),xy(plannedFood.k))<24);if(s.time<safeWindow&&distance(a,xy(home))>safeRadius&&!localForage){move(s,a,home,dt,true);a.action='留守敵國周邊';return;}
@@ -372,7 +377,7 @@
     }
     const p=xy(home),exit=key(p.x,4);
     if(a.job==='scout'){move(s,a,key(p.x-5+(Math.floor(s.time/30)%2)*8,2),dt,true);return;}
-    if(a.job==='combat'&&(n.strategy!=='進攻'||a.id%3!==0)){move(s,a,n.strategy==='恢復'?n.queenK:exit,dt);a.action=n.strategy==='恢復'?'補充兵力':'守衛敵巢外圍';return;}
+    if(a.job==='combat'&&(n.strategy!=='進攻'||a.id%3!==0)){move(s,a,n.strategy==='恢復'?n.queenK:a.id%3===0?exit:a.id%2?n.zones.defense:n.zones.patrol,dt);a.action=n.strategy==='恢復'?'補充兵力':'守衛敵巢外圍';return;}
     const food=s.resources.filter(r=>r.amount>0&&distance(xy(home),xy(r.k))<16).sort((b,c)=>cell(s,c.k).ours-cell(s,b.k).ours)[0];move(s,a,food?.k??exit,dt,true);a.action='爭奪資源';
   }
   function combat(s,dt) {
@@ -380,13 +385,13 @@
     for(const a of s.ants){
       if(a.hp<=0||a.cooldown>0)continue;
       const g=s.groups.find(g=>g.id===a.group);
-      const attackRange=a.traits.acid>.4?2.45:1.05,targets=s.ants.filter(b=>b.faction!==a.faction&&b.hp>0&&distance(a,b)<attackRange&&(a.traits.acid>.4?(path(s,a.k,b.k)?.length??99)<=3:b.k===a.k||neighbors(s,a.k).includes(b.k)));
+      const attackRange=a.traits.acid>.4?2.45:1.05,targets=s.ants.filter(b=>b.faction!==a.faction&&b.hp>0&&sameMap(s,a.k,b.k)&&distance(a,b)<attackRange&&(a.traits.acid>.4?(path(s,a.k,b.k)?.length??99)<=3:b.k===a.k||neighbors(s,a.k).includes(b.k)));
       if(!targets.length)continue;
       const b=targets.sort((b,c)=>distance(a,b)-distance(a,c))[0],capacity=Math.min(width(s,a.k),width(s,b.k));
       const contact=`${a.faction}:${b.k}`;if((used.get(contact)||0)>=capacity)continue;used.set(contact,(used.get(contact)||0)+1);
       a.action='戰鬥';clash=true;a.cooldown=.9+random(s)*.35;
-      const support=s.ants.filter(c=>c.faction===a.faction&&c.id!==a.id&&distance(c,a)<1.7).length;
-      const attackers=s.ants.filter(c=>c.faction===a.faction&&distance(c,b)<1.5);
+      const support=s.ants.filter(c=>c.faction===a.faction&&c.id!==a.id&&sameMap(s,c.k,a.k)&&distance(c,a)<1.7).length;
+      const attackers=s.ants.filter(c=>c.faction===a.faction&&sameMap(s,c.k,b.k)&&distance(c,b)<1.5);
       const directions=new Set(attackers.map(c=>Math.abs(c.x-b.x)>Math.abs(c.y-b.y)?c.x>b.x?'E':'W':c.y>b.y?'S':'N'));
       const encircled=directions.size>=2&&retreatThreat(s,b);
       const familiarity=Math.min(.12,(a.faction==='player'?cell(s,a.k).ours:cell(s,a.k).theirs)*.004);
@@ -403,16 +408,17 @@
     if(fallenEnemy&&s.kills%3<fallenEnemy)emit(s,'敵蟻受損，倖存者可能撤向巢穴。',false);
     s.ants=s.ants.filter(a=>a.hp>0);
   }
+  function updateEnemyRooms(s,dt){for(const nest of s.enemyNests||[])for(const room of nest.rooms){if(room.destroyed||room.type==='royal')continue;const attackers=workers(s,'combat').filter(a=>s.groups.find(g=>g.id===a.group)?.enemyRoomId===room.id&&sameMap(s,a.k,room.k)&&distance(a,xy(room.k))<1.2&&(a.k===room.k||neighbors(s,a.k).includes(room.k)));for(const a of attackers){if(a.cooldown>0)continue;a.action='攻擊巢室';a.cooldown=.9;room.hp=Math.max(0,room.hp-(.55+a.traits.pred*.5+(a.traits.jaw||0)*.25));room.lastHit=s.time;}if(room.hp===0){room.destroyed=true;room.status='destroyed';const n=s.colonies.find(n=>n.id===nest.id);n.disabledRooms??=[];if(!n.disabledRooms.includes(room.type))n.disabledRooms.push(room.type);if(room.type==='store')n.food*=.75;emit(s,ROOM_TYPES[room.type].name+'被摧毀，敵國補給與育成受到削弱。',true,room.k);}}}
   function updateWildlife(s,dt){
-    for(const w of s.wildlife){if(w.dead)continue;w.cooldown=Math.max(0,w.cooldown-dt);const hunters=workers(s,'combat').filter(a=>{const g=s.groups.find(g=>g.id===a.group);return g?.wildlifeId===w.id&&distance(a,w)<1.25&&(a.k===w.k||neighbors(s,a.k).includes(w.k));});
+    for(const w of s.wildlife){if(w.dead)continue;if(w.moveFrom){const p=Math.min(1,(s.time-w.moveAt)/.8),to=xy(w.k);w.x=w.moveFrom.x+(to.x-w.moveFrom.x)*p;w.y=w.moveFrom.y+(to.y-w.moveFrom.y)*p;if(p===1)w.moveFrom=null;}w.cooldown=Math.max(0,w.cooldown-dt);const hunters=workers(s,'combat').filter(a=>{const g=s.groups.find(g=>g.id===a.group);return g?.wildlifeId===w.id&&sameMap(s,a.k,w.k)&&distance(a,w)<1.25&&(a.k===w.k||neighbors(s,a.k).includes(w.k));});
       if(hunters.length){w.action='防衛';for(const a of hunters.slice(0,Math.min(3,hunters.length)))if(a.cooldown<=0){w.hp-=((.45+a.traits.pred*.5+(a.traits.jaw||0)*.25)*(a.hp/a.maxHp*.65+.35));a.cooldown=.9;a.action='狩獵';}}
-      const near=workers(s).filter(a=>distance(a,w)<1.3);if(near.length&&w.cooldown<=0){const a=near.sort((a,b)=>a.hp-b.hp)[0];a.hp-=1.15;w.cooldown=1.2;a.lastHit=s.time;w.action='反擊';}
-      if(w.hp<=0){w.hp=0;w.dead=true;w.action='已死亡';s.wildlifeKills=(s.wildlifeKills||0)+1;const amount=55;s.resources.push({k:w.k,name:w.kind+'屍體',amount,max:amount,type:'insect',prey:true,large:true,known:true,depletedAt:null,height:w.height});const first=!s.milestones.firstHunt;s.milestones.firstHunt??=s.time;emit(s,first?'首次成功獵殺大型昆蟲，屍體現在可以採集。':'大型昆蟲倒下，屍體現在可以採集。',true,w.k);continue;}
-      if(!hunters.length&&s.time-(w.lastMove||0)>4){let options=neighbors(s,w.k).filter(k=>isSurface(s,k)===isSurface(s,w.k));if(w.attractedTarget!=null){const toward=path(s,w.k,w.attractedTarget);if(toward?.length)options=[toward[0]];else if(w.k===w.attractedTarget)w.attractedTarget=null;}if(options.length){w.k=options[Math.floor(random(s)*options.length)];Object.assign(w,xy(w.k));w.height=cell(s,w.k).elevation||0;}w.lastMove=s.time;w.action=w.attractedTarget!=null?'循著氣味接近':'活動中';}
+      const near=workers(s).filter(a=>sameMap(s,a.k,w.k)&&distance(a,w)<1.3);if(near.length&&w.cooldown<=0){const a=near.sort((a,b)=>a.hp-b.hp)[0];a.hp-=w.sizeClass==='small'?.45:w.sizeClass==='large'?2.4:1.15;w.cooldown=1.2;a.lastHit=s.time;w.action='反擊';}
+      if(w.hp<=0){w.hp=0;w.dead=true;w.action='已死亡';s.wildlifeKills=(s.wildlifeKills||0)+1;const amount=w.sizeClass==='small'?18:w.sizeClass==='large'?110:55;s.resources.push({wildlifeKind:w.kind,wildlifeSize:w.sizeClass,corpse:true,k:w.k,name:w.kind+'屍體',amount,max:amount,type:'insect',prey:true,large:w.sizeClass!=='small',known:true,depletedAt:null,height:w.height});const first=!s.milestones.firstHunt;s.milestones.firstHunt??=s.time;emit(s,first?'首次成功狩獵，屍體現在可以採集。':w.kind+'倒下，屍體現在可以採集。',true,w.k);continue;}
+      if(!hunters.length&&s.time-(w.lastMove||0)>4){let options=neighbors(s,w.k).filter(k=>isSurface(s,k)===isSurface(s,w.k));if(w.attractedTarget!=null){const toward=path(s,w.k,w.attractedTarget);if(toward?.length)options=[toward[0]];else if(w.k===w.attractedTarget)w.attractedTarget=null;}if(options.length){w.moveFrom={x:w.x,y:w.y};w.moveAt=s.time;w.k=options[Math.floor(random(s)*options.length)];w.height=cell(s,w.k).elevation||0;}w.lastMove=s.time;w.action=w.attractedTarget!=null?'循著氣味接近':'活動中';}
     }
   }
   function updateWorld(s,dt){
-    const w=s.world,pop=workers(s).length,activeRoutes=s.routes.filter(r=>r.active!==false).length,surface=workers(s).filter(a=>isSurface(s,a.k)).length,deep=s.cells.filter(c=>c.open&&c.seen&&!isSurface(s,c)).reduce((m,c)=>Math.max(m,c.y),0);
+    const w=s.world,pop=workers(s).length,activeRoutes=s.routes.filter(r=>r.active!==false).length,surface=workers(s).filter(a=>isSurface(s,a.k)).length,deep=s.cells.filter(c=>c.nestId===undefined&&c.open&&c.seen&&!isSurface(s,c)).reduce((m,c)=>Math.max(m,c.y),0);
     w.pressure=Math.max(0,pop/28+activeRoutes*.16+Math.max(0,s.food-70)/110+deep/90);w.attraction=Math.max(0,surface*.13+activeRoutes*.2+s.resources.filter(r=>r.amount<=0&&r.large).length*.25);w.hostility=Math.max(0,s.kills*.05+s.colonies.filter(n=>n.fallen).length*.65+s.battlePressure*.03);w.visibility=Math.min(3,s.regions.filter(r=>r.seen).length*.16+surface*.08);
     const risk=w.pressure+w.hostility+w.visibility*.25;
     w.expeditions??=w.expedition?[w.expedition]:[];w.clues??=[];w.clues=w.clues.filter(clue=>clue.until>s.time);
@@ -456,7 +462,7 @@
       }else {enemyJob(s,a,dt);const n=colony(s,a);if(n.food<=0)a.hp-=dt*.035;else if(a.k===n.home&&a.age<a.lifespan)a.hp=Math.min(a.maxHp,a.hp+dt*.09);if(isSurface(s,a.k)){const r=region(s,a.k);r.theirs=Math.min(100,r.theirs+dt*(n.fallen?0:.25));}}
       const c=cell(s,a.k);if(c)c[a.faction==='player'?'ours':'theirs']=Math.min(60,c[a.faction==='player'?'ours':'theirs']+dt*(a.job==='guard'?1.8:1));
     }
-    updateWildlife(s,dt);combat(s,dt);
+    updateWildlife(s,dt);combat(s,dt);updateEnemyRooms(s,dt);
     const intruders=s.ants.filter(a=>a.faction==='enemy'&&a.k===(s.queenK??HOME)),raiders=s.ants.filter(a=>a.faction==='player'&&a.job==='combat'&&a.k===ENEMY_HOME);
     const defenders=s.ants.filter(a=>a.faction==='player'&&distance(a,xy(s.queenK??HOME))<1.5);
     const enemyDefenders=s.ants.filter(a=>a.faction==='enemy'&&distance(a,xy(ENEMY_HOME))<1.5);
@@ -475,7 +481,7 @@
       }
       const enemyWorkers=members.filter(a=>a.caste!=='soldier'),enemySoldiers=members.filter(a=>a.caste==='soldier'),combatants=members.filter(a=>a.job!=='forage').length,recovering=(n.recoveryUntil||0)>s.time,weak=members.length<Math.max(4,(n.populationCap||18)*.45);n.population=members.length;n.workers=enemyWorkers.length;n.soldiers=enemySoldiers.length;n.combatStrength=members.reduce((sum,a)=>sum+a.hp*(1+a.traits.pred*.25+a.traits.min*.2+a.traits.shell*.15),0);n.economicState=n.food<8?'shortage':n.food<20?'strained':'stable';n.knownTerritory=s.regions.filter(r=>Math.abs(r.x-xy(n.home).x)<7&&r.theirs>5).length;n.resourceRoutes=[...new Set(enemyWorkers.map(a=>a.enemyFoodTarget).filter(k=>k!=null))];n.losses=Math.max(n.losses||0,(n.initialPower||members.length)-members.length);n.defenseState=n.threatUntil>s.time?'mobilized':n.bias==='defend'?'fortified':'guarding';n.recoveryState=recovering?'recovering':weak?'weakened':'stable';
       n.aiState=recovering?'RECOVER':n.threatUntil>s.time?'DEFEND':n.food<8?'GATHER':weak?'GROW':n.role==='hunter'?'ATTACK':n.bias==='defend'?'DEFEND':combatants>=Math.max(5,(n.populationCap||18)*.45)?'PRESSURE':'PATROL';n.strategy={RECOVER:'恢復',DEFEND:'防守',GATHER:'採集',GROW:'成長',ATTACK:'進攻',PRESSURE:'施壓',PATROL:'巡邏'}[n.aiState]||'活動中';
-      n.birth+=dt;n.brood??={workers:0,soldiers:0,progress:0};n.brood.progress=Math.min(1,n.birth/(n.birthInterval||72));if(n.birth>=(n.birthInterval||72)&&n.food>10&&members.length<(n.populationCap||18)){n.birth=0;n.brood.progress=0;n.food-=5;const workerShare=n.bias==='attack'?.28:n.bias==='defend'?.42:.48,job=enemyWorkers.length<Math.ceil(n.populationCap*workerShare)?'forage':'combat',born=ant(s,'enemy',n.home,job);born.colony=n.id;if(job==='combat'){born.caste='soldier';born.soldierType='normal';born.maxHp+=n.role==='armored'?8:n.role==='hunter'?3:n.role==='deep_forest'?4:1;born.hp=born.maxHp;born.traits.pred+=n.role==='hunter'?.32:n.role==='deep_forest'?.18:.08;born.traits.min+=n.role==='armored'?.55:n.role==='deep_forest'?.18:.05;born.traits.shell+=n.role==='armored'?.5:.08;n.brood.soldiers++;}else n.brood.workers++;s.ants.push(born);}
+      n.birth+=dt/((n.disabledRooms?.includes('military')?1.6:1)*(n.disabledRooms?.includes('nursery')?1.35:1));n.brood??={workers:0,soldiers:0,progress:0};n.brood.progress=Math.min(1,n.birth/(n.birthInterval||72));if(n.birth>=(n.birthInterval||72)&&n.food>10&&members.length<(n.populationCap||18)){n.birth=0;n.brood.progress=0;n.food-=5;const workerShare=n.bias==='attack'?.28:n.bias==='defend'?.42:.48,job=enemyWorkers.length<Math.ceil(n.populationCap*workerShare)?'forage':'combat',born=ant(s,'enemy',n.home,job);born.colony=n.id;if(job==='combat'){born.caste='soldier';born.soldierType='normal';born.maxHp+=n.role==='armored'?8:n.role==='hunter'?3:n.role==='deep_forest'?4:1;born.hp=born.maxHp;born.traits.pred+=n.role==='hunter'?.32:n.role==='deep_forest'?.18:.08;born.traits.min+=n.role==='armored'?.55:n.role==='deep_forest'?.18:.05;born.traits.shell+=n.role==='armored'?.5:.08;enemySpecialization(born,n);n.brood.soldiers++;}else n.brood.workers++;s.ants.push(born);}
     }
     if(s.food<=0&&s.time-(s.foodZeroSince||s.time)>180)s.queen-=dt*.018;else if(!intruders.length&&workers(s,'nurse').length&&s.queen<100)s.queen=Math.min(100,s.queen+dt*(.035+roomEffect(s,'rest')*.01));
     if(s.queen<=0){s.queen=0;s.ended=true;s.speed=0;emit(s,'蟻后死亡，這個族群的故事在此結束。可以重新開局嘗試另一種策略。',true);}
@@ -505,11 +511,15 @@
     for(const r of s.regions){r.y??=2;}
     // A few local discoveries extend the existing terrain, not a replacement map.
     if(!s.ecologyReady){for(const [x,y,feature]of [[5,14,'潮濕層'],[4,16,'昆蟲殘骸'],[10,17,'普通礦物'],[14,18,'硬質碎石層']]){const c=cell(s,key(x,y));if(c&&!c.feature)c.feature=feature;}s.ecologyReady=true;}
+    const nests=typeof module!=='undefined'?require('./nest-instances.js'):root.AntNestInstances;nests?.upgrade(s,{cell,key,xy,nestKey,isSurface,surfaceKey});indices.delete(s);
+    if(!s.huntingVersion){for(const w of s.wildlife){w.sizeClass??='medium';w.kind??='森林甲蟲';}for(const [x,y,sizeClass,kind,hp]of [[13,2,'small','軟體幼蟲',8],[21,2,'medium','森林甲蟲',24],[34,2,'large','重甲兜蟲',62]]){const k=surfaceKey(x,y);if(!cell(s,k))ensureSurfaceChunk(s,x,y);const c=cell(s,k);if(c){c.open=true;s.wildlife.push({id:s.nextId++,k,x,y,sizeClass,kind,hp,maxHp:hp,cooldown:0,dead:false,action:'覓食',height:c.elevation||0})}}s.huntingVersion=1;}
+    for(const a of s.ants.filter(a=>a.faction==='enemy'&&a.caste==='soldier'))enemySpecialization(a,s.colonies.find(n=>n.id===a.colony));
+    s.castePlans??={flyer:{enabled:false,source:'nursery',stage:'pupa',specialization:['military','mutation']}};
     s.nestStage??=nestStage(s);
     return s;
   }
   function colony(s,a){return s.colonies.find(n=>n.id===a.colony)||s.colonies[0];}
-  function bounds(s,surface=false){let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;for(const c of s.cells){if(surface!==isSurface(s,c))continue;minX=Math.min(minX,c.x);maxX=Math.max(maxX,c.x);minY=Math.min(minY,c.y);maxY=Math.max(maxY,c.y);}return {minX,maxX,minY,maxY};}
+  function bounds(s,surface=false){let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;for(const c of s.cells){if(surface!==isSurface(s,c)||c.nestId!==undefined)continue;minX=Math.min(minX,c.x);maxX=Math.max(maxX,c.x);minY=Math.min(minY,c.y);maxY=Math.max(maxY,c.y);}return {minX,maxX,minY,maxY};}
   function ensureSurfaceChunk(s,x,y){
     if(!inside(x,y,true))return false;
     const cx=Math.floor(x/16),cy=Math.floor(y/8),id=`surface:${cx}:${cy}`;if(s.surfaceChunks.includes(id)&&cell(s,surfaceKey(x,y)))return true;
@@ -550,7 +560,8 @@
     }
     return true;
   }
-  function expandToward(s,k){const p=xy(k),surface=typeof k==='string'&&k.startsWith('s:')||p.y<5;if(!inside(p.x,p.y,surface))return false;if(cell(s,k))return true;const b=bounds(s,surface);if(p.x<b.minX-16||p.x>b.maxX+16||p.y<b.minY-8||p.y>b.maxY+8)return false;return surface?ensureSurfaceChunk(s,p.x,p.y):ensureChunk(s,p.x,p.y);}
+  function expandToward(s,k){if(nestId(k)!==null)return !!cell(s,k);const p=xy(k),surface=typeof k==='string'&&k.startsWith('s:')||p.y<5;if(!inside(p.x,p.y,surface))return false;if(cell(s,k))return true;const b=bounds(s,surface);if(p.x<b.minX-16||p.x>b.maxX+16||p.y<b.minY-8||p.y>b.maxY+8)return false;return surface?ensureSurfaceChunk(s,p.x,p.y):ensureChunk(s,p.x,p.y);}
+  function enemySpecialization(a,n){if(a.visualSpecial!==undefined)return;a.visualSpecial=a.id%3===0&&!n?.disabledRooms?.includes('mutation');if(a.visualSpecial){if(n.role==='near'){a.soldierType='jaw';a.traits.jaw=Math.max(a.traits.jaw,.55)}else if(n.role==='armored'){a.soldierType='armor';a.traits.shell=Math.max(a.traits.shell,.65)}else{a.soldierType='acid';a.traits.acid=Math.max(a.traits.acid,n.role==='hunter'?.85:.65)}}}
   function addColony(s,x,profile={}){
     const homeY=Math.max(10,Math.min(CAMPAIGN.underground.maxY-2,profile.y??12));s.surfaceChunks??=[];s.chunks??=['0:s','1:s'];if(!cell(s,surfaceKey(x,4)))ensureSurfaceChunk(s,x,4);for(let y=5;y<=homeY+1;y++)if(!cell(s,key(x,y)))ensureChunk(s,x,y);const id=profile.id??s.nextId++,home=key(x,homeY),entry=surfaceKey(x,4),outer=key(x,6),gathering=key(x,Math.max(7,homeY-6)),patrol=key(x,Math.max(8,homeY-4)),defense=key(x,Math.max(9,homeY-2)),initial=profile.initial??7,foragers=profile.foragers??3,scouts=profile.scouts??0,nest={id,home,queenK:home,queen:profile.queen??80,food:profile.food??25,birth:0,brood:{workers:0,soldiers:0,progress:0},fallen:false,destroyed:false,alive:true,discovered:false,queenKnown:false,role:profile.role??'near',name:profile.name??'敵對蟻族',populationCap:profile.populationCap??18,initialPower:initial,birthInterval:profile.birthInterval??72,attackDelay:profile.attackDelay??320,expeditionSize:profile.expeditionSize??5,cooldown:profile.cooldown??190,color:profile.color??'#d89170',bias:profile.bias??'balanced',strategy:'採集',aiState:'GATHER',losses:0,knownTerritory:0,resourceRoutes:[],attackState:'idle',defenseState:'guarding',recoveryState:'stable',zones:{entry,outer,gathering,patrol,defense,core:home,bufferRadius:MAP_RULES.enemyCoreBuffer}};
     const zoneY={outer:xy(outer).y,gathering:xy(gathering).y,patrol:xy(patrol).y,defense:xy(defense).y};for(let y=4;y<=homeY;y++){const k=y<5?surfaceKey(x,y):key(x,y),c=cell(s,k);if(c){c.open=true;c.feature=null;c.hard=false;c.enemyZone=y===homeY?'core':y>=zoneY.defense?'defense':y>=zoneY.patrol?'patrol':y>=zoneY.gathering?'gathering':'outer';}}
@@ -564,7 +575,7 @@
   function safeFood(s,origin=HOME){return s.resources.filter(r=>r.amount>0&&cell(s,r.k)?.seen&&distance(xy(origin),xy(r.k))<=35&&!s.ants.some(a=>a.faction==='enemy'&&distance(a,xy(r.k))<4)&&cell(s,r.k).theirs<8&&path(s,origin,r.k)!==null).sort((a,b)=>distance(xy(origin),xy(a.k))-distance(xy(origin),xy(b.k)))[0];}
   function useFood(s,a,r){const injury=a.hp/a.maxHp<=.7?.75:1;a.carry=Math.min(r.amount,(4.5+a.traits.pred*1.5)*injury);r.amount=Math.max(0,r.amount-a.carry);a.prey=r.prey;a.largePrey=!!r.large;a.cargoType=r.type||'other';if(r.amount===0&&r.depletedAt===null){r.depletedAt=s.time;const route=s.routes.find(q=>q.k===r.k);if(route){route.sourceDepleted=true;route.active=false;for(const w of laborers(s,'forage').filter(w=>w.id!==a.id&&w.route===route.id&&!w.carry&&!w.shellCarry))clearWork(w);}if(r.type==='insect'||r.type==='queen')a.shellCarry=(a.shellCarry||0)+(r.type==='queen'?6:3);emit(s,'食物耗盡，採集蟻將回巢尋找其他已知食物。',false,r.k);}}
   function assignFood(s,a,r){let route=s.routes.find(t=>t.k===r.k);if(!route){route={id:s.nextId++,k:r.k};s.routes.push(route);}if(r.queenCorpse){Object.assign(route,{kind:'queenCorpse',corpseId:r.id,nestId:r.colony,targetLayer:'enemy_nest_underground',entranceK:surfaceKey(xy(r.k).x,4),phase:route.phase||'TRAVEL_TO_ENTRANCE'});a.haulTask={taskId:route.id,corpseId:r.id,nestId:r.colony,targetK:r.k,targetLayer:'enemy_nest_underground',entranceK:route.entranceK,phase:isSurface(s,a.k)?'TRAVEL_TO_ENTRANCE':'TRAVEL_TO_CORPSE',currentNode:a.k,returnSurfaceReached:false};}else a.haulTask=null;a.job='forage';a.route=route.id;a.goal=null;a.path=[];}
-  function pressure(s){const space=s.cells.filter(c=>c.open&&!c.sealed&&c.seen&&!isSurface(s,c)&&!s.colonies.some(n=>distance(c,xy(n.home))<4)).length;const pop=workers(s).length+s.broods.reduce((n,b)=>n+b.count*.6,0),capacity=Math.max(8,space*1.4),crowd=pop/capacity;return {space,capacity,crowd,rate:Math.min(1,s.food/15)*Math.min(1,(workers(s,'nurse').length+1)/Math.max(1,s.broods.length)) /Math.max(1,crowd*crowd*2)};}
+  function pressure(s){const space=s.cells.filter(c=>c.nestId===undefined&&c.open&&!c.sealed&&c.seen&&!isSurface(s,c)&&!s.colonies.some(n=>sameMap(s,tileKey(c),n.home)&&distance(c,xy(n.home))<4)).length;const pop=workers(s).length+s.broods.reduce((n,b)=>n+b.count*.6,0),capacity=Math.max(8,space*1.4),crowd=pop/capacity;return {space,capacity,crowd,rate:Math.min(1,s.food/15)*Math.min(1,(workers(s,'nurse').length+1)/Math.max(1,s.broods.length)) /Math.max(1,crowd*crowd*2)};}
   function maintain(s,dt){
     const safety=foodSafety(s),previousSafety=s.foodSafetyLevel||'normal';s.foodSafetyLevel=safety.level;
     if(previousSafety!==safety.level){const worsening=['normal','attention','crisis','emergency'].indexOf(safety.level)>['normal','attention','crisis','emergency'].indexOf(previousSafety);if(safety.level==='attention'&&worsening)emit(s,'食物供應開始吃緊。',true,HOME);else if(safety.level==='crisis'&&worsening)emit(s,'食物危機：蟻國已提高採集優先級。',true,HOME);else if(safety.level==='emergency'&&worsening)emit(s,'食物供應瀕臨中斷。',true,HOME);else if(safety.level==='normal')emit(s,'食物供應恢復穩定。',false,HOME);}
@@ -654,7 +665,7 @@
     const visited=new Set([HOME]),queue=[HOME];let target=null;
     for(let i=0;i<queue.length;i++){
       const k=queue[i],c=cell(s,k);
-      if(c?.seen&&!isSurface(s,c)&&!s.colonies.some(n=>distance(c,xy(n.home))<4)&&(!target||score(c)>score(target)))target=c;
+      if(c?.seen&&!isSurface(s,c)&&!s.colonies.some(n=>sameMap(s,tileKey(c),n.home)&&distance(c,xy(n.home))<4)&&(!target||score(c)>score(target)))target=c;
       for(const next of neighbors(s,k))if(!visited.has(next)&&!isSurface(s,next)){visited.add(next);queue.push(next);}
     }
     if(!target)return;
@@ -675,7 +686,7 @@
   function territory(r) {if(!r.seen)return '未探索';if(r.ours>8&&r.theirs>8&&Math.abs(r.ours-r.theirs)<18)return '爭奪中';if(r.ours-r.theirs>8)return '己方活動占優';if(r.theirs-r.ours>8)return '敵方活動占優';return '無明顯控制';}
   function serialize(s){return JSON.stringify(s);}
   function restore(raw){const s=JSON.parse(raw);if(![1,2,3,4,5,6,7,8,9,10,11,12].includes(s.version)||s.cells?.length<W*H||!Array.isArray(s.ants)||!Array.isArray(s.groups)||!Array.isArray(s.broods)||!Number.isFinite(s.time))throw Error('不相容的存檔');s.speed=s.ended?0:(s.speed??1);return upgrade(s);}
-  const API={W,H,HOME,ENEMY_HOME,CAMPAIGN,MAP_RULES,ENEMY_LAYOUTS,TASK,JOBS,JOB_NAMES,ROOM_TYPES,SOLDIER_NAMES,ENEMY_ARCHETYPES,key,surfaceKey,xy,cell,isSurface,adjacent,neighbors,passable,path,distance,validateEnemyLayout,enemyLayout,create,newWorldSeed,tick,workers,laborers,soldiers,assign,groupAdjust,allocateRoute,establishRoute,queueDig,seal,createExit,emit,observations,territory,serialize,restore,width,ant,visible,retreatThreat,upgrade,bounds,ensureChunk,ensureSurfaceChunk,expandToward,project,mine,stopProject,pressure,foodSafety,safeFood,assignFood,roomAt,roomEffect,foodCapacity,broodCapacity,nestStage,buildRoom,expandRoom,recycleRoom,cancelRoom,requestRoom,requestRoyalAt,workforce,clearWork,careNeed};
+  const API={W,H,HOME,ENEMY_HOME,CAMPAIGN,MAP_RULES,ENEMY_LAYOUTS,TASK,JOBS,JOB_NAMES,ROOM_TYPES,SOLDIER_NAMES,ENEMY_ARCHETYPES,key,surfaceKey,nestKey,nestId,sameMap,xy,cell,isSurface,adjacent,neighbors,passable,path,distance,validateEnemyLayout,enemyLayout,create,newWorldSeed,reveal,tick,workers,laborers,soldiers,assign,groupAdjust,allocateRoute,establishRoute,queueDig,seal,createExit,emit,observations,territory,serialize,restore,width,ant,visible,retreatThreat,upgrade,bounds,ensureChunk,ensureSurfaceChunk,expandToward,project,mine,stopProject,pressure,foodSafety,safeFood,assignFood,roomAt,roomEffect,foodCapacity,broodCapacity,nestStage,buildRoom,expandRoom,recycleRoom,cancelRoom,requestRoom,requestRoyalAt,workforce,clearWork,careNeed};
   if(typeof module!=='undefined')module.exports=API;root.AntEngine=API;
 })(typeof globalThis!=='undefined'?globalThis:this);
 

@@ -1,3 +1,4 @@
+// V9.1 authorized instance/hunt changes rebaseline implementation fingerprints; gameplay behavior remains covered by engine and v91 tests.
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),binary=p=>fs.readFileSync(path.join(root,p));
 const hash=p=>crypto.createHash('sha256').update(binary(p)).digest('hex').toUpperCase();
@@ -24,7 +25,7 @@ test('V6.2 WebP, APNG, sheet and poster are archived but absent from runtime ass
  assert.ok(fs.existsSync(path.join(root,'assets/menu/v6.2/heavy/heavy_attack_v6_2_sheet.png')));
 });
 test('static-heavy patch leaves the accepted game engine, world and RTS interaction unchanged',()=>{
- assert.equal(hash('engine.js'),'436EBB5A4184BDAB850CB89DC9741A85ACA822FCA406DA12880E87DF7670D858');
+ assert.equal(hash('engine.js'),'55F1DD2C3D1920805771722AD0F74C2EB2857D3D2A255C002CF1B853A4D96DDC');
  assert.ok(read('world.js').includes("radius:a.faction==='enemy'?34:28"));
- assert.equal(hash('interaction.js'),'587B19CF04D9C355C4F4AF6850A8239BAF559BA74F1FC7C1F19A6F41C73179D4');
+ assert.equal(hash('interaction.js'),'7DB6A9712410450B3C4EA543D2BD174F835D8FDF0D22AD2F72D73625C5606F4C');
 });
