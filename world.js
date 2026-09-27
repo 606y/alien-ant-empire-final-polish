@@ -86,7 +86,7 @@
         if(tile.seen&&tile.hard){c.fillStyle='#0a1012';c.fillRect(x-.5,y-.26,1,.6);this.line(x-.5,y-.26,x+.5,y-.26,'#88928b',.03);}
       }
       if(this.view==='nest')this.nestGeometry(s);
-      if(this.view==='nest')for(const tile of s.cells){if(!tile.seen||!tile.strategicClue||E.isSurface(s,tile)||!visibleCell(tile.k??E.key(tile.x,tile.y)))continue;const p=this.screen(tile.x,tile.y);this.label(p.x,p.y-scale*.48,tile.strategicClue,'clue',tile.k??E.key(tile.x,tile.y),{source:0});this.targets.push({kind:'clue',k:tile.k??E.key(tile.x,tile.y),source:0,x:p.x,y:p.y,radius:38});}
+      if(this.view==='nest')for(const tile of s.cells){if(!tile.seen||!tile.strategicClue||E.isSurface(s,tile)||!visibleCell(tile.k??E.key(tile.x,tile.y)))continue;const p=this.screen(tile.x,tile.y);this.targets.push({kind:'clue',k:tile.k??E.key(tile.x,tile.y),source:0,x:p.x,y:p.y,radius:38});}
       // Territory is a tint on the actual ground, not a separate management view.
       for(const tile of s.cells){const k=tile.k??E.key(tile.x,tile.y);if(!tile.seen||!visibleCell(k))continue;
         if(tile.open){const contested=tile.ours>5&&tile.theirs>5;colorTint: {const n=Math.max(tile.ours,tile.theirs);if(n<1)break colorTint;this.ellipse(tile.x,tile.y,.28,.28,contested?'#d1a17212':tile.ours>tile.theirs?'#b7d17b06':'#a9684d0c');}}
@@ -104,7 +104,7 @@
       for(const prop of this.propPaint){const p=this.screen(prop.x,prop.y);if(p.x>-scale&&p.x<w+scale&&p.y>-scale&&p.y<h+scale)this.prop(prop.name,p.x,p.y,prop.size*scale,prop.angle);}
       if(this.view==='surface'){
         for(const reg of s.regions){const p=this.screen(reg.x,reg.y??2);c.textAlign='center';c.font='12px system-ui';c.fillStyle=reg.seen?'#c8d1a9':'#839575';c.fillText(reg.seen?reg.name:'未知森林',p.x,p.y-scale*.7);if(reg.seen){c.font='11px system-ui';c.fillStyle=E.territory(reg)==='爭奪中'?'#ddb184':'#8ba27c';c.fillText(E.territory(reg),p.x,p.y-scale*.7+20);}}
-        for(const clue of s.world?.clues||[]){const tile=E.cell(s,clue.k);if(!tile?.seen||!E.isSurface(s,tile))continue;const p=this.screen(tile.x,tile.y,tile.elevation||0),pulse=4+Math.sin(this.time*5)*2;this.ellipse(p.x-pulse,p.y+5,4,2,'#ddaa7866',-.35);this.ellipse(p.x+pulse,p.y-3,4,2,'#ddaa7866',-.35);this.label(p.x,p.y-scale*.48,clue.kind==='retreat'?'撤退足跡':'陌生蟻群痕跡','clue',clue.k,{source:clue.source});this.targets.push({kind:'clue',k:clue.k,source:clue.source,x:p.x,y:p.y,radius:38});}
+        for(const clue of s.world?.clues||[]){const tile=E.cell(s,clue.k);if(!tile?.seen||!E.isSurface(s,tile))continue;const p=this.screen(tile.x,tile.y,tile.elevation||0),pulse=4+Math.sin(this.time*5)*2;this.ellipse(p.x-pulse,p.y+5,4,2,'#ddaa7866',-.35);this.ellipse(p.x+pulse,p.y-3,4,2,'#ddaa7866',-.35);this.targets.push({kind:'clue',k:clue.k,source:clue.source,x:p.x,y:p.y,radius:38});}
       }
       for(const food of s.resources){if(food.amount<=0||!E.cell(s,food.k)?.seen||!visibleCell(food.k))continue;
         const p=E.xy(food.k),v=this.screen(p.x,p.y,food.height??E.cell(s,food.k)?.elevation??0),size=scale*.28,remaining=.32+.68*Math.sqrt(Math.min(1,food.amount/food.max));this.ctx.save();this.ctx.globalAlpha=food.bornAt===undefined?1:Math.min(1,(s.time-food.bornAt)/6);

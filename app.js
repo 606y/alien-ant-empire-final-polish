@@ -99,7 +99,7 @@
       else if(enemy)html+=actions(button('接戰','attack','class="primary"'),button('避開','avoid'));
       else html+=actions(button('前往','move','class="primary"'),button('守住','hold'));
     }else if(context.kind==='clue'){
-      const colony=s.colonies.find(n=>n.id===context.source);title='未知蟻群活動跡象';eyebrow='足跡、氣味與搬運痕跡';html=`<p>${colony?.discovered?`${colony.name}可能正從這個方向活動。`:'痕跡延伸到尚未掌握的森林；追蹤可以提早發現威脅與新資源。'}</p>${actions(button('派蟻追蹤','scout','class="primary"'))}`;
+      const colony=s.colonies.find(n=>n.id===context.source);title='未知蟻群活動跡象';eyebrow='足跡、氣味與搬運痕跡';html=`<p>${E.cell(s,k)?.strategicClue||(colony?.discovered?`${colony.name}可能正從這個方向活動。`:'痕跡延伸到尚未掌握的森林；追蹤可以提早發現威脅與新資源。')}</p>${actions(button('派蟻追蹤','scout','class="primary"'))}`;
     }else if(context.kind==='unknown'){
       title='未知的地下';eyebrow='尚未探索';html='<p>從相鄰通道慢慢挖掘，才能看清這裡。</p>';
     }else if(context.kind==='obstacle'){
